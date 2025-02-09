@@ -20,11 +20,11 @@ class Consultation
 
     #[ORM\ManyToOne(inversedBy: 'consultations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?patient $patient = null;
+    private ?Patient $patient = null;
 
     #[ORM\ManyToOne(inversedBy: 'consultations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?medecin $medecin = null;
+    private ?Medecin $medecin = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
@@ -52,24 +52,24 @@ class Consultation
         return $this;
     }
 
-    public function getPatient(): ?patient
+    public function getPatient(): ?Patient
     {
         return $this->patient;
     }
 
-    public function setPatient(?patient $patient): static
+    public function setPatient(?Patient $patient): static
     {
         $this->patient = $patient;
 
         return $this;
     }
 
-    public function getMedecin(): ?medecin
+    public function getMedecin(): ?Medecin
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?medecin $medecin): static
+    public function setMedecin(?Medecin $medecin): static
     {
         $this->medecin = $medecin;
 

@@ -36,12 +36,12 @@ class Evenement
 
     #[ORM\ManyToOne(inversedBy: 'evenements')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?medecin $medecin = null;
+    private ?Medecin $medecin = null;
 
     /**
-     * @var Collection<int, article>
+     * @var Collection<int, Article>
      */
-    #[ORM\OneToMany(targetEntity: article::class, mappedBy: 'evenement')]
+    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'evenement')]
     private Collection $article;
 
     public function __construct()
@@ -126,12 +126,12 @@ class Evenement
         return $this;
     }
 
-    public function getMedecin(): ?medecin
+    public function getMedecin(): ?Medecin
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?medecin $medecin): static
+    public function setMedecin(?Medecin $medecin): static
     {
         $this->medecin = $medecin;
 
@@ -139,14 +139,14 @@ class Evenement
     }
 
     /**
-     * @return Collection<int, article>
+     * @return Collection<int, Article>
      */
     public function getArticle(): Collection
     {
         return $this->article;
     }
 
-    public function addArticle(article $article): static
+    public function addArticle(Article $article): static
     {
         if (!$this->article->contains($article)) {
             $this->article->add($article);

@@ -33,7 +33,7 @@ class ConsultationHis
     private ?int $duree = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?consultation $consultation = null;
+    private ?Consultation $consultation = null;
 
     public function getId(): ?int
     {
@@ -112,12 +112,12 @@ class ConsultationHis
         return $this;
     }
 
-    public function getConsultation(): ?consultation
+    public function getConsultation(): ?Consultation
     {
         return $this->consultation;
     }
 
-    public function setConsultation(?consultation $consultation): static
+    public function setConsultation(?Consultation $consultation): static
     {
         $this->consultation = $consultation;
 

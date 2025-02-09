@@ -24,7 +24,7 @@ class Prescription
     private ?DossierMedical $dossierMedical = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?diagnostique $diagnostique = null;
+    private ?Diagnostique $diagnostique = null;
 
     public function getId(): ?int
     {
@@ -67,12 +67,12 @@ class Prescription
         return $this;
     }
 
-    public function getDiagnostique(): ?diagnostique
+    public function getDiagnostique(): ?Diagnostique
     {
         return $this->diagnostique;
     }
 
-    public function setDiagnostique(?diagnostique $diagnostique): static
+    public function setDiagnostique(?Diagnostique $diagnostique): static
     {
         $this->diagnostique = $diagnostique;
 

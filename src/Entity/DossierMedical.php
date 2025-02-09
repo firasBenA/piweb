@@ -20,12 +20,12 @@ class DossierMedical
     private ?\DateTimeInterface $datePrescription = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?patient $patient = null;
+    private ?Patient $patient = null;
 
     /**
-     * @var Collection<int, prescription>
+     * @var Collection<int, Prescription>
      */
-    #[ORM\OneToMany(targetEntity: prescription::class, mappedBy: 'dossierMedical')]
+    #[ORM\OneToMany(targetEntity: Prescription::class, mappedBy: 'dossierMedical')]
     private Collection $prescriptions;
 
     /**
@@ -57,12 +57,12 @@ class DossierMedical
         return $this;
     }
 
-    public function getPatient(): ?patient
+    public function getPatient(): ?Patient
     {
         return $this->patient;
     }
 
-    public function setPatient(?patient $patient): static
+    public function setPatient(?Patient $patient): static
     {
         $this->patient = $patient;
 
@@ -77,7 +77,7 @@ class DossierMedical
         return $this->prescriptions;
     }
 
-    public function addPrescription(prescription $prescription): static
+    public function addPrescription(Prescription $prescription): static
     {
         if (!$this->prescriptions->contains($prescription)) {
             $this->prescriptions->add($prescription);
@@ -87,7 +87,7 @@ class DossierMedical
         return $this;
     }
 
-    public function removePrescription(prescription $prescription): static
+    public function removePrescription(Prescription $prescription): static
     {
         if ($this->prescriptions->removeElement($prescription)) {
             // set the owning side to null (unless already changed)

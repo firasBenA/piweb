@@ -29,18 +29,18 @@ class Diagnostique
     private ?DossierMedical $dossierMedical = null;
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
-    private ?patient $patient = null;
+    private ?Patient $patient = null;
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
-    private ?medecin $medecin = null;
+    private ?Medecin $medecin = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?prescription $prescription = null;
+    private ?Prescription $prescription = null;
 
     /**
-     * @var Collection<int, symptomes>
+     * @var Collection<int, Symptomes>
      */
-    #[ORM\ManyToMany(targetEntity: symptomes::class, inversedBy: 'diagnostiques')]
+    #[ORM\ManyToMany(targetEntity: Symptomes::class, inversedBy: 'diagnostiques')]
     private Collection $symptomes;
 
     public function __construct()
@@ -101,36 +101,36 @@ class Diagnostique
         return $this;
     }
 
-    public function getPatient(): ?patient
+    public function getPatient(): ?Patient
     {
         return $this->patient;
     }
 
-    public function setPatient(?patient $patient): static
+    public function setPatient(?Patient $patient): static
     {
         $this->patient = $patient;
 
         return $this;
     }
 
-    public function getMedecin(): ?medecin
+    public function getMedecin(): ?Medecin
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?medecin $medecin): static
+    public function setMedecin(?Medecin $medecin): static
     {
         $this->medecin = $medecin;
 
         return $this;
     }
 
-    public function getPrescription(): ?prescription
+    public function getPrescription(): ?Prescription
     {
         return $this->prescription;
     }
 
-    public function setPrescription(?prescription $prescription): static
+    public function setPrescription(?Prescription $prescription): static
     {
         $this->prescription = $prescription;
 
@@ -138,14 +138,14 @@ class Diagnostique
     }
 
     /**
-     * @return Collection<int, symptomes>
+     * @return Collection<int, Symptomes>
      */
     public function getSymptomes(): Collection
     {
         return $this->symptomes;
     }
 
-    public function addSymptome(symptomes $symptome): static
+    public function addSymptome(Symptomes $symptome): static
     {
         if (!$this->symptomes->contains($symptome)) {
             $this->symptomes->add($symptome);
@@ -154,7 +154,7 @@ class Diagnostique
         return $this;
     }
 
-    public function removeSymptome(symptomes $symptome): static
+    public function removeSymptome(Symptomes $symptome): static
     {
         $this->symptomes->removeElement($symptome);
 

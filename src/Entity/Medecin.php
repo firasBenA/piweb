@@ -288,7 +288,6 @@ class Medecin
                 $evenement->setMedecin(null);
             }
         }
-
         return $this;
     }
 
@@ -306,7 +305,6 @@ class Medecin
             $this->diagnostiques->add($diagnostique);
             $diagnostique->setMedecin($this);
         }
-
         return $this;
     }
 
@@ -318,7 +316,6 @@ class Medecin
                 $diagnostique->setMedecin(null);
             }
         }
-
         return $this;
     }
 }

@@ -20,7 +20,7 @@ class RendezVous
 
     #[ORM\ManyToOne(inversedBy: 'rendezVouses')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?medecin $medecin = null;
+    private ?Medecin $medecin = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date = null;
@@ -39,24 +39,24 @@ class RendezVous
         return $this->id;
     }
 
-    public function getPatient(): ?patient
+    public function getPatient(): ?Patient
     {
         return $this->patient;
     }
 
-    public function setPatient(?patient $patient): static
+    public function setPatient(?Patient $patient): static
     {
         $this->patient = $patient;
 
         return $this;
     }
 
-    public function getMedecin(): ?medecin
+    public function getMedecin(): ?Medecin
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?medecin $medecin): static
+    public function setMedecin(?Medecin $medecin): static
     {
         $this->medecin = $medecin;
 
@@ -95,7 +95,6 @@ class RendezVous
     public function setTypeRdv(string $type_rdv): static
     {
         $this->type_rdv = $type_rdv;
-
         return $this;
     }
 
@@ -107,7 +106,6 @@ class RendezVous
     public function setCause(string $cause): static
     {
         $this->cause = $cause;
-
         return $this;
     }
 }
