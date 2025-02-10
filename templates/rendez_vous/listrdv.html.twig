@@ -1,0 +1,54 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center">Liste des Rendez-vous de {{ patient.nom }} {{ patient.prenom }}</h1>
+
+        {% if rendezVous is empty %}
+            <p class="text-center">Aucun rendez-vous trouvé.</p>
+        {% else %}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>ID</th>
+                        <th>Date</th>
+                        <th>Type</th>
+                        <th>Cause</th>
+                        <th>Médecin</th>
+                        <th>Statut</th>
+                        <th>Actions</th> <!-- Colonne pour les actions -->
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for rdv in rendezVous %}
+                        <tr>
+                            <td>{{ rdv.id }}</td>
+                            <td>{{ rdv.date|date('d/m/Y') }}</td>
+                            <td>{{ rdv.typeRdv }}</td>
+                            <td>{{ rdv.cause }}</td>
+                            <td>{{ rdv.medecin.nom }}</td>
+                            <td>{{ rdv.statut }}</td>
+                            <td>
+                                <!-- Bouton de suppression et de modification sur la même ligne -->
+                                <div class="d-inline-block">
+                                    <form action="{{ path('delete_rdv', {'id': rdv.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?');">
+                                        <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ rdv.id) }}">
+                                        <button type="submit" class="btn btn-danger btn-sm mr-2">Supprimer</button>
+                                    </form>
+                                </div>
+                                <div class="d-inline-block">
+                                    <a href="{{ path('edit_rdv', {'id': rdv.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% endif %}
+
+        <!-- Bouton pour réserver un nouveau rendez-vous -->
+        <div class="text-center mt-4">
+            <a href="{{ path('addrendezvous', {'id': patient.id}) }}" class="btn btn-success">Réserver un Nouveau Rendez-vous</a>
+        </div>
+    </div>
+{% endblock %}

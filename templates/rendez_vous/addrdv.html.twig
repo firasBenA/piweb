@@ -1,0 +1,45 @@
+{# templates/rendezvous/new.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center">Réservation de Rendez-vous</h1>
+
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                {{ form_start(form, {'attr': {'class': 'form'}}) }}
+
+                <div class="mb-3">
+                    {{ form_label(form.date, 'Date du rendez-vous') }}
+                    {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.date) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.type_rdv, 'Type de rendez-vous') }}
+                    {{ form_widget(form.type_rdv, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.type_rdv) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.cause, 'Cause du rendez-vous') }}
+                    {{ form_widget(form.cause, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.cause) }}
+                </div>
+
+                <div class="mb-3">
+                    {{ form_label(form.medecin, 'Médecin') }}
+                    {{ form_widget(form.medecin, {'attr': {'class': 'form-control'}}) }}
+                    {{ form_errors(form.medecin) }}
+                </div>
+
+                <div class="text-center">
+                    {{ form_widget(form.submit, {'attr': {'class': 'btn btn-primary'}}) }}
+                </div>
+
+                {{ form_end(form) }}
+            </div>
+        </div>
+    </div>
+{% endblock %}

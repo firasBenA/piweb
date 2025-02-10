@@ -16,7 +16,7 @@ class RendezVous
 
     #[ORM\ManyToOne(inversedBy: 'rendezVouses')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?patient $patient = null;
+    private ?Patient $patient = null;
 
     #[ORM\ManyToOne(inversedBy: 'rendezVouses')]
     #[ORM\JoinColumn(nullable: false)]

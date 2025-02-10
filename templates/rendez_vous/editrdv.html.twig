@@ -1,0 +1,17 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h1 class="text-center">Modifier le Rendez-vous</h1>
+
+        {{ form_start(form) }}
+            {{ form_row(form.date) }}
+            {{ form_row(form.type_rdv) }}
+            {{ form_row(form.cause) }}
+            {{ form_row(form.medecin) }}
+         
+            <button type="submit" class="btn btn-success">Enregistrer les modifications</button>
+        {{ form_end(form) }}
+
+    </div>
+{% endblock %}
