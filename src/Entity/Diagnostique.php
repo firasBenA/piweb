@@ -34,9 +34,6 @@ class Diagnostique
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
     private ?Medecin $medecin = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Prescription $prescription = null;
-
     /**
      * @var Collection<int, Symptomes>
      */
@@ -121,18 +118,6 @@ class Diagnostique
     public function setMedecin(?Medecin $medecin): static
     {
         $this->medecin = $medecin;
-
-        return $this;
-    }
-
-    public function getPrescription(): ?Prescription
-    {
-        return $this->prescription;
-    }
-
-    public function setPrescription(?Prescription $prescription): static
-    {
-        $this->prescription = $prescription;
 
         return $this;
     }

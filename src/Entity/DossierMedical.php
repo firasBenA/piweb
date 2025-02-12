@@ -70,7 +70,7 @@ class DossierMedical
     }
 
     /**
-     * @return Collection<int, prescription>
+     * @return Collection<int, Prescription>
      */
     public function getPrescriptions(): Collection
     {

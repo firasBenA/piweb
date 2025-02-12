@@ -1,20 +1,37 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Hello PrescriptionController!{% endblock %}
+{% block title %} Prescriptions {% endblock %}
 
 {% block body %}
-<style>
-    .example-wrapper { margin: 1em auto; max-width: 800px; width: 95%; font: 18px/1.5 sans-serif; }
-    .example-wrapper code { background: #F5F5F5; padding: 2px 6px; }
-</style>
+    <div class="container mt-5">
+        <h2>Liste des Prescriptions</h2>
+        <a href="{{ path('app_prescription_new') }}" class="btn btn-primary mb-3">Ajouter une Prescription</a>
 
-<div class="example-wrapper">
-    <h1>Hello {{ controller_name }}! ✅</h1>
-
-    This friendly message is coming from:
-    <ul>
-        <li>Your controller at <code>C:/Users/Jmbo2/piweb/src/Controller/PrescriptionController.php</code></li>
-        <li>Your template at <code>C:/Users/Jmbo2/piweb/templates/prescription/index.html.twig</code></li>
-    </ul>
-</div>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Contenu</th>
+                    <th>Date</th>
+                    <th>Dossier Médical</th>
+                    <th>Diagnostique</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prescription in prescriptions %}
+                    <tr>
+                        <td>{{ prescription.id }}</td>
+                        <td>{{ prescription.contenue }}</td>
+                        <td>{{ prescription.datePrscription|date('Y-m-d') }}</td>
+                        <td>{{ prescription.dossierMedical.id }}</td>
+                        <td>{{ prescription.diagnostique.nom }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">Aucune prescription trouvée.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
 {% endblock %}
