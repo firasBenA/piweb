@@ -36,25 +36,25 @@ class Patient
     /**
      * @var Collection<int, RendezVous>
      */
-    #[ORM\OneToMany(targetEntity: RendezVous::class, mappedBy: 'patient')]
+    #[ORM\OneToMany(targetEntity: RendezVous::class, mappedBy: 'Patient')]
     private Collection $rendezVouses;
 
     /**
      * @var Collection<int, Consultation>
      */
-    #[ORM\OneToMany(targetEntity: Consultation::class, mappedBy: 'patient')]
+    #[ORM\OneToMany(targetEntity: Consultation::class, mappedBy: 'Patient')]
     private Collection $consultations;
 
     /**
      * @var Collection<int, Reclamation>
      */
-    #[ORM\OneToMany(targetEntity: Reclamation::class, mappedBy: 'patient')]
+    #[ORM\OneToMany(targetEntity: Reclamation::class, mappedBy: 'Patient')]
     private Collection $reclamations;
 
     /**
      * @var Collection<int, Diagnostique>
      */
-    #[ORM\OneToMany(targetEntity: Diagnostique::class, mappedBy: 'patient')]
+    #[ORM\OneToMany(targetEntity: Diagnostique::class, mappedBy: 'Patient')]
     private Collection $diagnostiques;
 
     public function __construct()

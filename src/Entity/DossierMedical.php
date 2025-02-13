@@ -20,7 +20,7 @@ class DossierMedical
     private ?\DateTimeInterface $datePrescription = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Patient $patient = null;
+    private ?Patient $Patient = null;
 
     /**
      * @var Collection<int, Prescription>
@@ -59,12 +59,12 @@ class DossierMedical
 
     public function getPatient(): ?Patient
     {
-        return $this->patient;
+        return $this->Patient;
     }
 
-    public function setPatient(?Patient $patient): static
+    public function setPatient(?Patient $Patient): static
     {
-        $this->patient = $patient;
+        $this->Patient = $Patient;
 
         return $this;
     }

@@ -20,7 +20,7 @@ class Consultation
 
     #[ORM\ManyToOne(inversedBy: 'consultations')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Patient $patient = null;
+    private ?Patient $Patient = null;
 
     #[ORM\ManyToOne(inversedBy: 'consultations')]
     #[ORM\JoinColumn(nullable: false)]
@@ -54,12 +54,12 @@ class Consultation
 
     public function getPatient(): ?Patient
     {
-        return $this->patient;
+        return $this->Patient;
     }
 
-    public function setPatient(?Patient $patient): static
+    public function setPatient(?Patient $Patient): static
     {
-        $this->patient = $patient;
+        $this->Patient = $Patient;
 
         return $this;
     }

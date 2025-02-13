@@ -29,7 +29,7 @@ class Diagnostique
     private ?DossierMedical $dossierMedical = null;
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
-    private ?Patient $patient = null;
+    private ?Patient $Patient = null;
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
     private ?Medecin $medecin = null;
@@ -103,9 +103,9 @@ class Diagnostique
         return $this->patient;
     }
 
-    public function setPatient(?Patient $patient): static
+    public function setPatient(?Patient $Patient): static
     {
-        $this->patient = $patient;
+        $this->Patient = $Patient;
 
         return $this;
     }
