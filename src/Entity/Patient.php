@@ -33,6 +33,13 @@ class Patient
     #[ORM\Column]
     private ?int $telephone = null;
 
+    #[ORM\ManyToOne(targetEntity: Medecin::class, inversedBy: 'patients')]
+    #[ORM\JoinColumn(nullable: true)] // Allowing the medecin to be nullable if needed
+    private ?Medecin $medecin = null;
+
+    #[ORM\OneToOne(mappedBy: 'patient', targetEntity: DossierMedical::class)]
+    private ?DossierMedical $dossierMedical = null;
+
     /**
      * @var Collection<int, RendezVous>
      */
@@ -63,6 +70,8 @@ class Patient
         $this->consultations = new ArrayCollection();
         $this->reclamations = new ArrayCollection();
         $this->diagnostiques = new ArrayCollection();
+        $this->dossierMedical = new DossierMedical();
+        $this->dossierMedical->setPatient($this);
     }
 
     public function getId(): ?int
@@ -89,6 +98,18 @@ class Patient
     public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
+        return $this;
+    }
+
+    public function getMedecin(): ?Medecin
+    {
+        return $this->medecin;
+    }
+
+    public function setMedecin(?Medecin $medecin): self
+    {
+        $this->medecin = $medecin;
+
         return $this;
     }
 
@@ -257,6 +278,17 @@ class Patient
             }
         }
 
+        return $this;
+    }
+
+    public function getDossierMedical(): ?DossierMedical
+    {
+        return $this->dossierMedical;
+    }
+
+    public function setDossierMedical(DossierMedical $dossierMedical): self
+    {
+        $this->dossierMedical = $dossierMedical;
         return $this;
     }
 }

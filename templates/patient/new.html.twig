@@ -1,0 +1,18 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Patient{% endblock %}
+
+{% block body %}
+    <h1>Create New Patient</h1>
+
+    {{ form_start(form) }}
+        {{ form_row(form.nom) }}
+        {{ form_row(form.prenom) }}
+        {{ form_row(form.email) }}
+        {{ form_row(form.mot_de_passe) }}
+        {{ form_row(form.age) }}
+        {{ form_row(form.telephone) }}
+
+        <button class="btn">Save</button>
+    {{ form_end(form) }}
+{% endblock %}

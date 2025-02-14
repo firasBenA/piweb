@@ -19,8 +19,10 @@ class DossierMedical
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $datePrescription = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: Patient::class, inversedBy: 'dossierMedical', cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Patient $patient = null;
+
 
     /**
      * @var Collection<int, Prescription>
@@ -62,10 +64,9 @@ class DossierMedical
         return $this->patient;
     }
 
-    public function setPatient(?Patient $patient): static
+    public function setPatient(Patient $patient): self
     {
         $this->patient = $patient;
-
         return $this;
     }
 
@@ -90,12 +91,12 @@ class DossierMedical
     public function removePrescription(Prescription $prescription): static
     {
         if ($this->prescriptions->removeElement($prescription)) {
-            // set the owning side to null (unless already changed)
+            // Ensure the owning side is cleared only if it's still referencing this DossierMedical
             if ($prescription->getDossierMedical() === $this) {
-                $prescription->setDossierMedical(null);
+                $prescription->setDossierMedical($this); // Keep the relation intact
             }
         }
-
+    
         return $this;
     }
 

@@ -1,37 +1,17 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Nouvelle Prescription {% endblock %}
+{% block title %}Create Prescription
+{% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <h2>Ajouter une Nouvelle Prescription</h2>
+	<h1>Create Prescription</h1>
+	
+		<strong>Diagnostique:</strong>
+		{{ diagnostique.id }}</p>
 
-        {{ form_start(form) }}
-            <div class="mb-3">
-                {{ form_label(form.contenue) }}
-                {{ form_widget(form.contenue) }}
-                {{ form_errors(form.contenue) }}
-            </div>
+	{{ form_start(form) }}
+	{{ form_row(form.contenue) }}
+	{{ form_row(form.save) }}
+	{{ form_end(form) }}
 
-            <div class="mb-3">
-                {{ form_label(form.datePrscription) }}
-                {{ form_widget(form.datePrscription) }}
-                {{ form_errors(form.datePrscription) }}
-            </div>
-
-            <div class="mb-3">
-                {{ form_label(form.dossierMedical) }}
-                {{ form_widget(form.dossierMedical) }}
-                {{ form_errors(form.dossierMedical) }}
-            </div>
-
-            <div class="mb-3">
-                {{ form_label(form.diagnostique) }}
-                {{ form_widget(form.diagnostique) }}
-                {{ form_errors(form.diagnostique) }}
-            </div>
-
-            <button type="submit" class="btn btn-success">{{ form_widget(form.save) }}</button>
-        {{ form_end(form) }}
-    </div>
 {% endblock %}

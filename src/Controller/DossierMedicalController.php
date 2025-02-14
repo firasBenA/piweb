@@ -3,6 +3,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Diagnostique;
 use App\Entity\DossierMedical;
 use App\Entity\Patient;
 use App\Form\DossierMedicalType;
@@ -26,7 +27,7 @@ class DossierMedicalController extends AbstractController
             'dossier_medicals' => $dossierMedicals,
         ]);
     }
-    
+
     #[Route('/dossier-medical/new', name: 'app_dossier_medical_new')]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -51,14 +52,42 @@ class DossierMedicalController extends AbstractController
         return $this->render('dossier_medical/new.html.twig', [
             'form' => $form->createView(),
         ]);
-    } 
+    }
 
-    #[Route('/dossier-medical/{id}', name: 'app_dossier_medical_show')]
-    public function show(DossierMedical $dossierMedical): Response
+
+    #[Route('/dossierMedicalByPatient/{id}', name: 'dossierMedicalByPatient_page')]
+    public function show(int $id, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('dossier_medical/index.html.twig', [
-            'dossier_medical' => $dossierMedical,
+        // Fetch the patient by ID
+        $patient = $entityManager->getRepository(Patient::class)->find($id);
+
+        // Debugging - Log the patient object
+        dump($patient);
+
+        if (!$patient) {
+            throw $this->createNotFoundException('No patient found with this ID.');
+        }
+
+        // Fetch the dossier medical linked to the patient
+        $dossierMedical = $entityManager->getRepository(DossierMedical::class)->findOneBy(['patient' => $patient]);
+
+        // Debugging - Log the dossierMedical object
+        dump($dossierMedical);
+
+        if (!$dossierMedical) {
+            throw $this->createNotFoundException('No dossier medical found for this patient.');
+        }
+
+        // Fetch the diagnostiques related to the dossier medical
+        $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy(['dossierMedical' => $dossierMedical]);
+
+        // Debugging - Log the diagnostiques
+        dump($diagnostiques);
+
+        return $this->render('patient/dossierMedical.html.twig', [
+            'dossierMedical' => $dossierMedical,
+            'patient' => $patient, // Pass the patient to Twig
+            'diagnostiques' => $diagnostiques, // Pass the diagnostiques to Twig
         ]);
     }
 }
-

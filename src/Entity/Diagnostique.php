@@ -22,10 +22,11 @@ class Diagnostique
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]  // Added `nullable: true`
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?DossierMedical $dossierMedical = null;
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
@@ -33,6 +34,22 @@ class Diagnostique
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
     private ?Medecin $medecin = null;
+
+    #[ORM\Column]
+    private ?int $status = null;
+
+
+    public function getStatus(): ?int
+    {
+        return $this->status;
+    }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
 
     /**
      * @var Collection<int, Symptomes>

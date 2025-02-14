@@ -15,20 +15,54 @@ class Prescription
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    private ?string $titre = null;
+
+    #[ORM\Column(length: 255)]
     private ?string $contenue = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $datePrscription = null;
+    private ?\DateTimeInterface $datePrescription = null;
 
     #[ORM\ManyToOne(inversedBy: 'prescriptions')]
+    #[ORM\JoinColumn(nullable: false)]
     private ?DossierMedical $dossierMedical = null;
 
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
+    #[ORM\JoinColumn(nullable: false)]
     private ?Diagnostique $diagnostique = null;
+
+    #[ORM\ManyToOne(targetEntity: Medecin::class, inversedBy: 'prescriptions')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Medecin $medecin = null;
+
+
 
     public function getId(): ?int
     {
         return $this->id;
+    }
+
+    public function getTitre(): ?string
+    {
+        return $this->titre;
+    }
+
+    public function setTitre(string $titre): static
+    {
+        $this->titre = $titre;
+
+        return $this;
+    }
+
+    public function getMedecin(): ?Medecin
+    {
+        return $this->medecin;
+    }
+
+    public function setMedecin(?Medecin $medecin): self
+    {
+        $this->medecin = $medecin;
+        return $this;
     }
 
     public function getContenue(): ?string
@@ -43,14 +77,14 @@ class Prescription
         return $this;
     }
 
-    public function getDatePrscription(): ?\DateTimeInterface
+    public function getDatePrescription(): ?\DateTimeInterface
     {
-        return $this->datePrscription;
+        return $this->datePrescription;
     }
 
-    public function setDatePrscription(\DateTimeInterface $datePrscription): static
+    public function setDatePrescription(?\DateTimeInterface $datePrescription): static
     {
-        $this->datePrscription = $datePrscription;
+        $this->datePrescription = $datePrescription;
 
         return $this;
     }
@@ -60,7 +94,7 @@ class Prescription
         return $this->dossierMedical;
     }
 
-    public function setDossierMedical(?DossierMedical $dossierMedical): static
+    public function setDossierMedical(DossierMedical $dossierMedical): static
     {
         $this->dossierMedical = $dossierMedical;
 

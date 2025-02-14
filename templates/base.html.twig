@@ -7,72 +7,82 @@
 			{% endblock %}
 		</title>
 		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+		<link rel="manifest" href="site.webmanifest">
+		
+
 		{% block stylesheets %}
-			<link rel="manifest" href="site.webmanifest">
-			<link
-			rel="shortcut icon" type="image/x-icon" href="{{asset('assets/img/favicon.ico')}}">
+
 			<!-- CSS here -->
-			<link rel="stylesheet" href="{{asset('assets/css/bootstrap.min.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/owl.carousel.min.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/slicknav.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/flaticon.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/gijgo.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/animate.min.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/animated-headline.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/magnific-popup.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/fontawesome-all.min.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/themify-icons.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/slick.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/nice-select.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
+			<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/slicknav.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/flaticon.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/gijgo.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/animated-headline.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/magnific-popup.css' )}}">
+			<link rel="stylesheet" href="{{ asset('assets/css/fontawesome-all.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/themify-icons.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/slick.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/nice-select.css') }}">
+			<link
+			rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+
+
+			<!-- CSS MEDECIN here -->
+			<link rel="stylesheet" href="{{asset('medecin/assets/css/tailwind.output.css')}}"/>
+
 		{% endblock %}
 
 		{% block javascripts %}
 			<!-- JS here -->
 
-			<script src="{{asset('./assets/js/vendor/modernizr-3.5.0.min.js')}}"></script>
+			<script src="{{asset('assets/js/vendor/modernizr-3.5.0.min.js')}}"></script>
 			<!-- Jquery, Popper, Bootstrap -->
-			<script src="{{asset('./assets/js/vendor/jquery-1.12.4.min.js')}}"></script>
-			<script src="{{asset('./assets/js/popper.min.js')}}"></script>
-			<script src="{{asset('./assets/js/bootstrap.min.js')}}"></script>
+			<script src="{{asset('assets/js/vendor/jquery-1.12.4.min.js')}}"></script>
+			<script src="{{asset('assets/js/popper.min.js')}}"></script>
+			<script src="{{asset('assets/js/bootstrap.min.js')}}"></script>
 			<!-- Jquery Mobile Menu -->
-			<script src="{{asset('./assets/js/jquery.slicknav.min.js')}}"></script>
+			<script src="{{asset('assets/js/jquery.slicknav.min.js')}}"></script>
 
 			<!-- Jquery Slick , Owl-Carousel Plugins -->
-			<script src="{{asset('./assets/js/owl.carousel.min.js')}}"></script>
-			<script src="{{asset('./assets/js/slick.min.js')}}"></script>
+			<script src="{{asset('assets/js/owl.carousel.min.js')}}"></script>
+			<script src="{{asset('assets/js/slick.min.js')}}"></script>
 			<!-- One Page, Animated-HeadLin -->
-			<script src="{{asset('./assets/js/wow.min.js')}}"></script>
-			<script src="{{asset('./assets/js/animated.headline.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.magnific-popup.js')}}"></script>
+			<script src="{{asset('assets/js/wow.min.js')}}"></script>
+			<script src="{{asset('assets/js/animated.headline.js')}}"></script>
+			<script src="{{asset('assets/js/jquery.magnific-popup.js')}}"></script>
 
 			<!-- Date Picker -->
-			<script src="{{asset('./assets/js/gijgo.min.js')}}"></script>
+			<script src="{{asset('assets/js/gijgo.min.js')}}"></script>
 			<!-- Nice-select, sticky -->
-			<script src="{{asset('./assets/js/jquery.nice-select.min.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.sticky.js')}}"></script>
+			<script src="{{asset('assets/js/jquery.nice-select.min.js')}}"></script>
+			<script src="{{asset('assets/js/jquery.sticky.js')}}"></script>
 
 			<!-- counter , waypoint -->
-			<script src="{{asset('./assets/js/jquery.counterup.min.js')}}"></script>
-			<script src="{{asset('./assets/js/waypoints.min.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.countdown.min.js')}}"></script>
+			<script src="{{asset('assets/js/jquery.counterup.min.js')}}"></script>
+			<script src="{{asset('assets/js/waypoints.min.js')}}"></script>
+			<script src="{{asset('assets/js/jquery.countdown.min.js')}}"></script>
 			<!-- contact js -->
-			<script src="{{asset('./assets/js/contact.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.form.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.validate.min.js')}}"></script>
-			<script src="{{asset('./assets/js/mail-script.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.ajaxchimp.min.js')}}"></script>
+			<script src="{{asset('assets/js/contact.js')}}"></script>
+			<script src="{{asset('assets/js/jquery.form.js')}}"></script>
+			<script src="{{asset('assets/js/jquery.validate.min.js')}}"></script>
+			<script src="{{asset('assets/js/mail-script.js')}}"></script>
+			<script src="{{asset('assets/js/jquery.ajaxchimp.min.js')}}"></script>
 
 			<!-- Jquery Plugins, main Jquery -->
-			<script src="{{asset('./assets/js/plugins.js')}}"></script>
-			<script src="{{asset('./assets/js/main.js')}}"></script>
+			<script src="{{asset('assets/js/plugins.js')}}"></script>
+			<script src="{{asset('assets/js/main.js')}}"></script>
 
+			<!-- Script MEDECIN -->
+			<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+			<script src="{{asset('medecin/assets/js/init-alpine.js')}}"></script>
 			{% block importmap %}
 				{{ importmap('app') }}
 			{% endblock %}
 		{% endblock %}
 	</head>
-	
+
 	<header>
 		<!--? Header Start -->
 		<div class="header-area">
@@ -201,7 +211,7 @@
 								<p>
 									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 									Copyright &copy;
-									All rights reserved | This template is made with
+																																																																																										All rights reserved | This template is made with
 									<i class="fa fa-heart" aria-hidden="true"></i>
 									by
 									<a href="https://colorlib.com" target="_blank">Colorlib</a>

@@ -1,53 +1,35 @@
 <?php
 
+// src/Form/PrescriptionType.php
 namespace App\Form;
 
-use App\Entity\Prescription;
-use App\Entity\DossierMedical;
 use App\Entity\Diagnostique;
+use App\Entity\DossierMedical;
+use App\Entity\Prescription;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
 class PrescriptionType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options): void
+    public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('contenue', TextareaType::class, [
-                'label' => 'Contenu de la Prescription',
-                'attr' => ['class' => 'form-control'],
-            ])
-            ->add('datePrscription', DateType::class, [
-                'widget' => 'single_text',
-                'label' => 'Date de Prescription',
-                'attr' => ['class' => 'form-control'],
-            ])
-            ->add('dossierMedical', EntityType::class, [
-                'class' => DossierMedical::class,
-                'choice_label' => 'id', // Change this if you have a better label
-                'label' => 'Dossier Médical',
-                'placeholder' => 'Sélectionnez un dossier médical',
-                'attr' => ['class' => 'form-control'],
-            ])
+            ->add('titre', TextType::class)
+            ->add('contenue', TextType::class)
+            ->add('datePrescription', DateType::class)
             ->add('diagnostique', EntityType::class, [
-                'class' => Diagnostique::class,
-                'choice_label' => 'nom', // Assuming 'nom' is the diagnosis name
-                'label' => 'Diagnostique',
-                'placeholder' => 'Sélectionnez un diagnostic',
-                'attr' => ['class' => 'form-control'],
+                'class' => Diagnostique::class,  // This specifies that the field refers to the DossierMedical entity
+                'choice_label' => 'nom',            // You can customize this to show any field from DossierMedical, like 'name'
             ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Enregistrer la Prescription',
-                'attr' => ['class' => 'btn btn-primary mt-3'],
-            ]);
+            ->add('save', SubmitType::class, ['label' => 'Create Prescription']);
     }
 
-    public function configureOptions(OptionsResolver $resolver): void
+    public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => Prescription::class,

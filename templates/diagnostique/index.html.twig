@@ -1,0 +1,122 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+	<div class="contact-form-main" style="background-color: #f7fdff; padding: 20px;">
+		<div class="container" style="margin-left: 0; max-width: 100%;">
+			<div class="row">
+				<div class="col-xl-7 col-lg-7">
+					<div
+						class="form-wrapper">
+						<!--Section Tittle  -->
+						<div class="form-tittle">
+							<div class="row ">
+								<div class="col-xl-12">
+									<div class="section-tittle section-tittle2">
+										<span>Symptomes Apply Form</span>
+										<h2>Symptomes Form</h2>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!--End Section Tittle  -->
+						<form id="contact-form" action="#" method="POST">
+							<div class="row">
+								<div class="col-lg-6 col-md-6">
+									<div class="form-box user-icon mb-30">
+										<label for="symptoms">Choose a Symptom:</label>
+									</div>
+								</div>
+
+								<div class="col-lg-6 col-md-6 mb-30">
+									<div class="select-itms">
+										<select id="symptoms" name="symptoms">
+											<option value="">--Select a Symptom--</option>
+											{% for symptom, id in symptoms_dict %}
+												<option value="{{ symptom }}">{{ symptom | replace({'_': ' '}) }}</option>
+											{% endfor %}
+										</select>
+										<button id="selectSymptom">Select Symptom</button>
+
+									</div>
+								</div>
+								<div class="col-lg-6 col-md-6">
+									<div class="form-box subject-icon mb-30">
+										<h3>Selected Symptoms:</h3>
+										<p id="selectedSymptomsList"></p>
+									</div>
+								</div>
+								<div class="col-lg-12">
+									<div class="form-box message-icon mb-65">
+										<input type="number" id="dossierMedicalId" placeholder="Enter Dossier ID"/>
+									</div>
+									<div class="submit-info">
+										<button class="btn" id="submitSymptoms" style="width: 100%; margin-bottom:8px;">Submit Now
+											<i class="ti-arrow-right"></i>
+										</button>
+									</div>
+
+								</div>
+							</br>
+							<div class="col-lg-12">
+								<h2>Diagnosis:</h2>
+								<p id="diagnosisResult"></p>
+							</div>
+						</div>
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+<script>
+let selectedSymptoms = [];
+
+document.getElementById("selectSymptom").addEventListener("click", function () {
+    let selectedSymptom = document.getElementById("symptoms").value;
+    if (!selectedSymptom) {
+        alert("Please select a symptom!");
+        return;
+    }
+
+    if (!selectedSymptoms.includes(selectedSymptom)) {
+        selectedSymptoms.push(selectedSymptom);
+
+        // Update the list displayed on the page as a text with commas
+        document.getElementById("selectedSymptomsList").innerText = selectedSymptoms.map(symptom => symptom.replace(/_/g, ' ')).join(", ");
+    } else {
+        alert("This symptom is already selected!");
+    }
+
+    document.getElementById("symptoms").value = ''; // Reset selection
+});
+
+
+document.getElementById("submitSymptoms").addEventListener("click", function () {
+let dossierMedicalId = document.getElementById("dossierMedicalId").value;
+
+if (! dossierMedicalId) {
+alert("Please enter a dossier ID!");
+return;
+}
+
+fetch("/diagnose", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify(
+{symptoms: selectedSymptoms, dossierMedicalId: dossierMedicalId}
+)
+}).then(response => response.json()).then(data => {
+if (data.disease) {
+document.getElementById("diagnosisResult").innerText = "Diagnosis: " + data.disease;
+} else {
+document.getElementById("diagnosisResult").innerText = "Error: " + data.error;
+}
+}).catch(error => {
+console.error("Error:", error);
+document.getElementById("diagnosisResult").innerText = "An error occurred while processing the diagnosis.";
+});
+});
+</script>{% endblock %}

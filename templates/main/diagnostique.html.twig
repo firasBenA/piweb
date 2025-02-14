@@ -12,7 +12,8 @@
 					<div class="row">
 						<div class="col-xl-12">
 							<div class="hero-cap hero-cap2 text-center">
-								<h2>Diagnostique	</h2>
+								<h2>Diagnostique
+								</h2>
 							</div>
 						</div>
 					</div>
@@ -20,7 +21,7 @@
 			</div>
 		</div>
 		<!-- Hero End -->
-		
+
 		<!--? All startups Start -->
 		<div
 			class="all-starups-area testimonial-area fix">
@@ -117,11 +118,10 @@
 			</div>
 		</div>
 		<!-- Gallery Area End -->
-		
+
 		<!-- Contact form End -->
 		<!--? gallery Products Start -->
-		<div class="gallery-area fix">
-			<div class="container-fluid p-0">
+			<div class="gallery-area fix"> <div class="container-fluid p-0">
 				<div class="row no-gutters">
 					<div class="col-lg-3 col-md-3 col-sm-6">
 						<div class="gallery-box">
@@ -168,7 +168,60 @@
 				</div>
 			</div>
 		</div>
-		<!-- gallery Products End -->
-		
+
+
+		<script>
+			let selectedSymptoms = [];
+
+document.getElementById("selectSymptom").addEventListener("click", function () {
+let selectedSymptom = document.getElementById("symptoms").value;
+if (! selectedSymptom) {
+alert("Please select a symptom!");
+return;
+}
+
+if (! selectedSymptoms.includes(selectedSymptom)) {
+selectedSymptoms.push(selectedSymptom);
+
+// Update the list displayed on the page
+const selectedSymptomsList = document.getElementById("selectedSymptomsList");
+const listItem = document.createElement("li");
+listItem.textContent = selectedSymptom.replace(/_/g, ' '); // Format symptom name
+selectedSymptomsList.appendChild(listItem);
+} else {
+alert("This symptom is already selected!");
+}
+
+document.getElementById("symptoms").value = ''; // Reset selection
+});
+
+document.getElementById("submitSymptoms").addEventListener("click", function () {
+let dossierMedicalId = document.getElementById("dossierMedicalId").value;
+
+if (! dossierMedicalId) {
+alert("Please enter a dossier ID!");
+return;
+}
+
+fetch("/diagnose", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify(
+{symptoms: selectedSymptoms, dossierMedicalId: dossierMedicalId}
+)
+}).then(response => response.json()).then(data => {
+if (data.disease) {
+document.getElementById("diagnosisResult").innerText = "Diagnosis: " + data.disease;
+} else {
+document.getElementById("diagnosisResult").innerText = "Error: " + data.error;
+}
+}).catch(error => {
+console.error("Error:", error);
+document.getElementById("diagnosisResult").innerText = "An error occurred while processing the diagnosis.";
+});
+});
+		</script>
 	</main>
 {% endblock %}

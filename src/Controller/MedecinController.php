@@ -2,19 +2,37 @@
 
 namespace App\Controller;
 
+use App\Entity\DossierMedical;
+use App\Entity\Medecin;
+use App\Entity\Patient;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 
 final class MedecinController extends AbstractController
 {
-    #[Route('/medecin/dashboard', name: 'medecinDashboard_page')]
-    public function index(): Response
+    #[Route('/medecin/dashboard/{id}', name: 'medecinDashboard_page')]
+    public function dashboard(int $id, EntityManagerInterface $entityManager): Response
     {
+        // Fetch the doctor (medecin) by its ID
+        $medecin = $entityManager->getRepository(Medecin::class)->find($id);
+
+        if (!$medecin) {
+            throw $this->createNotFoundException('Médecin non trouvé.');
+        }
+
+        // Fetch patients related to the doctor (medecin)
+        $patients = $entityManager->getRepository(Patient::class)->findBy(['medecin' => $medecin]);
+
         return $this->render('medecin/index.html.twig', [
-            'controller_name' => 'MedecinController',
+            'medecin' => $medecin,
+            'patients' => $patients,
         ]);
     }
+
+
+
 
     #[Route('/createAccount', name: 'createAccount_page')]
     public function createAccount(): Response
@@ -47,6 +65,4 @@ final class MedecinController extends AbstractController
             'controller_name' => 'MedecinController',
         ]);
     }
-
-    
 }

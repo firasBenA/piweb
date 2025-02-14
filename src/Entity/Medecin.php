@@ -36,6 +36,10 @@ class Medecin
     #[ORM\Column(length: 255)]
     private ?string $adresse = null;
 
+    #[ORM\OneToMany(mappedBy: 'medecin', targetEntity: Prescription::class, cascade: ['persist', 'remove'])]
+    private Collection $prescriptions;
+
+
     #[ORM\Column]
     private ?int $age = null;
 
@@ -75,6 +79,47 @@ class Medecin
         $this->consultations = new ArrayCollection();
         $this->evenements = new ArrayCollection();
         $this->diagnostiques = new ArrayCollection();
+        $this->patients = new ArrayCollection();
+    }
+
+    /**
+     * @var Collection<int, Patient>
+     */
+    #[ORM\OneToMany(mappedBy: 'medecin', targetEntity: Patient::class)]
+    private Collection $patients;
+
+
+    // Getters and Setters
+    public function getPrescriptions(): Collection
+    {
+        return $this->prescriptions;
+    }
+
+    public function addPrescription(Prescription $prescription): self
+    {
+        if (!$this->prescriptions->contains($prescription)) {
+            $this->prescriptions->add($prescription);
+            $prescription->setMedecin($this);
+        }
+
+        return $this;
+    }
+
+    public function removePrescription(Prescription $prescription): self
+    {
+        if ($this->prescriptions->removeElement($prescription)) {
+            // Set the owning side to null (unless already changed)
+            if ($prescription->getMedecin() === $this) {
+                $prescription->setMedecin(null);
+            }
+        }
+
+        return $this;
+    }
+
+    public function getPatients(): Collection
+    {
+        return $this->patients;
     }
 
     public function getId(): ?int
