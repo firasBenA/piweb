@@ -22,7 +22,7 @@ final class EvenementController extends AbstractController
         ]);
     }
 
-    #[Route('/new', name: 'app_evenement_new', methods: ['GET', 'POST'])]
+    #[Route('/ajouter', name: 'app_evenement_ajouter', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
         $evenement = new Evenement();
@@ -42,7 +42,7 @@ final class EvenementController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}', name: 'app_evenement_show', methods: ['GET'])]
+    #[Route('/{id}', name: 'app_evenement_afficher', methods: ['GET'])]
     public function show(Evenement $evenement): Response
     {
         return $this->render('evenement/show.html.twig', [
@@ -50,7 +50,7 @@ final class EvenementController extends AbstractController
         ]);
     }
 
-    #[Route('/{id}/edit', name: 'app_evenement_edit', methods: ['GET', 'POST'])]
+    #[Route('/{id}/modifier', name: 'app_evenement_modifier', methods: ['GET', 'POST'])]
     public function edit(Request $request, Evenement $evenement, EntityManagerInterface $entityManager): Response
     {
         $form = $this->createForm(EvenementType::class, $evenement);

@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
@@ -17,21 +18,41 @@ class Evenement
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le contenu est obligatoire')]
     private ?string $contenue = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le type est obligatoire')]
+    #[Assert\Choice(
+        choices: ['conference', 'seminaire', 'workshop'],
+        message: 'Choisissez un type valide'
+    )]
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le statut est obligatoire')]
     private ?string $statut = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Le lieu est obligatoire')]
     private ?string $lieux_event = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(message: 'La date est obligatoire')]
+    #[Assert\GreaterThanOrEqual(
+        'today',
+        message: 'La date doit être ultérieure ou égale à aujourd\'hui'
+    )]
     private ?\DateTimeInterface $date_event = null;
 
     #[ORM\ManyToOne(inversedBy: 'evenements')]
@@ -41,7 +62,7 @@ class Evenement
     /**
      * @var Collection<int, Article>
      */
-    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'evenement')]
+    #[ORM\ManyToMany(targetEntity: Article::class)]
     private Collection $article;
 
     public function __construct()
@@ -156,7 +177,7 @@ class Evenement
         return $this;
     }
 
-    public function removeArticle(article $article): static
+    public function removeArticle(Article $article): static
     {
         if ($this->article->removeElement($article)) {
             // set the owning side to null (unless already changed)

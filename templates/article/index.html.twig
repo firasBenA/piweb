@@ -1,9 +1,9 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Article index{% endblock %}
+{% block title %}Article{% endblock %}
 
 {% block body %}
-    <h1>Article index</h1>
+    <h1>Article</h1>
 
     <table class="table">
         <thead>
@@ -19,7 +19,7 @@
             </tr>
         </thead>
         <tbody>
-        {% for article in articles %}
+        {% for article in article %}
             <tr>
                 <td>{{ article.id }}</td>
                 <td>{{ article.titre }}</td>
@@ -29,17 +29,17 @@
                 <td>{{ article.commantaire }}</td>
                 <td>{{ article.nbJaime }}</td>
                 <td>
-                    <a href="{{ path('app_article_show', {'id': article.id}) }}">show</a>
-                    <a href="{{ path('app_article_edit', {'id': article.id}) }}">edit</a>
+                    <a href="{{ path('app_article_show', {'id': article.id}) }}">Voir</a>
+                    <a href="{{ path('app_article_edit', {'id': article.id}) }}">Modifier</a>
                 </td>
             </tr>
         {% else %}
             <tr>
-                <td colspan="8">no records found</td>
+                <td colspan="8">Mafamech</td>
             </tr>
         {% endfor %}
         </tbody>
     </table>
 
-    <a href="{{ path('app_article_new') }}">Create new</a>
+    <a href="{{ path('app_article_new') }}">Creer un article </a>
 {% endblock %}
