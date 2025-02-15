@@ -22,6 +22,7 @@ class Reponse
 
     #[ORM\OneToOne(targetEntity: Reclamation::class, inversedBy: 'reponses')]
     #[ORM\JoinColumn(nullable: false)]
+    #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Reclamation $reclamation = null;
 
     public function getId(): ?int
