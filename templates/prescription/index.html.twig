@@ -1,0 +1,37 @@
+{% extends 'base.html.twig' %}
+
+{% block title %} Prescriptions {% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h2>Liste des Prescriptions</h2>
+        <a href="{{ path('app_prescription_new') }}" class="btn btn-primary mb-3">Ajouter une Prescription</a>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Contenu</th>
+                    <th>Date</th>
+                    <th>Dossier Médical</th>
+                    <th>Diagnostique</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for prescription in prescriptions %}
+                    <tr>
+                        <td>{{ prescription.id }}</td>
+                        <td>{{ prescription.contenue }}</td>
+                        <td>{{ prescription.datePrscription|date('Y-m-d') }}</td>
+                        <td>{{ prescription.dossierMedical.id }}</td>
+                        <td>{{ prescription.diagnostique.nom }}</td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="5">Aucune prescription trouvée.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+{% endblock %}

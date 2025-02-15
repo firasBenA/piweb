@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        {% block title %}Créer compte Médecin{% endblock %}
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('./medecin/assets/css/tailwind.output.css') }}"/>
+    {% endblock %}
+
+    {% block javascripts %}
+        <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+        <script src="{{ asset('./medecin/assets/js/init-alpine.js') }}"></script>
+        {{ importmap('app') }}
+    {% endblock %}
+</head>
+{% block body %}
+<body>
+    <div class="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
+        <div class="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl dark:bg-gray-800">
+            <div class="flex flex-col overflow-y-auto md:flex-row">
+                <div class="h-32 md:h-auto md:w-1/2">
+                    <img aria-hidden="true" class="object-cover  h-full dark:hidden" src="{{ asset('./medecin/assets/img/medecin-img.jpg') }}" alt="Office"/>
+                    <img aria-hidden="true" class="hidden object-cover w-full h-full dark:block " src="{{ asset('./medecin/assets/img/medecin-img/your-image-dark.jpg') }}" alt="Office"/>
+                </div>
+                <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
+                    <div class="w-full">
+                        <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
+                            Créer compte Médecin
+                        </h1>
+
+                        {# Début du formulaire Symfony #}
+                        {{ form_start(form, {'attr': {'class': 'space-y-4', 'id': 'medecin-form'}}) }}
+
+                            {# Champ Nom #}
+                            <div class="block text-sm">
+                                {{ form_label(form.nom, 'Nom', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.nom, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre nom'}}) }}
+                                <div id="nom-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour le nom #}
+                            </div>
+
+                            {# Champ Prénom #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(form.prenom, 'Prénom', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.prenom, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre prénom'}}) }}
+                                <div id="prenom-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour le prénom #}
+                            </div>
+
+                            {# Champ Email #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(form.email, 'Email', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.email, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre email'}}) }}
+                                <div id="email-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour l'email #}
+                            </div>
+
+                           
+
+                            {# Champ Spécialité #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(form.specialite, 'Spécialité', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.specialite, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre spécialité'}}) }}
+                                <div id="specialite-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour la spécialité #}
+                            </div>
+
+                            {# Champ Certificat #}
+                             <div class="block mt-4 text-sm">
+                                 {{ form_label(form.certificat, 'Certificat (image)', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                 {{ form_widget(form.certificat, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input'}}) }}
+                                 <div id="certificat-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour le certificat #}
+                             </div>
+
+                            {# Champ Adresse #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(form.adresse, 'Adresse', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.adresse, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre adresse'}}) }}
+                                <div id="adresse-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour l'adresse #}
+                            </div>
+
+                            {# Champ Âge #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(form.age, 'Âge', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.age, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre âge'}}) }}
+                                <div id="age-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour l'âge #}
+                            </div>
+
+                            {# Champ Sexe #}
+<div class="block mt-4 text-sm">
+    {{ form_label(form.sexe, 'Sexe', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+    {{ form_widget(form.sexe, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-select', 'placeholder': 'Sélectionnez votre sexe'}}) }}
+    <div id="sexe-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour le sexe #}
+</div>
+                            {# Champ Téléphone #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(form.telephone, 'Téléphone', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.telephone, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre téléphone'}}) }}
+                                <div id="telephone-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour le téléphone #}
+                            </div>
+
+                             {# Champ Mot de passe #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(form.motDePasse, 'Mot de passe', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.motDePasse, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': '***************'}}) }}
+                                <div id="motDePasse-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour le mot de passe #}
+                            </div>
+
+                            {# Champ Confirmation du mot de passe #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(form.confirmMotDePasse, 'Confirmer le mot de passe', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.confirmMotDePasse, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': '***************'}}) }}
+                                <div id="confirmMotDePasse-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour la confirmation du mot de passe #}
+                            </div>
+
+                            {# Champ Image de profil #}
+                             <div class="block mt-4 text-sm">
+                             {{ form_label(form.imageDeProfil, 'Image de profil (facultatif)', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                             {{ form_widget(form.imageDeProfil, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'URL de l\'image de profil (facultatif)'}}) }}
+                             <div id="imageDeProfil-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour l'image de profil #}
+                            </div>
+
+                            {# Bouton de soumission #}
+                            <button type="submit" class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                Créer un compte
+                            </button>
+
+                        {{ form_end(form) }}
+                        {# Fin du formulaire Symfony #}
+
+                        <hr class="my-8"/>
+
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Script JavaScript pour la validation en temps réel #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.getElementById('medecin-form');
+
+            // Fonction pour afficher les messages d'erreur
+            function showError(inputId, message) {
+                const errorElement = document.getElementById(`${inputId}-error`);
+                errorElement.textContent = message;
+            }
+
+            // Fonction pour effacer les messages d'erreur
+            function clearError(inputId) {
+                const errorElement = document.getElementById(`${inputId}-error`);
+                errorElement.textContent = '';
+            }
+
+            // Écouter l'événement 'blur' sur chaque champ
+            form.querySelectorAll('input').forEach(input => {
+                input.addEventListener('blur', function () {
+                    const inputId = input.id.replace('medecin_', ''); // Récupère l'ID du champ sans le préfixe
+                    const value = input.value.trim();
+
+                    // Validation en fonction du champ
+                    switch (inputId) {
+                        case 'nom':
+                            if (value === '') {
+                                showError(inputId, 'Veuillez entrer votre nom.');
+                            } else if (value.length < 2 || value.length > 50) {
+                                showError(inputId, 'Le nom doit contenir entre 2 et 50 caractères.');
+                            } else {
+                                clearError(inputId);
+                            }
+                            break;
+
+                        case 'prenom':
+                            if (value === '') {
+                                showError(inputId, 'Veuillez entrer votre prénom.');
+                            } else if (value.length < 2 || value.length > 50) {
+                                showError(inputId, 'Le prénom doit contenir entre 2 et 50 caractères.');
+                            } else {
+                                clearError(inputId);
+                            }
+                            break;
+
+                        case 'email':
+                            if (value === '') {
+                                showError(inputId, 'Veuillez entrer votre email.');
+                            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                                showError(inputId, 'Veuillez entrer un email valide.');
+                            } else {
+                                clearError(inputId);
+                            }
+                            break;
+
+                       
+
+                        case 'age':
+                            if (value === '') {
+                                showError(inputId, 'Veuillez entrer votre âge.');
+                            } else if (!/^\d+$/.test(value)) {
+                                showError(inputId, 'L\'âge doit être un nombre entier.');
+                            } else {
+                                clearError(inputId);
+                            }
+                            break;
+                         case 'motDePasse':
+                            if (value === '') {
+                                showError(inputId, 'Veuillez entrer un mot de passe.');
+                            } else if (value.length < 6 || value.length > 20) {
+                                showError(inputId, 'Le mot de passe doit contenir entre 6 et 20 caractères.');
+                            } else if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(value)) {
+                                showError(inputId, 'Le mot de passe doit contenir au moins une lettre et un chiffre.');
+                            } else {
+                                clearError(inputId);
+                            }
+                            break;
+
+                        case 'confirmMotDePasse':
+                            const motDePasse = form.querySelector('#medecin_motDePasse').value.trim();
+                            if (value === '') {
+                                showError(inputId, 'Veuillez confirmer votre mot de passe.');
+                            } else if (value !== motDePasse) {
+                                showError(inputId, 'Les mots de passe ne correspondent pas.');
+                            } else {
+                                clearError(inputId);
+                            }
+                            break;
+
+                            case 'sexe':
+                               if (value === '') {
+                                   showError(inputId, 'Veuillez sélectionner votre sexe.');
+                                } else {
+                             clearError(inputId);
+                            }
+                            break;
+                           
+                            case 'imageDeProfil':
+                             // Pas de validation nécessaire si le champ est facultatif
+                             clearError(inputId);
+                             break;
+
+                             case 'telephone':
+                            if (value === '') {
+                                showError(inputId, 'Veuillez entrer votre numéro de téléphone.');
+                            } else if (!/^\d{8}$/.test(value)) {
+                                showError(inputId, 'Le numéro de téléphone doit contenir exactement 10 chiffres.');
+                            } else {
+                                clearError(inputId);
+                            }
+                            break;
+
+                             case 'certificat':
+                             const file = input.files[0];
+                             if (file) {
+                                                       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
+                                 if (!allowedTypes.includes(file.type)) {
+                                     showError(inputId, 'Veuillez télécharger une image valide (JPEG, PNG ou GIF).');
+                                 } else if (file.size > 1024 * 1024) { // 1 Mo
+                                     showError(inputId, 'Le fichier ne doit pas dépasser 1 Mo.');
+                                 } else {
+                                     clearError(inputId);
+                                 }
+                             } else {
+                                 clearError(inputId);
+                             }
+                             break;                         
+                                             }
+
+                });
+            });
+        });
+    </script>
+</body>
+{% endblock %}
+</html>
