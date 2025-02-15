@@ -42,7 +42,8 @@ final class ReclamationController extends AbstractController
 
             // Associer la réclamation au patient
             $reclamation->setPatient($patient);
-
+            $reclamation->setEtat('en_attente');
+            
             // Persister la réclamation dans la base de données
             $entityManager->persist($reclamation);
             $entityManager->flush();

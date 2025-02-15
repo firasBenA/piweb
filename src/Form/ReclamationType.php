@@ -30,16 +30,7 @@ class ReclamationType extends AbstractType
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('etat', ChoiceType::class, [
-                'label' => 'État',
-                'choices' => [
-                    'En attente' => 'en_attente',
-                    'En cours' => 'en_cours',
-                    'Résolu' => 'resolu',
-                    'Rejeté' => 'rejete'
-                ],
-                'attr' => ['class' => 'form-control']
-            ])
+          
           ;
     }
 

@@ -23,10 +23,7 @@
                 {{ form_label(form.dateDebut) }}
                 {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
             </div>
-            <div class="form-group">
-                {{ form_label(form.etat) }}
-                {{ form_widget(form.etat, {'attr': {'class': 'form-control'}}) }}
-            </div>
+
 
             <button type="submit" class="btn btn-primary">Mettre à jour</button>
             <a href="{{ path('reclamation_page') }}" class="btn btn-secondary">Annuler</a>

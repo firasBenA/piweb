@@ -33,10 +33,13 @@ final class ResponseController extends AbstractController{
             $reponse->setReclamation($reclamation);
             $reponse->setDateDeReponse(new \DateTime()); // Définir la date actuelle
 
+            $reclamation->setEtat('traité');
             $entityManager->persist($reponse);
+            $entityManager->persist($reclamation); // Mettre à jour la réclamation
+
             $entityManager->flush();
 
-            $this->addFlash('success', 'Réponse ajoutée avec succès !');
+            $this->addFlash('success', 'Réponse ajoutée avec succès et réclamation marquée comme traitée !');
             return $this->redirectToRoute('reclamation_page');
         }
 
