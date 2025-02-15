@@ -108,4 +108,19 @@ class RendezVous
         $this->cause = $cause;
         return $this;
     }
+
+    #[ORM\OneToOne(mappedBy: 'rendezVous', cascade: ['persist', 'remove'])]
+private ?Consultation $consultation = null;
+
+public function getConsultation(): ?Consultation
+{
+    return $this->consultation;
+}
+
+public function setConsultation(?Consultation $consultation): static
+{
+    $this->consultation = $consultation;
+    return $this;
+}
+
 }

@@ -36,11 +36,6 @@ class RendezVousType extends AbstractType
                 'class' => Medecin::class,
                 'choice_label' => 'nom',
                 'label' => 'Médecin',
-            ])
-
-            ->add('submit', SubmitType::class, [
-                'label' => 'Réserver',
-                'attr' => ['class' => 'btn btn-primary']
             ]);
     }
 

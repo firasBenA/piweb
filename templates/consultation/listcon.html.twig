@@ -2,7 +2,7 @@
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="text-center text-primary fw-bold">📅 Liste des Rendez-vous de {{ patient.nom }} {{ patient.prenom }}</h1>
+        <h1 class="text-center text-primary fw-bold">📅 Liste des Rendez-vous du Dr. {{ medecin.nom }}</h1>
 
         {% if rendezVous is empty %}
             <p class="text-center text-muted mt-4">Aucun rendez-vous trouvé.</p>
@@ -15,7 +15,7 @@
                             <th>Date</th>
                             <th>Type</th>
                             <th>Cause</th>
-                            <th>Médecin</th>
+                            <th>Patient</th>
                             <th>Statut</th>
                             <th>Actions</th>
                         </tr>
@@ -27,7 +27,7 @@
                                 <td>{{ rdv.date|date('d/m/Y') }}</td>
                                 <td>{{ rdv.typeRdv }}</td>
                                 <td>{{ rdv.cause }}</td>
-                                <td>{{ rdv.medecin.nom }}</td>
+                                <td>{{ rdv.patient.nom }} {{ rdv.patient.prenom }}</td>
                                 <td>
                                     {% if rdv.statut == 'En attente' %}
                                         <span class="badge bg-warning text-dark">🕒 En attente</span>
@@ -41,12 +41,11 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center">
-                                        <form action="{{ path('delete_rdv', {'id': rdv.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?');">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ rdv.id) }}">
-                                            <button type="submit" class="btn btn-danger btn-sm me-2 shadow">🗑 Supprimer</button>
-                                        </form>
-                                        <a href="{{ path('edit_rdv', {'id': rdv.id}) }}" class="btn btn-warning btn-sm shadow">✏ Modifier</a>
-                                        <a href="{{ path('detail_rdv', {'id': rdv.id}) }}" class="btn btn-info btn-sm shadow ms-2">🔍 Détails</a> <!-- Ajout du bouton Détails -->
+                                        
+                                            <a href="{{ path('rendezvous_approuver', {'id': rdv.id}) }}" class="btn btn-success btn-sm me-2 shadow-lg">✅ Approuver</a>
+                                            <a href="{{ path('rendezvous_refuser', {'id': rdv.id}) }}" class="btn btn-danger btn-sm me-2 shadow-lg">❌ Refuser</a>
+                                        
+                                        <a href="{{ path('rendezvous_modifier', {'id': rdv.id}) }}" class="btn btn-warning btn-sm shadow-lg">✏ Modifier</a>
                                     </div>
                                 </td>
                             </tr>
@@ -56,11 +55,6 @@
             </div>
         {% endif %}
 
-        <div class="text-center mt-4">
-            <a href="{{ path('addrendezvous', {'id': patient.id}) }}" class="btn btn-success btn-lg shadow px-5 py-2 fw-bold">
-                ➕ Réserver un Nouveau Rendez-vous
-            </a>
-        </div>
     </div>
 
     <style>
@@ -90,6 +84,15 @@
             font-size: 14px;
             padding: 8px 12px;
             border-radius: 8px;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .table th {
+            font-size: 16px;
+        }
+        .table td {
+            font-size: 14px;
         }
     </style>
 {% endblock %}
