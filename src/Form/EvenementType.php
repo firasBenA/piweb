@@ -50,7 +50,7 @@ class EvenementType extends AbstractType
             ])
             ->add('article', EntityType::class, [
                 'class' => Article::class,
-                'choice_label' => 'titre', // Assuming 'title' is a property of Article
+                'choice_label' => 'titre',
                 'multiple' => true,
                 'expanded' => false,
             ])
