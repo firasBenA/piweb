@@ -56,8 +56,8 @@ security:
         - { path: ^/medecin/newM, roles: PUBLIC_ACCESS }
         - { path: ^/patient/new, roles: PUBLIC_ACCESS }
         - { path: ^/admin, roles: ROLE_ADMIN }
-        - { path: ^/medecin, roles: ROLE_MEDECIN }
-        - { path: ^/patient, roles: ROLE_PATIENT }
+       # - { path: ^/medecin, roles: ROLE_MEDECIN }
+        #- { path: ^/patient, roles: ROLE_PATIENT }
         - { path: ^/login, roles: PUBLIC_ACCESS }
         
 
