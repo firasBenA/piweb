@@ -21,7 +21,7 @@ class DossierMedical2Type extends AbstractType
             ])
             ->add('patient', EntityType::class, [
                 'class' => Patient::class,
-                'choice_label' => 'nom', // Ensure Patient entity has a "name" field
+                'choice_label' => 'nom', 
                 'label' => 'Patient'
             ]);
     }

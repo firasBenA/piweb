@@ -18,38 +18,64 @@ class MainController extends AbstractController
     #[Route('/doctors', name: 'doctors_page')]
     public function doctors(): Response
     {
-        return $this->render('main/doctors.html.twig'); 
+        return $this->render('main/doctors.html.twig');
     }
 
     #[Route('/blog', name: 'blog_page')]
     public function blog(): Response
     {
-        return $this->render('main/blog.html.twig'); 
+        return $this->render('main/blog.html.twig');
     }
-    
+
     #[Route('/blog_details', name: 'blog_details_page')]
     public function blog_details(): Response
     {
-        return $this->render('main/blog_details.html.twig'); 
+        return $this->render('main/blog_details.html.twig');
     }
 
     #[Route('/reclamation', name: 'reclamation_page')]
     public function reclamation(): Response
     {
-        return $this->render('main/reclamation.html.twig'); 
-    }
-
-    #[Route('/diagnostique', name: 'diagnostique_page')]
-    public function diagnostique(): Response
-    {
-        return $this->render('main/diagnostique.html.twig'); 
+        return $this->render('main/reclamation.html.twig');
     }
 
     #[Route('/appointment', name: 'appointment_page')]
     public function appointment(): Response
     {
-        return $this->render('main/appointment.html.twig'); 
+        return $this->render('main/appointment.html.twig');
     }
 
+    #[Route('/createAccount', name: 'createAccount_page')]
+    public function createAccount(): Response
+    {
+        return $this->render('main/createAccount.html.twig');
+    }
 
+    #[Route('/login', name: 'login_page')]
+    public function Login(): Response
+    {
+        return $this->render('main/login.html.twig', [
+            'controller_name' => 'MedecinController',
+        ]);
+    }
+
+    #[Route('/forgotPassword', name: 'forgotPassword_page')]
+    public function forgotPassword(): Response
+    {
+        return $this->render('main/forgotPassword.html.twig', [
+            'controller_name' => 'MedecinController',
+        ]);
+    }
+
+    #[Route('/formMed', name: 'formMed_page')]
+    public function formMed(): Response
+    {
+        return $this->render('main/form.html.twig', [
+            'controller_name' => 'MedecinController',
+        ]);
+    }
+
+    
+
+    
 }

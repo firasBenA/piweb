@@ -38,6 +38,9 @@ class Diagnostique
     #[ORM\Column]
     private ?int $status = null;
 
+    #[ORM\Column(type: 'json')]
+    private array $symptoms = [];
+
 
     public function getStatus(): ?int
     {
@@ -51,16 +54,7 @@ class Diagnostique
         return $this;
     }
 
-    /**
-     * @var Collection<int, Symptomes>
-     */
-    #[ORM\ManyToMany(targetEntity: Symptomes::class, inversedBy: 'diagnostiques')]
-    private Collection $symptomes;
-
-    public function __construct()
-    {
-        $this->symptomes = new ArrayCollection();
-    }
+    public function __construct() {}
 
     public function getId(): ?int
     {
@@ -139,27 +133,14 @@ class Diagnostique
         return $this;
     }
 
-    /**
-     * @return Collection<int, Symptomes>
-     */
-    public function getSymptomes(): Collection
+    public function getSymptoms(): array
     {
-        return $this->symptomes;
+        return $this->symptoms;
     }
 
-    public function addSymptome(Symptomes $symptome): static
+    public function setSymptoms(array $symptoms): self
     {
-        if (!$this->symptomes->contains($symptome)) {
-            $this->symptomes->add($symptome);
-        }
-
-        return $this;
-    }
-
-    public function removeSymptome(Symptomes $symptome): static
-    {
-        $this->symptomes->removeElement($symptome);
-
+        $this->symptoms = $symptoms;
         return $this;
     }
 }

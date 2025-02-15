@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\Diagnostique;
 use App\Entity\Patient;
 use App\Entity\DossierMedical;
+use App\Entity\Prescription;
 use App\Form\PatientType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -46,6 +48,45 @@ class PatientController extends AbstractController
         return $this->render('patient/new.html.twig', [
             'patient' => $patient,
             'form' => $form,
+        ]);
+    }
+
+    #[Route('/dashboard/{id}', name: 'patientDashboard_page')]
+    public function dashboard(int $id, EntityManagerInterface $entityManager): Response
+    {
+        // Récupérer le patient
+        $patient = $entityManager->getRepository(Patient::class)->find($id);
+
+        if (!$patient) {
+            throw $this->createNotFoundException('Patient non trouvé.');
+        }
+
+        // Récupérer le dossier médical du patient
+        $dossierMedical = $patient->getDossierMedical();
+
+        if (!$dossierMedical) {
+            throw $this->createNotFoundException('Dossier médical non trouvé pour ce patient.');
+        }
+
+        // Récupérer les prescriptions associées
+        $prescriptions = $dossierMedical->getPrescriptions();
+
+        $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy(['dossierMedical' => $dossierMedical]);
+
+        // Extraire les médecins liés aux prescriptions
+        $medecins = [];
+        foreach ($prescriptions as $prescription) {
+            if ($prescription->getMedecin() && !in_array($prescription->getMedecin(), $medecins, true)) {
+                $medecins[] = $prescription->getMedecin();
+            }
+        }
+
+        return $this->render('patient/dossierMedical.html.twig', [
+            'patient' => $patient,
+            'dossierMedical' => $dossierMedical,
+            'prescriptions' => $prescriptions,
+            'medecins' => $medecins,
+            'diagnostiques' => $diagnostiques,
         ]);
     }
 

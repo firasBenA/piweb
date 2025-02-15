@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Diagnostique;
 use App\Entity\DossierMedical;
+use App\Entity\Symptomes;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -67,7 +68,7 @@ final class DiagnostiqueController extends AbstractController
             'yellowing_of_eyes' => 43
         ];
 
-        return $this->render('diagnostique/index.html.twig', [
+        return $this->render('main/diagnostique.html.twig', [
             'symptoms_dict' => $symptomsDict
         ]);
     }
@@ -117,7 +118,8 @@ final class DiagnostiqueController extends AbstractController
         $diagnosis->setDossierMedical($dossierMedical);
         $diagnosis->setDescription($diagnosisData['description'] ?? 'No description available.');
         $diagnosis->setStatus(0);
-        
+        $diagnosis->setSymptoms($symptoms);
+
         $entityManager->persist($diagnosis);
         $entityManager->flush();
 

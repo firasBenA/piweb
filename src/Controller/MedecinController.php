@@ -16,6 +16,7 @@ final class MedecinController extends AbstractController
     public function dashboard(int $id, EntityManagerInterface $entityManager): Response
     {
         // Fetch the doctor (medecin) by its ID
+
         $medecin = $entityManager->getRepository(Medecin::class)->find($id);
 
         if (!$medecin) {
@@ -28,33 +29,6 @@ final class MedecinController extends AbstractController
         return $this->render('medecin/index.html.twig', [
             'medecin' => $medecin,
             'patients' => $patients,
-        ]);
-    }
-
-
-
-
-    #[Route('/createAccount', name: 'createAccount_page')]
-    public function createAccount(): Response
-    {
-        return $this->render('medecin/createAccount.html.twig', [
-            'controller_name' => 'MedecinController',
-        ]);
-    }
-
-    #[Route('/login', name: 'login_page')]
-    public function Login(): Response
-    {
-        return $this->render('medecin/login.html.twig', [
-            'controller_name' => 'MedecinController',
-        ]);
-    }
-
-    #[Route('/forgotPassword', name: 'forgotPassword_page')]
-    public function forgotPassword(): Response
-    {
-        return $this->render('medecin/forgotPassword.html.twig', [
-            'controller_name' => 'MedecinController',
         ]);
     }
 
