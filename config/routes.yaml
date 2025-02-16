@@ -3,3 +3,8 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+
+    
+formMed_page:
+    path: /formMed/{id}
+    controller: App\Controller\MedecinController::formMed

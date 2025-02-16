@@ -3,10 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\DiagnostiqueRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DiagnostiqueRepository::class)]
 class Diagnostique
@@ -22,12 +21,14 @@ class Diagnostique
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255, nullable: true)]  // Added `nullable: true`
+    #[ORM\Column(length: 255, nullable: true)]  
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: "La date du diagnostic est obligatoire.")]
     private ?DossierMedical $dossierMedical = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
     private ?Patient $patient = null;
@@ -39,6 +40,7 @@ class Diagnostique
     private ?int $status = null;
 
     #[ORM\Column(type: 'json')]
+    #[Assert\NotBlank(message: "La date du diagnostic est obligatoire.")]
     private array $symptoms = [];
 
 

@@ -98,4 +98,5 @@ class DossierMedicalController extends AbstractController
             'medecins' => $medecins,
         ]);
     }
+
 }

@@ -6,7 +6,7 @@
 			<aside class="z-20 hidden w-64 overflow-y-auto bg-white dark:bg-gray-800 md:block flex-shrink-0">
 				<div class="py-4 text-gray-500 dark:text-gray-400">
 					<a class="ml-6 text-lg font-bold text-gray-800 dark:text-gray-200" href="#">
-						Patient Dashboard
+						Medecin Dashboard
 					</a>
 					<ul class="mt-6">
 						<li class="relative px-6 py-3">
@@ -174,9 +174,13 @@
 														class="px-4 py-3 text-xs">
 														<!-- Status conditional rendering -->
 														{% if diagnostique.status == 0 %}
-																<p>processing</p>
+															<a href="{{ path('app_prescription_new', {'diagnostique_id': diagnostique.id}) }}" class="px-2 py-1 font-semibold leading-tight text-black-700 bg-white-100 rounded-full dark:bg-blue-500 dark:text-white">
+																<p>+</p>
+															</a>
 														{% elseif diagnostique.status == 1 %}
+														<div class="px-2 py-1 font-semibold leading-tight text-black-700 bg-white-100 rounded-full dark:bg-blue-500 dark:text-white">
 															<i class="fas fa-check"></i>
+														</div>	
 															<!-- Check mark for status 1 -->
 														{% endif %}
 													</td>
@@ -207,6 +211,7 @@
 											<th class="px-4 py-3">Contenue</th>
 											<th class="px-4 py-3">Date</th>
 											<th class="px-4 py-3">Doctor</th>
+											<th class="px-4 py-3">Action</th>
 										</tr>
 									</thead>
 									<tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
@@ -231,6 +236,29 @@
 												<td class="px-4 py-3 text-sm">
 													{{ prescription.medecin.nom }}
 												</td>
+												<td
+													class="px-4 py-3 text-sm">
+													{# Add the delete button within a form to trigger the DELETE action #}
+													<form action="{{ path('app_prescription_delete', {'id': prescription.id}) }}" method="POST" style="display: inline;">
+														<button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Delete">
+															<svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20">
+																<path fill-rule="evenodd" d="M9 2a1 1 0 00-.894.553L7.382 4H4a1 1 0 000 2v10a2 2 0 002 2h8a2 2 0 002-2V6a1 1 0 100-2h-3.382l-.724-1.447A1 1 0 0011 2H9zM7 8a1 1 0 012 0v6a1 1 0 11-2 0V8zm5-1a1 1 0 00-1 1v6a1 1 0 102 0V8a1 1 0 00-1-1z" clip-rule="evenodd"></path>
+															</svg>
+														</button>
+													</form>
+												</td>
+												<td
+													class="px-4 py-3 text-sm">
+													{# Modify Button - Links to the edit route for the prescription #}
+													<a href="{{ path('app_prescription_edit', {'id': prescription.id}) }}" class="btn btn-primary">
+														<button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Edit">
+															<svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20">
+																<path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"></path>
+															</svg>
+														</button>
+													</a>
+												</td>
+
 											</tr>
 										{% endfor %}
 									</tbody>
@@ -257,8 +285,6 @@
 				</div>
 			</main>
 		</div>
-
-
 		<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
 

@@ -12,6 +12,7 @@ use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\RedirectResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
@@ -38,7 +39,6 @@ class PrescriptionController extends AbstractController
         ]);
     }
 
-
     #[Route('/new', name: 'app_prescription_new')]
     public function new(
         Request $request,
@@ -46,22 +46,28 @@ class PrescriptionController extends AbstractController
         MedecinRepository $medecinRepository,
         EntityManagerInterface $entityManager
     ) {
+        // Safely get the diagnostique_id from the query parameters
         $diagnostiqueId = $request->query->get('diagnostique_id');
 
+        // Check if diagnostique_id is not set or is invalid
         if (!$diagnostiqueId) {
+            // Redirect to an appropriate route or handle the error (e.g., home page or an error message)
             return $this->redirectToRoute('home');
         }
 
+        // Find the Diagnostique by ID
         $diagnostique = $diagnostiqueRepository->find($diagnostiqueId);
+
+        // If Diagnostique is not found, throw a 404 exception
         if (!$diagnostique) {
             throw $this->createNotFoundException('Diagnostique not found!');
         }
 
-        // Get the associated DossierMedical and Patient
+        // Get associated DossierMedical and Patient
         $dossierMedical = $diagnostique->getDossierMedical();
-        $patient = $dossierMedical->getPatient(); // Get the patient from the dossierMedical
+        $patient = $dossierMedical->getPatient();
 
-        // Find a Medecin (modify the logic based on your requirements)
+        // Find a Medecin (Modify as per your business logic)
         $medecin = $medecinRepository->findOneBy([]);
         if (!$medecin) {
             throw $this->createNotFoundException('Medecin not found!');
@@ -74,52 +80,70 @@ class PrescriptionController extends AbstractController
         $prescription->setMedecin($medecin);
         $prescription->setDatePrescription(new \DateTime());
 
-        // Create the form
+        // Create the form and pass the diagnostique_id as an option
         $form = $this->createForm(PrescriptionType::class, $prescription);
+
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // **Update the status of the Diagnostique to 1**
-            $diagnostique->setStatus(1); // Assuming you have a `setStatus()` method in Diagnostique
+            // Update the Diagnostique status (if necessary)
+            $diagnostique->setStatus(1); // Modify as needed
 
-            // Persist both the prescription and the updated Diagnostique
+            // Persist both Prescription and updated Diagnostique
             $entityManager->persist($prescription);
             $entityManager->flush();
 
-            // Redirect to the dossierMedicalByPatient_page with the patient's ID
-            return $this->redirectToRoute('dossierMedicalByPatient_page', [
-                'id' => $patient->getId()  // Use the patient ID from the DossierMedical
+            // Redirect to patient's dossierMedical page (or another appropriate page)
+            return $this->redirectToRoute('medecinDossierMedicalByPatient_page', [
+                'id' => $patient->getId()
             ]);
         }
 
+        // Return the view with form and relevant data
         return $this->render('prescription/new.html.twig', [
             'form' => $form->createView(),
             'diagnostique' => $diagnostique,
-            'patient' => $patient, // Pass the patient to the template
+            'patient' => $patient,
         ]);
     }
+
 
 
     #[Route('/prescription/{id}/edit', name: 'app_prescription_edit')]
-    public function editPrescription(Request $request, Prescription $prescription, EntityManagerInterface $entityManager)
-    {
-        // Process the form submission
-        $form = $this->createForm(PrescriptionType::class, $prescription);
-        $form->handleRequest($request);
+public function editPrescription(
+    Request $request, 
+    Prescription $prescription, 
+    EntityManagerInterface $entityManager,
+    DiagnostiqueRepository $diagnostiqueRepository
+) {
+    // Ensure we have the Diagnostique associated with this Prescription
+    $diagnostique = $prescription->getDiagnostique(); // Get existing diagnostique
+    
+    if (!$diagnostique) {
+        throw $this->createNotFoundException("Aucun diagnostique trouvé pour cette prescription.");
+    }
 
-        if ($form->isSubmitted() && $form->isValid()) {
-            // Save the prescription (or any other processing you need)
-            $entityManager->flush();
+    $dossierMedical = $diagnostique->getDossierMedical();
+    $patient = $dossierMedical->getPatient();
 
-            // Redirect to the previous page
-            $referer = $request->headers->get('referer');
-            return new RedirectResponse($referer);
-        }
+    // Create the form and disable diagnostique field
+    $form = $this->createForm(PrescriptionType::class, $prescription);
 
-        return $this->render('prescription/edit.html.twig', [
-            'form' => $form->createView(),
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->flush(); // No need to persist, it's already managed
+        
+        return $this->redirectToRoute('medecinDossierMedicalByPatient_page', [
+            'id' => $patient->getId()
         ]);
     }
+
+    return $this->render('prescription/edit.html.twig', [
+        'form' => $form->createView(),
+    ]);
+}
+
 
     #[Route('/delete/{id}', name: 'app_prescription_delete', methods: ['POST'])]
     public function delete(PatientRepository $patientRepository, Prescription $prescription, EntityManagerInterface $entityManager): RedirectResponse
@@ -133,6 +157,15 @@ class PrescriptionController extends AbstractController
 
         return $this->redirectToRoute('dossierMedicalByPatient_page', [
             'id' => $patient->getId()
+        ]);
+    }
+
+
+    #[Route('/{id}', name: "prescription_details", methods: ['GET'])]
+    public function showPrescriptionDetails(Prescription $prescription): Response
+    {
+        return $this->render('prescription/details.html.twig', [
+            'prescription' => $prescription,
         ]);
     }
 }

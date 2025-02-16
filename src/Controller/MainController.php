@@ -3,6 +3,7 @@
 namespace App\Controller;
 
 use App\Entity\DossierMedical;
+use App\Repository\MedecinRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -67,15 +68,33 @@ class MainController extends AbstractController
         ]);
     }
 
-    #[Route('/formMed', name: 'formMed_page')]
-    public function formMed(): Response
+    #[Route('/admin/dashboard', name: 'adminDashboard_page')]
+    public function admin(): Response
     {
-        return $this->render('main/form.html.twig', [
-            'controller_name' => 'MedecinController',
-        ]);
+        return $this->render('admin/index.html.twig');
     }
 
-    
 
-    
+
+
+
+
+
+    //////////////////////////
+    #[Route('/formMed/{id}', name: 'formMed_page')]
+    public function formMed(int $id, MedecinRepository $medecinRepository): Response
+    {
+        // Retrieve the medecin (doctor) from the database using the ID passed in the URL
+        $medecin = $medecinRepository->find($id);
+
+        if (!$medecin) {
+            throw $this->createNotFoundException('Medecin not found!');
+        }
+        dump($medecin);
+
+        // Return the response and pass the medecin variable to the Twig template
+        return $this->render('main/form.html.twig', [
+            'medecin' => $medecin,
+        ]);
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\PrescriptionRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PrescriptionRepository::class)]
 class Prescription
@@ -14,13 +15,21 @@ class Prescription
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'string')]
+    #[Assert\NotBlank(message: "Le titre ne peut pas être vide.")]
     private ?string $titre = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(type: 'text')]
+    #[Assert\NotBlank(message: "Le contenu ne peut pas être vide.")]
     private ?string $contenue = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[ORM\Column(type: 'datetime')]
+    #[Assert\Type(type: \DateTimeInterface::class, message: "La date doit être valide.")]
+    #[Assert\NotBlank(message: "La date de prescription est obligatoire.")]
+    #[Assert\GreaterThanOrEqual(
+        value: "today",
+        message: "La date de prescription ne peut pas être dans le passé."
+    )]
     private ?\DateTimeInterface $datePrescription = null;
 
     #[ORM\ManyToOne(inversedBy: 'prescriptions')]
@@ -35,8 +44,6 @@ class Prescription
     #[ORM\JoinColumn(nullable: false)]
     private ?Medecin $medecin = null;
 
-
-
     public function getId(): ?int
     {
         return $this->id;
@@ -50,18 +57,6 @@ class Prescription
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
-
-        return $this;
-    }
-
-    public function getMedecin(): ?Medecin
-    {
-        return $this->medecin;
-    }
-
-    public function setMedecin(?Medecin $medecin): self
-    {
-        $this->medecin = $medecin;
         return $this;
     }
 
@@ -73,7 +68,6 @@ class Prescription
     public function setContenue(string $contenue): static
     {
         $this->contenue = $contenue;
-
         return $this;
     }
 
@@ -85,7 +79,6 @@ class Prescription
     public function setDatePrescription(?\DateTimeInterface $datePrescription): static
     {
         $this->datePrescription = $datePrescription;
-
         return $this;
     }
 
@@ -97,7 +90,6 @@ class Prescription
     public function setDossierMedical(DossierMedical $dossierMedical): static
     {
         $this->dossierMedical = $dossierMedical;
-
         return $this;
     }
 
@@ -109,7 +101,17 @@ class Prescription
     public function setDiagnostique(?Diagnostique $diagnostique): static
     {
         $this->diagnostique = $diagnostique;
+        return $this;
+    }
 
+    public function getMedecin(): ?Medecin
+    {
+        return $this->medecin;
+    }
+
+    public function setMedecin(?Medecin $medecin): static
+    {
+        $this->medecin = $medecin;
         return $this;
     }
 }
