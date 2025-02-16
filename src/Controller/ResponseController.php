@@ -16,12 +16,14 @@ final class ResponseController extends AbstractController{
     #[Route('/liste', name: 'reponse_reclamation_page')]
     public function index(EntityManagerInterface $entityManager): Response
     {
-        $reclamations = $entityManager->getRepository(Reclamation::class)->findAll();
-
+        $reclamations = $entityManager->getRepository(Reclamation::class)
+            ->findBy([], ['date_debut' => 'DESC']);
+    
         return $this->render('reponse/liste.html.twig', [
             'reclamations' => $reclamations,
         ]);
     }
+    
     #[Route('/ajouter/{id}', name: 'ajouter_reponse')]
     public function ajouter(Reclamation $reclamation, Request $request, EntityManagerInterface $entityManager): Response
     {
