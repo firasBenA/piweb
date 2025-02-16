@@ -27,6 +27,12 @@ class Evenement
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'le contenue doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le contenue ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $contenue = null;
 
     #[ORM\Column(length: 255)]
@@ -40,6 +46,12 @@ class Evenement
     private ?string $statut = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'le lieu doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'le lieu ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $lieux_event = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
@@ -62,6 +74,7 @@ class Evenement
     public function __construct()
     {
         $this->article = new ArrayCollection();
+        $this->date_event = new \DateTime();
     }
 
     public function getId(): ?int
