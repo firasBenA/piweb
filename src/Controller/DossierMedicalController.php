@@ -81,6 +81,13 @@ class DossierMedicalController extends AbstractController
         // Fetch the diagnostiques related to the dossier medical
         $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy(['dossierMedical' => $dossierMedical]);
 
+        $prescriptions = $dossierMedical->getPrescriptions();
+        $medecins = [];
+        foreach ($prescriptions as $prescription) {
+            if ($prescription->getMedecin() && !in_array($prescription->getMedecin(), $medecins, true)) {
+                $medecins[] = $prescription->getMedecin();
+            }
+        }
         // Debugging - Log the diagnostiques
         dump($diagnostiques);
 
@@ -88,6 +95,8 @@ class DossierMedicalController extends AbstractController
             'dossierMedical' => $dossierMedical,
             'patient' => $patient, // Pass the patient to Twig
             'diagnostiques' => $diagnostiques, // Pass the diagnostiques to Twig
+            'medecins' => $medecins,
         ]);
     }
+
 }

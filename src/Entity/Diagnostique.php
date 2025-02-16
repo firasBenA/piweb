@@ -3,10 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\DiagnostiqueRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DiagnostiqueRepository::class)]
 class Diagnostique
@@ -22,12 +21,14 @@ class Diagnostique
     #[ORM\Column(length: 255)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255, nullable: true)]  // Added `nullable: true`
+    #[ORM\Column(length: 255, nullable: true)]  
     private ?string $description = null;
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: "La date du diagnostic est obligatoire.")]
     private ?DossierMedical $dossierMedical = null;
+
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
     private ?Patient $patient = null;
@@ -37,6 +38,10 @@ class Diagnostique
 
     #[ORM\Column]
     private ?int $status = null;
+
+    #[ORM\Column(type: 'json')]
+    #[Assert\NotBlank(message: "La date du diagnostic est obligatoire.")]
+    private array $symptoms = [];
 
 
     public function getStatus(): ?int
@@ -51,16 +56,7 @@ class Diagnostique
         return $this;
     }
 
-    /**
-     * @var Collection<int, Symptomes>
-     */
-    #[ORM\ManyToMany(targetEntity: Symptomes::class, inversedBy: 'diagnostiques')]
-    private Collection $symptomes;
-
-    public function __construct()
-    {
-        $this->symptomes = new ArrayCollection();
-    }
+    public function __construct() {}
 
     public function getId(): ?int
     {
@@ -139,27 +135,14 @@ class Diagnostique
         return $this;
     }
 
-    /**
-     * @return Collection<int, Symptomes>
-     */
-    public function getSymptomes(): Collection
+    public function getSymptoms(): array
     {
-        return $this->symptomes;
+        return $this->symptoms;
     }
 
-    public function addSymptome(Symptomes $symptome): static
+    public function setSymptoms(array $symptoms): self
     {
-        if (!$this->symptomes->contains($symptome)) {
-            $this->symptomes->add($symptome);
-        }
-
-        return $this;
-    }
-
-    public function removeSymptome(Symptomes $symptome): static
-    {
-        $this->symptomes->removeElement($symptome);
-
+        $this->symptoms = $symptoms;
         return $this;
     }
 }

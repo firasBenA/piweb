@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: DossierMedicalRepository::class)]
 class DossierMedical
@@ -17,10 +19,13 @@ class DossierMedical
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(message: "The date of prescription is required.")]
+    #[Assert\Type("\DateTimeInterface", message: "Please provide a valid date.")]
     private ?\DateTimeInterface $datePrescription = null;
 
     #[ORM\OneToOne(targetEntity: Patient::class, inversedBy: 'dossierMedical', cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotBlank(message: "The patient is required.")]
     private ?Patient $patient = null;
 
 
@@ -96,7 +101,7 @@ class DossierMedical
                 $prescription->setDossierMedical($this); // Keep the relation intact
             }
         }
-    
+
         return $this;
     }
 

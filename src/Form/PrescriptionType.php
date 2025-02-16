@@ -19,12 +19,22 @@ class PrescriptionType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('titre', TextType::class)
-            ->add('contenue', TextType::class)
+            ->add('titre', TextType::class, [
+                'required' => true,
+                'empty_data' => '', // Forces an empty string if the field is left empty
+                'attr' => ['class' => 'form-control'],
+            ])
+            ->add('contenue', TextType::class, [
+                'required' => true,
+                'empty_data' => '', // Forces an empty string if the field is left empty
+                'attr' => ['class' => 'form-control'],
+            ])
             ->add('datePrescription', DateType::class)
             ->add('diagnostique', EntityType::class, [
-                'class' => Diagnostique::class,  // This specifies that the field refers to the DossierMedical entity
-                'choice_label' => 'nom',            // You can customize this to show any field from DossierMedical, like 'name'
+                'class' => Diagnostique::class,
+                'choice_label' => 'nom',
+                'disabled' => true // Use the custom option
+
             ])
             ->add('save', SubmitType::class, ['label' => 'Create Prescription']);
     }
@@ -33,6 +43,8 @@ class PrescriptionType extends AbstractType
     {
         $resolver->setDefaults([
             'data_class' => Prescription::class,
+            'disabled_diagnostique' => false, // Default is false, but controller sets it to true
+
         ]);
     }
 }

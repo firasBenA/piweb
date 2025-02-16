@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Diagnostique;
 use App\Entity\DossierMedical;
 use App\Entity\Medecin;
 use App\Entity\Patient;
@@ -16,6 +17,7 @@ final class MedecinController extends AbstractController
     public function dashboard(int $id, EntityManagerInterface $entityManager): Response
     {
         // Fetch the doctor (medecin) by its ID
+
         $medecin = $entityManager->getRepository(Medecin::class)->find($id);
 
         if (!$medecin) {
@@ -32,32 +34,49 @@ final class MedecinController extends AbstractController
     }
 
 
-
-
-    #[Route('/createAccount', name: 'createAccount_page')]
-    public function createAccount(): Response
+    #[Route('/medecin/dossierMedicalByPatient/{id}', name: 'medecinDossierMedicalByPatient_page')]
+    public function MedecinDossierMedical(int $id, EntityManagerInterface $entityManager): Response
     {
-        return $this->render('medecin/createAccount.html.twig', [
-            'controller_name' => 'MedecinController',
+        // Fetch the patient by ID
+        $patient = $entityManager->getRepository(Patient::class)->find($id);
+
+        // Debugging - Log the patient object
+        dump($patient);
+
+        if (!$patient) {
+            throw $this->createNotFoundException('No patient found with this ID.');
+        }
+
+        // Fetch the dossier medical linked to the patient
+        $dossierMedical = $entityManager->getRepository(DossierMedical::class)->findOneBy(['patient' => $patient]);
+
+        // Debugging - Log the dossierMedical object
+        dump($dossierMedical);
+
+        if (!$dossierMedical) {
+            throw $this->createNotFoundException('No dossier medical found for this patient.');
+        }
+
+        // Fetch the diagnostiques related to the dossier medical
+        $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy(['dossierMedical' => $dossierMedical]);
+
+        $prescriptions = $dossierMedical->getPrescriptions();
+        $medecins = [];
+        foreach ($prescriptions as $prescription) {
+            if ($prescription->getMedecin() && !in_array($prescription->getMedecin(), $medecins, true)) {
+                $medecins[] = $prescription->getMedecin();
+            }
+        }
+        // Debugging - Log the diagnostiques
+        dump($diagnostiques);
+
+        return $this->render('medecin/dossierMedicalPatient.html.twig', [
+            'dossierMedical' => $dossierMedical,
+            'patient' => $patient, // Pass the patient to Twig
+            'diagnostiques' => $diagnostiques, // Pass the diagnostiques to Twig
+            'medecins' => $medecins,
         ]);
     }
-
-    #[Route('/login', name: 'login_page')]
-    public function Login(): Response
-    {
-        return $this->render('medecin/login.html.twig', [
-            'controller_name' => 'MedecinController',
-        ]);
-    }
-
-    #[Route('/forgotPassword', name: 'forgotPassword_page')]
-    public function forgotPassword(): Response
-    {
-        return $this->render('medecin/forgotPassword.html.twig', [
-            'controller_name' => 'MedecinController',
-        ]);
-    }
-
     #[Route('/formMed', name: 'formMed_page')]
     public function formMed(): Response
     {
