@@ -1,47 +1,101 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h2 class="mb-4">Liste des Réclamations</h2>
+    <div class="container mt-5">
+        <h1 class="text-center text-primary fw-bold">📋 Liste des Réclamations</h1>
 
-        {% for message in app.flashes('success') %}
-            <div class="alert alert-success">
-                {{ message }}
+        {% if reclamations is empty %}
+            <p class="text-center text-muted mt-4">Aucune réclamation trouvée.</p>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle shadow-lg rounded">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Sujet</th>
+                            <th>Description</th>
+                            <th>Date de création</th>
+                            <th>État</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        {% for reclamation in reclamations %}
+                            <tr class="bg-white">
+                                <td><strong>#{{ reclamation.id }}</strong></td>
+                                <td>{{ reclamation.sujet }}</td>
+                                <td>{{ reclamation.description }}</td>
+                                <td>{{ reclamation.dateDebut|date('d/m/Y') }}</td>
+                                <td>
+                                    {% if reclamation.etat == 'en_attente' %}
+                                        <span class="badge bg-warning text-dark">🕒 En attente</span>
+                                    {% elseif reclamation.etat == 'traité' %}
+                                        <span class="badge bg-success">✅ Traité</span>
+                                    {% elseif reclamation.etat == 'refuse' %}
+                                        <span class="badge bg-danger">❌ Refusée</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">❓ Non spécifiée</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+<div class="d-flex justify-content-center">
+    <a href="{{ path('modifier_reclamation', {'id': reclamation.id}) }}" style="margin-right: 10px;">
+        <i class="bi bi-pencil" style="color: green;font-size: 20px;"></i> <!-- Red color for pencil icon -->
+    </a>
+    <a href="{{ path('supprimer_reclamation', {'id': reclamation.id}) }}"  onclick="return confirm('Voulez-vous vraiment supprimer cette réclamation ?');">
+        <i class="bi bi-trash" style="color: red;font-size: 20px;"></i> <!-- White color for trash icon -->
+    </a>
+</div>
+
+
+
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
             </div>
-        {% endfor %}
+        {% endif %}
 
-        <table class="table table-striped">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Sujet</th>
-                    <th>Description</th>
-                    <th>Date de creation </th>
-                    <th>État</th>
-                    <th>Actions</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for reclamation in reclamations %}
-                    <tr>
-                        <td>{{ reclamation.id }}</td>
-                        <td>{{ reclamation.sujet }}</td>
-                        <td>{{ reclamation.description }}</td>
-                        <td>{{ reclamation.dateDebut|date('d/m/Y') }}</td>
-                        <td>{{ reclamation.etat }}</td>
-                        <td>
-                            <a href="{{ path('modifier_reclamation', {'id': reclamation.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
-                            <a href="{{ path('supprimer_reclamation', {'id': reclamation.id}) }}" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette réclamation ?');">Supprimer</a>
-                        </td>
-                    </tr>
-                {% else %}
-                    <tr>
-                        <td colspan="7" class="text-center">Aucune réclamation trouvée.</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
-
-        <a href="{{ path('ajouter_reclamation') }}" class="btn btn-primary">Ajouter une Réclamation</a>
+        <div class="text-center mt-4" style="margin-bottom: 20PX;">
+            <a href="{{ path('ajouter_reclamation') }}" class="btn btn-success btn-lg shadow px-5 py-2 fw-bold">➕ Ajouter une Réclamation</a>
+        </div>
     </div>
+
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: 'Poppins', sans-serif;
+        }
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .table thead {
+            background-color: #343a40;
+            color: white;
+        }
+        .table tbody tr:hover {
+            background-color: #e3f2fd;
+            transition: 0.3s ease-in-out;
+        }
+        .btn {
+            transition: all 0.3s ease-in-out;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .icon-pencil {
+            color: red;
+            }
+
+            .icon-trash {
+                color: white;
+            }
+    </style>
 {% endblock %}

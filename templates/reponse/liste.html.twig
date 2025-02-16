@@ -1,21 +1,69 @@
 {% extends 'base.html.twig' %}
 
 {% block body %}
-    <div class="container mt-4">
-        <h2>Liste des Réclamations</h2>
+    <div class="container mt-5">
+        <h2 class="text-center text-primary fw-bold mb-4">📄 Liste des Réclamations</h2>
 
-        {% for reclamation in reclamations %}
-            <div class="card mb-3">
-                <div class="card-body">
-                    <h5 class="card-title">{{ reclamation.sujet }}</h5>
-                    <p class="card-text">{{ reclamation.description }}</p>
-                    <p class="text-muted">Début: {{ reclamation.dateDebut|date('Y-m-d') }}</p>
+        {% if reclamations is empty %}
+            <p class="text-center text-muted">Aucune réclamation trouvée.</p>
+        {% else %}
+            {% for reclamation in reclamations %}
+                <div class="card mb-4 shadow-lg rounded">
+                    <div class="card-body">
+                        <h5 class="card-title text-dark">{{ reclamation.sujet }}</h5>
+                        <p class="card-text">{{ reclamation.description }}</p>
+                        <p class="text-muted">Date de création: {{ reclamation.dateDebut|date('d/m/Y') }}</p>
 
-                    <a href="{{ path('ajouter_reponse', { 'id': reclamation.id }) }}" class="btn btn-success">
-                        Répondre
-                    </a>
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ path('ajouter_reponse', { 'id': reclamation.id }) }}" class="btn btn-success px-4 py-2 shadow-sm">
+                                Répondre
+                            </a>
+                            <span class="badge bg-info text-dark p-2 align-self-center">
+                                {{ reclamation.etat }}
+                            </span>
+                        </div>
+                    </div>
                 </div>
-            </div>
-        {% endfor %}
+            {% endfor %}
+        {% endif %}
     </div>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+        }
+
+        .card {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .card-body {
+            padding: 20px;
+        }
+
+        .btn {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .card-title {
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .card-text {
+            font-size: 1rem;
+            color: #7f8c8d;
+        }
+
+        .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 10px;
+        }
+    </style>
 {% endblock %}
