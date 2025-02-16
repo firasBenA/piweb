@@ -6,6 +6,7 @@ use App\Entity\RendezVous;
 use App\Entity\Patient;
 use App\Entity\Medecin;
 use App\Form\RendezVousType;
+use App\Form\ModifConType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -68,44 +69,36 @@ public function refuserRendezVous(RendezVous $rendezVous, EntityManagerInterface
 
 // Route pour modifier la date d'un rendez-vous
 #[Route('/modifier/{id}', name: 'rendezvous_modifier')]
-public function modifierRendezVous(Request $request, RendezVous $rendezVous, EntityManagerInterface $entityManager): Response
-{
-    // Crée le formulaire lié à l'entité RendezVous
-    $form = $this->createForm(RendezVousType::class, $rendezVous);
-    $form->handleRequest($request);
+    public function modifierRendezVous(Request $request, RendezVous $rendezVous, EntityManagerInterface $entityManager): Response
+    {
+        // Crée un formulaire avec uniquement le champ date
+        $form = $this->createForm(ModifConType::class, $rendezVous);
+        $form->handleRequest($request);
 
-    // Si le formulaire est soumis et valide
-    if ($form->isSubmitted() && $form->isValid()) {
-        // Récupère la nouvelle date du formulaire
-        $newDate = $rendezVous->getDate();
+        // Vérification et traitement du formulaire
+        if ($form->isSubmitted() && $form->isValid()) {
+            $newDate = $rendezVous->getDate();
 
-        // Vérifie si la date est dans le passé
-        if ($newDate < new \DateTime('today')) {
-            // Message flash pour indiquer que la date choisie est invalide
-            $this->addFlash('error', 'La date choisie ne peut pas être antérieure à aujourd\'hui.');
+            // Vérifie que la date n'est pas dans le passé
+            if ($newDate < new \DateTime('today')) {
+                $this->addFlash('error', 'La date choisie ne peut pas être antérieure à aujourd\'hui.');
+                return $this->redirectToRoute('rendezvous_modifier', ['id' => $rendezVous->getId()]);
+            }
 
-            // Redirige vers la même page pour afficher le formulaire avec l'erreur
-            return $this->redirectToRoute('rendezvous_modifier', ['id' => $rendezVous->getId()]);
+            // Met à jour le rendez-vous et change son statut en "Approuvé"
+            $rendezVous->setStatut('Approuvé');
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Le rendez-vous a été modifié et approuvé.');
+
+            // Redirection après modification
+            return $this->redirectToRoute('consultation_medecin_list', ['id' => $rendezVous->getMedecin()->getId()]);
         }
 
-        // Met à jour la date du rendez-vous et change son statut en "Approuvé"
-        $rendezVous->setDate($newDate);
-        $rendezVous->setStatut('Approuvé'); // Changer le statut automatiquement à "Approuvé"
-
-        // Sauvegarde les changements dans la base de données
-        $entityManager->flush();
-
-        // Message flash pour indiquer que le rendez-vous a été modifié et approuvé
-        $this->addFlash('success', 'Le rendez-vous a été modifié et approuvé.');
-
-        // Redirection vers la liste des rendez-vous du médecin
-        return $this->redirectToRoute('consultation_medecin_list', ['id' => $rendezVous->getMedecin()->getId()]);
+        // Rendu du formulaire dans la vue
+        return $this->render('consultation/modifier.html.twig', [
+            'form' => $form->createView(),
+        ]);
     }
-
-    // Rendu du formulaire dans la vue Twig
-    return $this->render('consultation/modifier.html.twig', [
-        'form' => $form->createView(),
-    ]);
-}
 
 }

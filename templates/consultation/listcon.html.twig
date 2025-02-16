@@ -2,7 +2,7 @@
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="text-center text-primary fw-bold">📅 Liste des Rendez-vous du Dr. {{ medecin.nom }}</h1>
+        <h1 class="text-center text-primary fw-bold">📅 Liste des Consultations du Dr. {{ medecin.nom }} {{ medecin.prenom }}</h1>
 
         {% if rendezVous is empty %}
             <p class="text-center text-muted mt-4">Aucun rendez-vous trouvé.</p>

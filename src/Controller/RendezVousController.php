@@ -60,6 +60,7 @@ public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Respo
 
     return $this->render('rendez_vous/addrdv.html.twig', [
         'form' => $form->createView(),
+        'patient' => $patient,
     ]);
 }
 
