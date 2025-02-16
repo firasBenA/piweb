@@ -5,31 +5,125 @@
 {% block title %}Créer un compte{% endblock %}
 
 {% block body %}
+<style>
+    /* Appliquer une police générale */
+    body {
+        font-family: 'Inter', sans-serif;
+    }
+
+    /* Conteneur principal */
+    .container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 100vh;
+        background-color: #f3f4f6;
+    }
+
+    /* Carte d'inscription */
+    .card {
+        background: #ffffff;
+        padding: 2rem;
+        border-radius: 10px;
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        max-width: 400px;
+        width: 100%;
+        text-align: center;
+    }
+
+    /* Titre principal */
+    .card h1 {
+        font-size: 1.75rem;
+        font-weight: bold;
+        color: #333;
+        margin-top: 6rem;
+        margin-bottom: 6rem;
+    }
+
+    /* Cartes de sélection du type de compte */
+    .selection-container {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 2rem;
+        margin-bottom: 6rem;
+        flex-wrap: wrap;
+    }
+
+    .selection-card {
+        background: #e0f2fe;
+        padding: 2.5rem;
+        border-radius: 12px;
+        text-align: center;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        flex: 0 1 45%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .selection-card:hover {
+        background: #bae6fd;
+    }
+
+    .selection-card img {
+        width: 120px;
+        height: 120px;
+        margin-bottom: 1.5rem;
+    }
+
+    .selection-card h3 {
+        font-size: 1.75rem;
+        font-weight: bold;
+        color: #1e40af;
+    }
+
+    .selection-card p {
+        font-size: 1.2rem;
+        color: #374151;
+    }
+
+    /* Lien vers la connexion */
+    .login-link {
+        display: block;
+        margin-top: 1rem;
+        color: #2563eb;
+        font-weight: 500;
+        text-decoration: none;
+    }
+
+    .login-link:hover {
+        text-decoration: underline;
+    }
+</style>
+
 <div class="min-h-screen bg-gray-100 dark:bg-gray-900 flex items-center justify-center p-4">
     <div class="w-full max-w-md bg-white dark:bg-gray-800 p-8 rounded-xl shadow-lg">
-        <h1 class="text-2xl font-bold text-gray-800 dark:text-white mb-6 text-center">
+        <h1 class="text-2xl font-bold text-gray-800 dark:text-white text-center">
             Créer un compte
         </h1>
 
+        <div style="margin-bottom: 6rem;"></div>
+
         {# Choix du type de compte #}
-        <div class="flex flex-row gap-6 justify-center items-center w-full max-w-2xl mx-auto mb-8">
-    {# Carte Médecin #}
-    <a href="{{ path('app_medecin_controllerr_new') }}" 
-       class="p-6 text-center bg-blue-50 dark:bg-gray-700 rounded-lg transition-all hover:bg-blue-100 dark:hover:bg-gray-600 cursor-pointer group flex flex-col items-center w-1/2">
-        <img src="{{ asset('./medecin/assets/img/medecin-icon.png') }}" alt="Médecin" class="w-20 h-20 mx-auto mb-2">
-        <h3 class="font-semibold text-gray-800 dark:text-white">Médecin</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-300">Inscrire en tant que Médecin</p>
-    </a>
+        <div class="selection-container">
+            {# Carte Médecin #}
+            <a href="{{ path('app_medecin_controllerr_new') }}" 
+               class="selection-card">
+                <img src="{{ asset('./medecin/assets/img/medecin-icon.png') }}" alt="Médecin">
+                <h3>Médecin</h3>
+                <p>Inscrire en tant que Médecin</p>
+            </a>
 
-    {# Carte Patient #}
-    <a href="{{ path('app_patient_new') }}" 
-       class="p-6 text-center bg-green-50 dark:bg-gray-700 rounded-lg transition-all hover:bg-green-100 dark:hover:bg-gray-600 cursor-pointer group flex flex-col items-center w-1/2">
-        <img src="{{ asset('./medecin/assets/img/patient-icon.png') }}" alt="Patient" class="w-20 h-20 mx-auto mb-2">
-        <h3 class="font-semibold text-gray-800 dark:text-white">Patient</h3>
-        <p class="text-sm text-gray-600 dark:text-gray-300">Inscrire en tant que Patient</p>
-    </a>
-</div>
-
+            {# Carte Patient #}
+            <a href="{{ path('app_patient_new') }}" 
+               class="selection-card">
+                <img src="{{ asset('./medecin/assets/img/patient-icon.png') }}" alt="Patient">
+                <h3>Patient</h3>
+                <p>Inscrire en tant que Patient</p>
+            </a>
+        </div>
 
         <div class="mt-6 text-center">
             <a href="{{ path('app_login') }}" class="text-blue-600 dark:text-blue-400 hover:underline">

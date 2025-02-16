@@ -13,7 +13,6 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface; // Pour générer un nom de fichier unique
 
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 
 #[Route('/medecin')]

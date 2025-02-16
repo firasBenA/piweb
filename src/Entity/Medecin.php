@@ -13,6 +13,8 @@ use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 #[ORM\Entity(repositoryClass: MedecinRepository::class)]
 class Medecin implements UserInterface, PasswordAuthenticatedUserInterface
 {
+
+    
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]

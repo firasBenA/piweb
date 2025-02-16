@@ -43,6 +43,8 @@ class MedecinType extends AbstractType
 
             ->add('specialite')
             #->add('certificat')
+
+            
             ->add('certificat', FileType::class, [ // Champ pour télécharger un fichier
                 'label' => 'Certificat (image)',
                 'mapped' => false, // Ne pas mapper directement à l'entité
