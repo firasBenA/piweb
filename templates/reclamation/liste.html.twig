@@ -4,6 +4,20 @@
     <div class="container mt-5">
         <h1 class="text-center text-primary fw-bold">📋 Liste des Réclamations</h1>
 
+        <div class="mb-4">
+            <!-- Container for filter aligned to the left -->
+            <div class="d-flex justify-content-end">
+                <form method="get" class="d-flex">
+                    <select name="etat" class="form-select w-auto" onchange="this.form.submit()">
+                        <option value="" selected>Tous les États</option>
+                        <option value="en_attente" {% if app.request.get('etat') == 'en_attente' %}selected{% endif %}>En attente</option>
+                        <option value="traité" {% if app.request.get('etat') == 'traité' %}selected{% endif %}>Traité</option>
+                        <option value="refuse" {% if app.request.get('etat') == 'refuse' %}selected{% endif %}>Refusée</option>
+                    </select>
+                </form>
+            </div>
+        </div>
+
         {% if reclamations is empty %}
             <p class="text-center text-muted mt-4">Aucune réclamation trouvée.</p>
         {% else %}
@@ -38,17 +52,14 @@
                                     {% endif %}
                                 </td>
                                 <td>
-<div class="d-flex justify-content-center">
-    <a href="{{ path('modifier_reclamation', {'id': reclamation.id}) }}" style="margin-right: 10px;">
-        <i class="bi bi-pencil" style="color: green;font-size: 20px;"></i> <!-- Red color for pencil icon -->
-    </a>
-    <a href="{{ path('supprimer_reclamation', {'id': reclamation.id}) }}"  onclick="return confirm('Voulez-vous vraiment supprimer cette réclamation ?');">
-        <i class="bi bi-trash" style="color: red;font-size: 20px;"></i> <!-- White color for trash icon -->
-    </a>
-</div>
-
-
-
+                                    <div class="d-flex justify-content-center">
+                                        <a href="{{ path('modifier_reclamation', {'id': reclamation.id}) }}" style="margin-right: 10px;">
+                                            <i class="bi bi-pencil" style="color: green;font-size: 20px;"></i> <!-- Green pencil icon -->
+                                        </a>
+                                        <a href="{{ path('supprimer_reclamation', {'id': reclamation.id}) }}" onclick="return confirm('Voulez-vous vraiment supprimer cette réclamation ?');">
+                                            <i class="bi bi-trash" style="color: red;font-size: 20px;"></i> <!-- Red trash icon -->
+                                        </a>
+                                    </div>
                                 </td>
                             </tr>
                         {% endfor %}
@@ -57,7 +68,7 @@
             </div>
         {% endif %}
 
-        <div class="text-center mt-4" style="margin-bottom: 20PX;">
+        <div class="text-center mt-4" style="margin-bottom: 20px;">
             <a href="{{ path('ajouter_reclamation') }}" class="btn btn-success btn-lg shadow px-5 py-2 fw-bold">➕ Ajouter une Réclamation</a>
         </div>
     </div>
@@ -92,10 +103,9 @@
         }
         .icon-pencil {
             color: red;
-            }
-
-            .icon-trash {
-                color: white;
-            }
+        }
+        .icon-trash {
+            color: white;
+        }
     </style>
 {% endblock %}

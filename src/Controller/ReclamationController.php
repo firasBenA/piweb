@@ -15,14 +15,27 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class ReclamationController extends AbstractController
 {
     #[Route('/liste', name: 'reclamation_page')]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(EntityManagerInterface $entityManager, Request $request): Response
     {
-        $reclamations = $entityManager->getRepository(Reclamation::class)->findAll();
-
+        // Get the 'etat' parameter from the request (query string)
+        $etat = $request->query->get('etat');
+    
+        // Check if the 'etat' is provided and apply the filter accordingly
+        if ($etat) {
+            // Filter by the selected state
+            $reclamations = $entityManager->getRepository(Reclamation::class)
+                ->findBy(['etat' => $etat], ['date_debut' => 'DESC']);
+        } else {
+            // If no filter, fetch all reclamations
+            $reclamations = $entityManager->getRepository(Reclamation::class)
+                ->findBy([], ['date_debut' => 'DESC']);
+        }
+    
         return $this->render('reclamation/liste.html.twig', [
             'reclamations' => $reclamations,
         ]);
     }
+    
 
     #[Route('/ajouter', name: 'ajouter_reclamation')]
     public function ajouter(Request $request, EntityManagerInterface $entityManager): Response
