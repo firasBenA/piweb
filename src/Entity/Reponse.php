@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ReponseRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReponseRepository::class)]
 class Reponse
@@ -14,6 +15,13 @@ class Reponse
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le contenu ne peut pas être vide")]
+    #[Assert\Length(
+        min: 10,
+        max: 1000,
+        minMessage: "La réponse doit contenir au moins {{ limit }} caractères",
+        maxMessage: "La réponse ne peut pas dépasser {{ limit }} caractères"
+    )]
     private ?string $contenu = null;
 
     #[ORM\Column(type: "datetime")]
@@ -25,7 +33,7 @@ class Reponse
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
     private ?Reclamation $reclamation = null;
 
-    public function getId(): ?int
+    public function getId(): ?int 
     {
         return $this->id;
     }

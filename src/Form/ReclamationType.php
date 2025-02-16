@@ -11,28 +11,25 @@ use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Validator\Constraints as Assert;
 
 class ReclamationType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options): void
-    {
-        $builder
-            ->add('sujet', TextType::class, [
-                'label' => 'Sujet',
-                'attr' => ['class' => 'form-control']
-            ])
-            ->add('description', TextareaType::class, [
-                'label' => 'Description',
-                'attr' => ['class' => 'form-control']
-            ])
-            ->add('dateDebut', DateType::class, [
-                'label' => 'Date de début',
-                'widget' => 'single_text',
-                'attr' => ['class' => 'form-control']
-            ])
-          
-          ;
-    }
+{
+    $builder
+        ->add('sujet', TextType::class, [
+            'label' => 'Sujet',
+            'attr' => ['class' => 'form-control']
+           
+        ])
+        ->add('description', TextareaType::class, [
+            'label' => 'Description',
+            'attr' => ['class' => 'form-control']
+           
+        ]);
+}
+
 
     public function configureOptions(OptionsResolver $resolver): void
     {

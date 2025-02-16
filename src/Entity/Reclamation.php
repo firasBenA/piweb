@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReclamationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReclamationRepository::class)]
 class Reclamation
@@ -15,9 +16,21 @@ class Reclamation
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le sujet ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "Le sujet doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le sujet ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $sujet = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La description est requise.")]
+    #[Assert\Length(
+        min: 10,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères."
+    )]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]

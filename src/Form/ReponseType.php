@@ -15,8 +15,12 @@ class ReponseType extends AbstractType
     {
         $builder
         ->add('contenu', TextareaType::class, [
-            'label' => 'Contenu de la réponse',
-            'attr' => ['class' => 'form-control']
+            'label' => 'Votre réponse',
+            'help' => '10 à 1000 caractères',
+            'attr' => [
+                'placeholder' => 'Saisissez votre réponse ici...',
+                'rows' => 5
+            ]
         ])
       
       
