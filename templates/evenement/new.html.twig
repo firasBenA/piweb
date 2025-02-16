@@ -3,9 +3,11 @@
 {% block title %}Nouveau Evenement{% endblock %}
 
 {% block body %}
-    <h1>Creer un evenement</h1>
+    <h1 class="title">Creer un evenement</h1>
 
-    {{ include('evenement/_form.html.twig') }}
+    <div class="form-container">
+        {{ include('evenement/_form.html.twig') }}
+    </div>
 
-    <a href="{{ path('app_evenement_index') }}">Arjaa l teli</a>
+    <a class="btn btn-primary" href="{{ path('app_evenement_index') }}">Retourner</a>
 {% endblock %}

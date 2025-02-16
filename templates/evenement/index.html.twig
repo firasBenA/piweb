@@ -3,9 +3,9 @@
 {% block title %}Evenement{% endblock %}
 
 {% block body %}
-    <h1>Evenement</h1>
+    <h1 class="title">Evenement</h1>
 
-    <table class="table">
+    <table class="table table-striped">
         <thead>
             <tr>
                 <th>Id</th>
@@ -29,8 +29,8 @@
                 <td>{{ evenement.lieuxEvent }}</td>
                 <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : '' }}</td>
                 <td>
-                    <a href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
-                    <a href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}"> Modifier</a>
+                    <a class="btn btn-info" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
+                    <a class="btn btn-secondary" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}"> Modifier</a>
                 </td>
             </tr>
         {% else %}
@@ -41,5 +41,5 @@
         </tbody>
     </table>
 
-    <a href="{{ path('app_evenement_ajouter') }}">Creer un evenement</a>
+    <a class="btn btn-primary" href="{{ path('app_evenement_ajouter') }}">Creer un evenement</a>
 {% endblock %}

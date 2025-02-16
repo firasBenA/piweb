@@ -3,11 +3,13 @@
 {% block title %}Modifier Article{% endblock %}
 
 {% block body %}
-    <h1>Modifier Article</h1>
+<div class="container mt-4">
+    <h1 class="mb-4 text-center">Modifier Article</h1>
 
-    {{ include('article/_form.html.twig', {'button_label': 'Update'}) }}
+    {{ include('article/_form.html.twig', {'button_label': 'Mettre à jour'}) }}
 
-    <a href="{{ path('app_article_index') }}">Arjaa liste article</a>
+    <a href="{{ path('app_article_index') }}" class="btn btn-secondary mt-3">Retour à la liste</a>
 
     {{ include('article/_delete_form.html.twig') }}
+</div>
 {% endblock %}

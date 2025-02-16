@@ -18,7 +18,6 @@ class Evenement
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le nom est obligatoire')]
     #[Assert\Length(
         min: 3,
         max: 255,
@@ -28,11 +27,9 @@ class Evenement
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Ce champ est obligatoire')]
     private ?string $contenue = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Ce champ est obligatoire')]
     #[Assert\Choice(
         choices: ['conference', 'seminaire', 'workshop'],
         message: 'Choisissez un type valide'
@@ -40,15 +37,12 @@ class Evenement
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Ce champ est obligatoire')]
     private ?string $statut = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Ce champ est obligatoire')]
     private ?string $lieux_event = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
-    #[Assert\NotBlank(message: 'La date est obligatoire')]
     #[Assert\GreaterThanOrEqual(
         'today',
         message: 'La date doit être ultérieure ou égale à aujourd\'hui'

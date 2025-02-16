@@ -14,27 +14,32 @@ class Article
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le titre ne doit pas être vide.')]
-    #[Assert\Length(max: 255,)]
-    private ?string $titre = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotBlank(message: 'ce champ est obligatoire.')]
+    private ?string $titre = '';
 
-    #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le contenu ne doit pas être vide.')]
-    #[Assert\Length(max: 255,)]
-    private ?string $contenue = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotBlank(message: 'ce champ est obligatoire.')]
+    
+    private ?string $contenue = '';
 
-    #[ORM\Column(length: 255)]
-    private ?string $image = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotBlank(message: 'L\'image est obligatoire.')]
+    #[Assert\Url(message: 'L\'URL de l\'image n\'est pas valide.')]
+    private ?string $image = '';
 
-    #[ORM\Column]
-    private ?int $prix_article = null;
+    #[ORM\Column(nullable: false)]
+    #[Assert\Positive(message: 'ce champ doit être un nombre positif')]
+    private ?int $prix_article = 0;
 
-    #[ORM\Column(length: 255)]
-    private ?string $commantaire = null;
+    #[ORM\Column(length: 255, nullable: false)]
+    #[Assert\NotBlank(message: 'ce champ est obligatoire.')]
+    
+    private ?string $commantaire = '';
 
-    #[ORM\Column]
-    private ?int $nbJaime = null;
+    #[ORM\Column(nullable: false)]
+    #[Assert\Positive(message: 'Le nombre de j\'aime doit être un nombre positif ou zéro.')]
+    private ?int $nbJaime = 0;
 
     #[ORM\ManyToOne(inversedBy: 'article')]
     private ?Evenement $evenement = null;
@@ -52,7 +57,6 @@ class Article
     public function setTitre(string $titre): static
     {
         $this->titre = $titre;
-
         return $this;
     }
 
@@ -64,7 +68,6 @@ class Article
     public function setContenue(string $contenue): static
     {
         $this->contenue = $contenue;
-
         return $this;
     }
 
@@ -76,7 +79,6 @@ class Article
     public function setImage(string $image): static
     {
         $this->image = $image;
-
         return $this;
     }
 
@@ -88,7 +90,6 @@ class Article
     public function setPrixArticle(int $prix_article): static
     {
         $this->prix_article = $prix_article;
-
         return $this;
     }
 
@@ -100,7 +101,6 @@ class Article
     public function setCommantaire(string $commantaire): static
     {
         $this->commantaire = $commantaire;
-
         return $this;
     }
 
@@ -112,7 +112,6 @@ class Article
     public function setNbJaime(int $nbJaime): static
     {
         $this->nbJaime = $nbJaime;
-
         return $this;
     }
 
@@ -124,7 +123,6 @@ class Article
     public function setEvenement(?Evenement $evenement): static
     {
         $this->evenement = $evenement;
-
         return $this;
     }
 }
