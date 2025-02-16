@@ -25,7 +25,7 @@
             <div class="flex flex-col overflow-y-auto md:flex-row">
                 <div class="h-32 md:h-auto md:w-1/2">
                     <img aria-hidden="true" class="object-cover  h-full dark:hidden" src="{{ asset('./medecin/assets/img/medecin-img.jpg') }}" alt="Office"/>
-                    <img aria-hidden="true" class="hidden object-cover w-full h-full dark:block " src="{{ asset('./medecin/assets/img/medecin-img/your-image-dark.jpg') }}" alt="Office"/>
+                    
                 </div>
                 <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
                     <div class="w-full">
@@ -40,7 +40,8 @@
                             <div class="block text-sm">
                                 {{ form_label(form.nom, 'Nom', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
                                 {{ form_widget(form.nom, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre nom'}}) }}
-                                <div id="nom-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour le nom #}
+                                <div id="nom-error" class="text-red-500 text-sm mt-1"></div> 
+
                             </div>
 
                             {# Champ Prénom #}
@@ -116,9 +117,9 @@
 
                             {# Champ Image de profil #}
                              <div class="block mt-4 text-sm">
-                             {{ form_label(form.imageDeProfil, 'Image de profil (facultatif)', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
-                             {{ form_widget(form.imageDeProfil, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'URL de l\'image de profil (facultatif)'}}) }}
-                             <div id="imageDeProfil-error" class="text-red-500 text-sm mt-1"></div> {# Message d'erreur pour l'image de profil #}
+                                {{ form_label(form.imageDeProfil, 'Image de profil (facultatif)', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(form.imageDeProfil, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input'}}) }}
+                                <div id="imageDeProfil-error" class="text-red-500 text-sm mt-1"></div>
                             </div>
 
                             {# Bouton de soumission #}
@@ -138,139 +139,149 @@
         </div>
     </div>
 
-    {# Script JavaScript pour la validation en temps réel #}
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
-            const form = document.getElementById('medecin-form');
+    document.addEventListener('DOMContentLoaded', function () {
+        const form = document.getElementById('medecin-form');
 
-            // Fonction pour afficher les messages d'erreur
-            function showError(inputId, message) {
-                const errorElement = document.getElementById(`${inputId}-error`);
-                errorElement.textContent = message;
-            }
+        // Function to show error messages
+        function showError(inputId, message) {
+            const errorElement = document.getElementById(`${inputId}-error`);
+            errorElement.textContent = message;
+        }
 
-            // Fonction pour effacer les messages d'erreur
-            function clearError(inputId) {
-                const errorElement = document.getElementById(`${inputId}-error`);
-                errorElement.textContent = '';
-            }
+        // Function to clear error messages
+        function clearError(inputId) {
+            const errorElement = document.getElementById(`${inputId}-error`);
+            errorElement.textContent = '';
+        }
 
-            // Écouter l'événement 'blur' sur chaque champ
-            form.querySelectorAll('input').forEach(input => {
-                input.addEventListener('blur', function () {
-                    const inputId = input.id.replace('medecin_', ''); // Récupère l'ID du champ sans le préfixe
-                    const value = input.value.trim();
+        // Listen for the 'blur' event on each field
+        form.querySelectorAll('input, select').forEach(input => {
+            input.addEventListener('blur', function () {
+                const inputId = input.id.replace('medecin_', ''); // Remove 'medecin_' prefix to get the field name
+                const value = input.value.trim();
 
-                    // Validation en fonction du champ
-                    switch (inputId) {
-                        case 'nom':
-                            if (value === '') {
-                                showError(inputId, 'Veuillez entrer votre nom.');
-                            } else if (value.length < 2 || value.length > 50) {
-                                showError(inputId, 'Le nom doit contenir entre 2 et 50 caractères.');
-                            } else {
-                                clearError(inputId);
-                            }
-                            break;
+                // Validate based on the field
+                switch (inputId) {
+                    case 'nom':
+                        if (value === '') {
+                            showError(inputId, 'Veuillez entrer votre nom.');
+                        } else if (value.length < 2 || value.length > 50) {
+                            showError(inputId, 'Le nom doit contenir entre 2 et 50 caractères.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
 
-                        case 'prenom':
-                            if (value === '') {
-                                showError(inputId, 'Veuillez entrer votre prénom.');
-                            } else if (value.length < 2 || value.length > 50) {
-                                showError(inputId, 'Le prénom doit contenir entre 2 et 50 caractères.');
-                            } else {
-                                clearError(inputId);
-                            }
-                            break;
+                    case 'prenom':
+                        if (value === '') {
+                            showError(inputId, 'Veuillez entrer votre prénom.');
+                        } else if (value.length < 2 || value.length > 50) {
+                            showError(inputId, 'Le prénom doit contenir entre 2 et 50 caractères.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
 
-                        case 'email':
-                            if (value === '') {
-                                showError(inputId, 'Veuillez entrer votre email.');
-                            } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
-                                showError(inputId, 'Veuillez entrer un email valide.');
-                            } else {
-                                clearError(inputId);
-                            }
-                            break;
+                    case 'email':
+                        if (value === '') {
+                            showError(inputId, 'Veuillez entrer votre email.');
+                        } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value)) {
+                            showError(inputId, 'Veuillez entrer un email valide.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
 
-                       
+                    case 'motDePasse':
+                        if (value === '') {
+                            showError(inputId, 'Veuillez entrer un mot de passe.');
+                        } else if (value.length < 6 || value.length > 20) {
+                            showError(inputId, 'Le mot de passe doit contenir entre 6 et 20 caractères.');
+                        } else if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(value)) {
+                            showError(inputId, 'Le mot de passe doit contenir au moins une lettre et un chiffre.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
 
-                        case 'age':
-                            if (value === '') {
-                                showError(inputId, 'Veuillez entrer votre âge.');
-                            } else if (!/^\d+$/.test(value)) {
-                                showError(inputId, 'L\'âge doit être un nombre entier.');
-                            } else {
-                                clearError(inputId);
-                            }
-                            break;
-                         case 'motDePasse':
-                            if (value === '') {
-                                showError(inputId, 'Veuillez entrer un mot de passe.');
-                            } else if (value.length < 6 || value.length > 20) {
-                                showError(inputId, 'Le mot de passe doit contenir entre 6 et 20 caractères.');
-                            } else if (!/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/.test(value)) {
-                                showError(inputId, 'Le mot de passe doit contenir au moins une lettre et un chiffre.');
-                            } else {
-                                clearError(inputId);
-                            }
-                            break;
+                    case 'confirmMotDePasse':
+                        const motDePasse = form.querySelector('#medecin_motDePasse').value.trim();
+                        if (value === '') {
+                            showError(inputId, 'Veuillez confirmer votre mot de passe.');
+                        } else if (value !== motDePasse) {
+                            showError(inputId, 'Les mots de passe ne correspondent pas.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
 
-                        case 'confirmMotDePasse':
-                            const motDePasse = form.querySelector('#medecin_motDePasse').value.trim();
-                            if (value === '') {
-                                showError(inputId, 'Veuillez confirmer votre mot de passe.');
-                            } else if (value !== motDePasse) {
-                                showError(inputId, 'Les mots de passe ne correspondent pas.');
-                            } else {
-                                clearError(inputId);
-                            }
-                            break;
+                    case 'age':
+                        if (value === '') {
+                            showError(inputId, 'Veuillez entrer votre âge.');
+                        } else if (!/^\d+$/.test(value)) {
+                            showError(inputId, 'L\'âge doit être un nombre entier.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
 
-                            case 'sexe':
-                               if (value === '') {
-                                   showError(inputId, 'Veuillez sélectionner votre sexe.');
-                                } else {
-                             clearError(inputId);
-                            }
-                            break;
-                           
-                            case 'imageDeProfil':
-                             // Pas de validation nécessaire si le champ est facultatif
-                             clearError(inputId);
-                             break;
+                    case 'adresse':
+                        if (value === '') {
+                            showError(inputId, 'Veuillez entrer votre adresse.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
 
-                             case 'telephone':
-                            if (value === '') {
-                                showError(inputId, 'Veuillez entrer votre numéro de téléphone.');
-                            } else if (!/^\d{8}$/.test(value)) {
-                                showError(inputId, 'Le numéro de téléphone doit contenir exactement 10 chiffres.');
-                            } else {
-                                clearError(inputId);
-                            }
-                            break;
+                    case 'sexe':
+                        if (value === '') {
+                            showError(inputId, 'Veuillez sélectionner votre sexe.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
 
-                             case 'certificat':
-                             const file = input.files[0];
-                             if (file) {
-                                                       const allowedTypes = ['image/jpeg', 'image/png', 'image/gif'];
-                                 if (!allowedTypes.includes(file.type)) {
-                                     showError(inputId, 'Veuillez télécharger une image valide (JPEG, PNG ou GIF).');
-                                 } else if (file.size > 1024 * 1024) { // 1 Mo
-                                     showError(inputId, 'Le fichier ne doit pas dépasser 1 Mo.');
-                                 } else {
-                                     clearError(inputId);
-                                 }
-                             } else {
-                                 clearError(inputId);
-                             }
-                             break;                         
-                                             }
+                    case 'telephone':
+                        if (value === '') {
+                            showError(inputId, 'Veuillez entrer votre numéro de téléphone.');
+                        } else if (!/^\d{8}$/.test(value)) {
+                            showError(inputId, 'Le numéro de téléphone doit contenir exactement 8 chiffres.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
 
-                });
+                    case 'specialite':
+                        if (value === '') {
+                            showError(inputId, 'Veuillez entrer votre spécialité.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
+
+                    case 'certificat':
+                        if (!value) {
+                            showError(inputId, 'Veuillez télécharger un certificat.');
+                        } else {
+                            clearError(inputId);
+                        }
+                        break;
+
+                    case 'imageDeProfil':
+                        // No validation required if the profile image is optional, but you can add validation if necessary
+                        clearError(inputId);
+                        break;
+
+                    default:
+                        clearError(inputId);
+                        break;
+                }
             });
         });
-    </script>
+    });
+</script>
+
 </body>
 {% endblock %}
 </html>

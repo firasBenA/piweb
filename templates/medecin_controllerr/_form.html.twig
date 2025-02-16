@@ -1,4 +1,19 @@
-{{ form_start(form) }}
-    {{ form_widget(form) }}
+{{ form_start(form, {'attr': {'onsubmit': 'return validateForm()'}}) }}
+
+    {{ form_row(form.nom) }}
+    {{ form_row(form.prenom) }}
+    {{ form_row(form.email) }}
+    {{ form_row(form.specialite) }}
+    {{ form_row(form.certificat) }}
+    {{ form_row(form.adresse) }}
+    {{ form_row(form.age) }}
+    {{ form_row(form.telephone) }}
+    {{ form_row(form.sexe) }}
+    {{ form_row(form.imageDeProfil) }}
+    
+    {{ form_row(form.motDePasse)}}
+    {{ form_row(form.confirmMotDePasse) }}
+
     <button class="btn">{{ button_label|default('Save') }}</button>
+    
 {{ form_end(form) }}

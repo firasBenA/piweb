@@ -3,11 +3,246 @@
 {% block title %}Edit Medecin{% endblock %}
 
 {% block body %}
-    <h1>Edit Medecin</h1>
+     <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7f8fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
 
-    {{ include('medecin_controllerr/_form.html.twig', {'button_label': 'Update'}) }}
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
 
-    <a href="{{ path('app_medecin_controllerr_index') }}">back to list</a>
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            text-align: center;
+        }
 
-    {{ include('medecin_controllerr/_delete_form.html.twig') }}
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        form {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        form:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], select,
+        input[type="tel"], input[type="file"] {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        select {
+            font-size: 16px;
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus,
+        input[type="tel"]:focus, input[type="file"]:focus input[type="number"]:focus{
+            border-color: #007bff;
+            background-color: #ffffff;
+            outline: none;
+        }
+
+        button[type="submit"] {
+            padding: 15px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-form {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .delete-form button {
+            background-color: #dc3545;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-form button:hover {
+            background-color: #c82333;
+        }
+
+        .btn-back {
+            padding: 12px 20px;
+            background-color: #e0e0e0;
+            color: #333;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-back:hover {
+            background-color: #cccccc;
+        }
+
+        /* Make age, phone, image and certificate fields larger */
+        .age-field, .phone-field, .image-field, .certificat-field {
+            font-size: 18px;
+            padding: 16px;
+        }
+
+        @media (max-width: 768px) {
+            form {
+                padding: 20px;
+            }
+
+            input[type="text"], input[type="email"], input[type="password"], select,
+            input[type="tel"], input[type="file"] ,input[type="number"] {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            button[type="submit"] {
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+
+            .btn-back {
+                font-size: 14px;
+                padding: 10px 18px;
+            }
+           
+
+        }
+    </style>
+
+    <h1>Modifier Medecin</h1>
+
+    {{ include('medecin_controllerr/_form.html.twig', {'button_label': 'Modifier'}) }}
+
+    
+
+<script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const passwordField = document.getElementById("{{ form.motDePasse.vars.id }}");
+            const confirmPasswordField = document.getElementById("{{ form.confirmMotDePasse.vars.id }}");
+            const passwordError = document.createElement('div'); // Create the error message element
+            passwordError.id = "password-error";
+            passwordError.style.color = "red";
+            passwordError.style.display = "none"; // Initially hide the error message
+            confirmPasswordField.parentNode.appendChild(passwordError);
+
+            const requiredFields = document.querySelectorAll('input[required]');
+            
+            // Function to check required fields
+            requiredFields.forEach(field => {
+                field.addEventListener('input', function() {
+                    if (field.value.trim() === "") {
+                        field.style.border = "2px solid red";
+                    } else {
+                        field.style.border = "";
+                    }
+                });
+            });
+
+            // Function to validate passwords
+            function validatePasswords() {
+                if (passwordField.value !== confirmPasswordField.value) {
+                    confirmPasswordField.style.border = "2px solid red";
+                    passwordError.textContent = "Les mots de passe ne correspondent pas !";
+                    passwordError.style.display = "block";
+                    return false;
+                } else {
+                    confirmPasswordField.style.border = "";
+                    passwordError.style.display = "none";
+                    return true;
+                }
+            }
+
+            // Check passwords only when confirm password is clicked or typed
+            confirmPasswordField.addEventListener('input', function () {
+                if (passwordField.value !== confirmPasswordField.value) {
+                    confirmPasswordField.style.border = "2px solid red";
+                } else {
+                    confirmPasswordField.style.border = "";
+                }
+            });
+
+            // Add event listener for form submission
+            form.addEventListener('submit', function (event) {
+                let isValid = true;
+
+                // Check all required fields
+                requiredFields.forEach(field => {
+                    if (field.value.trim() === "") {
+                        field.style.border = "2px solid red";
+                        isValid = false;
+                    } else {
+                        field.style.border = "";
+                    }
+                });
+
+                // Check passwords
+                if (!validatePasswords()) {
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    event.preventDefault(); // Prevent form submission if validation fails
+                }
+            });
+        });
+    </script>
+
+    
 {% endblock %}
+
+

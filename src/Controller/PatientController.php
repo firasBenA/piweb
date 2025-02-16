@@ -99,17 +99,25 @@ final class PatientController extends AbstractController
     }
 
     #[Route('/{id}/edit', name: 'app_patient_edit', methods: ['GET', 'POST'])]
-    public function edit(Request $request, Patient $patient, EntityManagerInterface $entityManager): Response
+    public function edit(Request $request, Patient $patient, EntityManagerInterface $entityManager,UserPasswordHasherInterface $passwordHasher): Response
     {
         $form = $this->createForm(PatientType::class, $patient);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $motDePasse = $form->get('motDePasse')->getData();
+            if ($motDePasse) {
+                // Hacher le mot de passe
+                $hashedPassword = $passwordHasher->hashPassword($patient, $motDePasse);
+                $patient->setMotDePasse($hashedPassword);
+            }
+           
             $entityManager->flush();
 
             return $this->redirectToRoute('app_patient_index', [], Response::HTTP_SEE_OTHER);
         }
 
+        
         return $this->render('patient/edit.html.twig', [
             'patient' => $patient,
             'form' => $form,
@@ -119,7 +127,7 @@ final class PatientController extends AbstractController
     #[Route('/{id}', name: 'app_patient_delete', methods: ['POST'])]
     public function delete(Request $request, Patient $patient, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$patient->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete'.$patient->getId(), $request->request->get('_token'))) {
             $entityManager->remove($patient);
             $entityManager->flush();
         }

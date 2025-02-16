@@ -55,6 +55,19 @@ final class MedecinControllerrController extends AbstractController
                  $medecin->setCertificat($newFilename);
              }
 
+             // Gérer le téléchargement de l'image de profil
+        $imageDeProfilFile = $form->get('imageDeProfil')->getData();
+        if ($imageDeProfilFile) {
+            $originalFilename = pathinfo($imageDeProfilFile->getClientOriginalName(), PATHINFO_FILENAME);
+            $safeFilename = $slugger->slug($originalFilename);
+            $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageDeProfilFile->guessExtension();
+            $imageDeProfilFile->move(
+                $this->getParameter('images_directory'), // Configurez ce paramètre dans services.yaml
+                $newFilename
+            );
+            $medecin->setImageDeProfil($newFilename);
+        }
+
 
            // Hachage du mot de passe
         $hashedPassword = $passwordHasher->hashPassword(
@@ -66,7 +79,7 @@ final class MedecinControllerrController extends AbstractController
             $entityManager->persist($medecin);
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_medecin_controllerr_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_login', [], Response::HTTP_SEE_OTHER);
        
             
        
@@ -93,9 +106,15 @@ final class MedecinControllerrController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+           
+                // Dump form errors to check what's wrong
+                dump($form->getErrors(true)); // This will give you more information about the validation issue
+            
+            
             $entityManager->flush();
 
-            return $this->redirectToRoute('app_medecin_controllerr_index', [], Response::HTTP_SEE_OTHER);
+            return $this->redirectToRoute('app_medecin_controllerr_show', ['id' => $medecin->getId()], Response::HTTP_SEE_OTHER);
+
         }
 
         return $this->render('medecin_controllerr/edit.html.twig', [
@@ -107,11 +126,18 @@ final class MedecinControllerrController extends AbstractController
     #[Route('/{id}', name: 'app_medecin_controllerr_delete', methods: ['POST'])]
     public function delete(Request $request, Medecin $medecin, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$medecin->getId(), $request->getPayload()->getString('_token'))) {
+        // Vérifier le jeton CSRF
+        if ($this->isCsrfTokenValid('delete' . $medecin->getId(), $request->request->get('_token'))) {
+            // Supprimer le médecin
             $entityManager->remove($medecin);
             $entityManager->flush();
+            
+            // Ajout d'un message flash pour informer l'utilisateur du succès
+            $this->addFlash('success', 'Médecin supprimé avec succès.');
         }
-
+    
+        // Rediriger vers la liste des médecins après la suppression
         return $this->redirectToRoute('app_medecin_controllerr_index', [], Response::HTTP_SEE_OTHER);
     }
+    
 }

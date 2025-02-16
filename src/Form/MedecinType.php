@@ -83,11 +83,21 @@ class MedecinType extends AbstractType
                     ],
                 ])
 
-            ->add('imageDeProfil', null,[
-                'required' => false, 
-                'attr' => [
-                'placeholder' => 'URL de l\'image de profil (facultatif)',
-    ],
+            ->add('imageDeProfil', FileType::class, [
+                'label' => 'Image de profil (facultatif)',
+                'mapped' => false, 
+                'required' => false, // Le champ est facultatif
+                'constraints' => [
+                    new File([
+                        'maxSize' => '1024k',
+                        'mimeTypes' => [
+                            'image/jpeg',
+                            'image/png',
+                            'image/gif',
+                        ],
+                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPEG, PNG ou GIF).',
+                    ])
+                ],
             ])
         ;
     }

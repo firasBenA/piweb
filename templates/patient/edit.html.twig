@@ -3,11 +3,200 @@
 {% block title %}Modifier Patient{% endblock %}
 
 {% block body %}
-    <h1>Edit Patient</h1>
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background-color: #f7f8fa;
+            margin: 0;
+            padding: 0;
+            color: #333;
+        }
 
-    {{ include('patient/_form.html.twig', {'button_label': 'Update'}) }}
+        h1 {
+            font-size: 28px;
+            color: #333;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: 600;
+        }
 
-    <a href="{{ path('app_patient_index') }}">back to list</a>
+        a {
+            display: inline-block;
+            margin-top: 20px;
+            font-size: 16px;
+            color: #007bff;
+            text-decoration: none;
+            transition: color 0.3s ease;
+            text-align: center;
+        }
 
+        a:hover {
+            color: #0056b3;
+            text-decoration: underline;
+        }
+
+        form {
+            max-width: 700px;
+            margin: 0 auto;
+            padding: 25px;
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+            transition: box-shadow 0.3s ease-in-out;
+        }
+
+        form:hover {
+            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15);
+        }
+
+        label {
+            font-weight: 600;
+            font-size: 16px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+
+        input[type="text"], input[type="email"], input[type="password"], select {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background-color: #f9f9f9;
+            font-size: 16px;
+            transition: border-color 0.3s ease-in-out;
+        }
+
+        select {
+            font-size: 16px; /* Ensure the text inside the dropdown is legible */
+        }
+
+        input[type="text"]:focus, input[type="email"]:focus, input[type="password"]:focus, select:focus {
+            border-color: #007bff;
+            background-color: #ffffff;
+            outline: none;
+        }
+
+        button[type="submit"] {
+            padding: 15px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 18px;
+            width: 100%;
+            transition: background-color 0.3s ease;
+        }
+
+        button[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+
+        .delete-form {
+            text-align: center;
+            margin-top: 30px;
+        }
+
+        .delete-form button {
+            background-color: #dc3545;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .delete-form button:hover {
+            background-color: #c82333;
+        }
+
+        .btn-back {
+            padding: 12px 20px;
+            background-color: #e0e0e0;
+            color: #333;
+            border-radius: 8px;
+            font-size: 16px;
+            margin-top: 20px;
+            text-decoration: none;
+            display: inline-block;
+            width: 100%;
+            text-align: center;
+        }
+
+        .btn-back:hover {
+            background-color: #cccccc;
+        }
+
+        @media (max-width: 768px) {
+            form {
+                padding: 20px;
+            }
+
+            input[type="text"], input[type="email"], input[type="password"], select {
+                padding: 10px;
+                font-size: 14px;
+            }
+
+            button[type="submit"] {
+                font-size: 16px;
+                padding: 12px 20px;
+            }
+
+            .btn-back {
+                font-size: 14px;
+                padding: 10px 18px;
+            }
+        }
+    </style>
+
+    <h1>Modifier Patient</h1>
+
+    {{ include('patient/_form.html.twig', {'button_label': 'Modifier'}) }}
     {{ include('patient/_delete_form.html.twig') }}
+    
+   <script>
+document.addEventListener('DOMContentLoaded', function () {
+    const passwordField = document.querySelector('input[name="patient[motDePasse]"]'); 
+    const confirmPasswordField = document.querySelector('input[name="patient[confirmMotDePasse]"]');
+    const form = document.querySelector('form');
+
+    if (passwordField && confirmPasswordField) {
+        form.addEventListener('submit', function (event) {
+            // Vérifier si les mots de passe sont vides
+            if (!passwordField.value || !confirmPasswordField.value) {
+                event.preventDefault();
+                alert("Veuillez remplir les champs du mot de passe !");
+                return;
+            }
+
+            // Vérifier si les mots de passe sont identiques
+            if (passwordField.value !== confirmPasswordField.value) {
+                event.preventDefault(); // Bloquer l'envoi du formulaire
+                alert("Les mots de passe ne correspondent pas !");
+                confirmPasswordField.style.border = "2px solid red"; // Bordure rouge
+                return;
+            }
+
+            // Réinitialiser la bordure si les mots de passe correspondent
+            confirmPasswordField.style.border = "";
+        });
+
+        confirmPasswordField.addEventListener('input', function () {
+            if (passwordField.value !== confirmPasswordField.value) {
+                confirmPasswordField.style.border = "2px solid red";
+            } else {
+                confirmPasswordField.style.border = "2px solid green";
+            }
+        });
+    } else {
+        console.error("Les champs de mot de passe ne sont pas trouvés !");
+    }
+});
+</script>
+
+
+
 {% endblock %}

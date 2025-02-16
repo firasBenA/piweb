@@ -1,62 +1,181 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Medecin{% endblock %}
+{% block title %}Détails du Médecin{% endblock %}
 
 {% block body %}
-    <h1>Medecin</h1>
+   <style>
+    /* Styles spécifiques à la page */
+    .page-container {
+        font-family: 'Poppins', sans-serif;
+        background-color: #f4f7fc;
+        color: #333;
+        margin: 0;
+        padding: 20px;
+    }
 
-    <table class="table">
-        <tbody>
-            <tr>
-                <th>Id</th>
-                <td>{{ medecin.id }}</td>
-            </tr>
-            <tr>
-                <th>Nom</th>
-                <td>{{ medecin.nom }}</td>
-            </tr>
-            <tr>
-                <th>Prenom</th>
-                <td>{{ medecin.prenom }}</td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>{{ medecin.email }}</td>
-            </tr>
-            <tr>
-                <th>MotDePasse</th>
-                <td>{{ medecin.motDePasse }}</td>
-            </tr>
-            <tr>
-                <th>Specialite</th>
-                <td>{{ medecin.specialite }}</td>
-            </tr>
-            <tr>
-                <th>Certificat</th>
-                <td>{{ medecin.certificat }}</td>
-            </tr>
-            <tr>
-                <th>Adresse</th>
-                <td>{{ medecin.adresse }}</td>
-            </tr>
-            <tr>
-                <th>Age</th>
-                <td>{{ medecin.age }}</td>
-            </tr>
-            <tr>
-                <th>Sexe</th>
-                <td>{{ medecin.sexe }}</td>
-            </tr>
-            <tr>
-                <th>ImageDeProfil</th>
-                <td>{{ medecin.imageDeProfil }}</td>
-            </tr>
-        </tbody>
-    </table>
+    .page-container .container {
+        max-width: 800px;
+        margin: auto;
+        background: #fff;
+        padding: 30px;
+        border-radius: 12px;
+        box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+        text-align: center;
+    }
 
-    <a href="{{ path('app_medecin_controllerr_index') }}">back to list</a>
+    .page-container h1 {
+        color: #007bff;
+        font-size: 28px;
+        margin-bottom: 15px;
+        font-weight: 600;
+    }
 
-    <a href="{{ path('app_medecin_controllerr_edit', {'id': medecin.id}) }}">edit</a>
+    .page-container .profile-img {
+        width: 120px;
+        height: 120px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 15px;
+        border: 3px solid #007bff;
+    }
 
-    {{ include('medecin_controllerr/_delete_form.html.twig') }}
+    .page-container .table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-top: 20px;
+    }
+
+    .page-container .table th, .page-container .table td {
+        padding: 18px;
+        border-bottom: 2px solid #ddd;
+        text-align: left;
+        font-size: 16px;
+    }
+
+    .page-container .table th {
+        color: #007bff;
+        font-weight: 700;
+        width: 30%;
+    }
+
+    .page-container .table td {
+        font-weight: 500;
+        width: 70%;
+    }
+
+    .page-container .btn-container {
+        margin-top: 20px;
+        display: inline-flex
+        justify-content: space-between;
+    }
+
+    .page-container .btn {
+        padding: 12px 18px;
+        text-decoration: none;
+        color: white;
+        border-radius: 8px;
+        font-size: 16px;
+        text-align: center;
+        transition: 0.3s ease-in-out;
+    }
+
+    .page-container .btn-edit {
+        background-color: #28a745;
+    }
+
+    .page-container .btn-edit:hover {
+        background-color: #218838;
+    }
+
+    .page-container .btn-delete {
+        background-color: #dc3545;
+    }
+
+    .page-container .btn-delete:hover {
+        background-color: #c82333;
+    }
+
+    .page-container .btn-back {
+        background-color: #6c757d;
+    }
+
+    .page-container .btn-back:hover {
+        background-color: #5a6268;
+    }
+
+    .page-container .actions {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+
+    @media (max-width: 768px) {
+        .page-container .btn-container {
+            flex-direction: column;
+            gap: 20px;
+        }
+    }
+</style>
+
+    <div class="page-container">
+        <div class="container">
+            <h1>Détails du Médecin</h1>
+
+            {% if medecin.imageDeProfil %}
+                <img src="{{ asset('uploads/' ~ medecin.imageDeProfil) }}" alt="Image de Profil" class="profile-img">
+            {% else %}
+                <img src="{{ asset('images/default-profile.png') }}" alt="Image par défaut" class="profile-img">
+            {% endif %}
+
+            <table class="table">
+                <tbody>
+                    <tr>
+                        <th>Nom :</th>
+                        <td>{{ medecin.nom }}</td>
+                    </tr>
+                    <tr>
+                        <th>Prénom :</th>
+                        <td>{{ medecin.prenom }}</td>
+                    </tr>
+                    <tr>
+                        <th>Email :</th>
+                        <td>{{ medecin.email }}</td>
+                    </tr>
+                    <tr>
+                        <th>Spécialité :</th>
+                        <td>{{ medecin.specialite }}</td>
+                    </tr>
+                    <tr>
+                        <th>Certificat :</th>
+                        <td>{{ medecin.certificat }}</td>
+                    </tr>
+                    <tr>
+                        <th>Adresse :</th>
+                        <td>{{ medecin.adresse }}</td>
+                    </tr>
+                    <tr>
+                        <th>Âge :</th>
+                        <td>{{ medecin.age }}</td>
+                    </tr>
+                    <tr>
+                        <th>Téléphone :</th>
+                        <td>{{ medecin.telephone }}</td>
+                    </tr>
+                    <tr>
+                        <th>Sexe :</th>
+                        <td>{{ medecin.sexe }}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+
+            <div class="actions">
+                <a href="{{ path('app_medecin_controllerr_edit', {'id': medecin.id}) }}" class="btn btn-edit">Modifier</a>
+                {{ include('medecin_controllerr/_delete_form.html.twig') }}
+            </div>
+
+        </div>
+    </div>
 {% endblock %}

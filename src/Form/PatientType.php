@@ -67,9 +67,17 @@ class PatientType extends AbstractType
                 'required' => false,
             ])
             ->add('adresse', TextType::class, [
-                'label' => 'Adresse',
-                'required' => false,
-            ])
+    'label' => 'Adresse',
+    'required' => false,
+    'constraints' => [
+        new Length([
+            'min' => 5,
+            'max' => 100,
+            'minMessage' => 'L\'adresse doit contenir au moins {{ limit }} caractères.',
+            'maxMessage' => 'L\'adresse ne peut pas dépasser {{ limit }} caractères.',
+        ]),
+    ],
+])
             ->add('motDePasse', PasswordType::class, [
                 'label' => 'Mot de passe',
                 'constraints' => [
@@ -91,6 +99,7 @@ class PatientType extends AbstractType
                 'mapped' => false, // Ce champ n'est pas mappé à l'entité
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez confirmer votre mot de passe.']),
+                    
                 ],
             ])
             
@@ -109,8 +118,8 @@ class PatientType extends AbstractType
                 'constraints' => [
                     new NotBlank(['message' => 'Veuillez entrer votre numéro de téléphone.']),
                     new Regex([
-                        'pattern' => '/^\d{10}$/',
-                        'message' => 'Le numéro de téléphone doit contenir exactement 10 chiffres.',
+                        'pattern' => '/^\d{8}$/',
+                        'message' => 'Le numéro de téléphone doit contenir exactement 8 chiffres.',
                     ]),
                 ],
             ]);
