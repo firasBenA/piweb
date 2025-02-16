@@ -16,6 +16,12 @@ class PatientRepository extends ServiceEntityRepository
         parent::__construct($registry, Patient::class);
     }
 
+    public function findByEmail(string $email): ?Patient
+{
+    return $this->findOneBy(['email' => $email]);
+}
+
+
     //    /**
     //     * @return Patient[] Returns an array of Patient objects
     //     */

@@ -124,7 +124,8 @@
             <h1>Détails du Médecin</h1>
 
             {% if medecin.imageDeProfil %}
-                <img src="{{ asset('uploads/' ~ medecin.imageDeProfil) }}" alt="Image de Profil" class="profile-img">
+                <img src="{{ asset('uploads/images/' ~ medecin.imageDeProfil) }}" alt="Image de Profil" class="profile-img">
+
             {% else %}
                 <img src="{{ asset('images/default-profile.png') }}" alt="Image par défaut" class="profile-img">
             {% endif %}

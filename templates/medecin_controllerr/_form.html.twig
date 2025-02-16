@@ -1,3 +1,11 @@
+{% if medecin.imageDeProfil %}
+    <div style="text-align: center; margin-bottom: 20px;">
+        <img src="{{ asset('uploads/images/' ~ medecin.imageDeProfil) }}" 
+             alt="Photo de profil" 
+             style="width: 150px; height: 150px; border-radius: 50%; object-fit: cover; border: 2px solid #ddd;">
+    </div>
+{% endif %}
+
 {{ form_start(form, {'attr': {'onsubmit': 'return validateForm()'}}) }}
 
     {{ form_row(form.nom) }}
@@ -9,9 +17,12 @@
     {{ form_row(form.age) }}
     {{ form_row(form.telephone) }}
     {{ form_row(form.sexe) }}
+
+    {# Champ pour changer l'image de profil #}
+    <label for="medecin_imageDeProfil">Changer l'image de profil :</label>
     {{ form_row(form.imageDeProfil) }}
-    
-    {{ form_row(form.motDePasse)}}
+
+    {{ form_row(form.motDePasse) }}
     {{ form_row(form.confirmMotDePasse) }}
 
     <button class="btn">{{ button_label|default('Save') }}</button>

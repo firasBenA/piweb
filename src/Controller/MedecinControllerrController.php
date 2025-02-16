@@ -13,6 +13,8 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\String\Slugger\SluggerInterface; // Pour générer un nom de fichier unique
 
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 
 #[Route('/medecin')]
 final class MedecinControllerrController extends AbstractController
@@ -106,6 +108,34 @@ final class MedecinControllerrController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
+            $imageFile = $form->get('imageDeProfil')->getData();
+
+            if ($imageFile) {
+                $originalFilename = pathinfo($imageFile->getClientOriginalName(), PATHINFO_FILENAME);
+                $safeFilename = $slugger->slug($originalFilename);
+                $newFilename = $safeFilename . '-' . uniqid() . '.' . $imageFile->guessExtension();
+    
+                try {
+                    $imageFile->move(
+                        $this->getParameter('images_directory'), // Assure-toi d'avoir ce paramètre
+                        $newFilename
+                    );
+    
+                    // Supprime l'ancienne image si elle existe
+                    if ($medecin->getImageDeProfil()) {
+                        $oldImagePath = $this->getParameter('images_directory') . '/' . $medecin->getImageDeProfil();
+                        if (file_exists($oldImagePath)) {
+                            unlink($oldImagePath);
+                        }
+                    }
+    
+                    // Mise à jour de l'image de profil
+                    $medecin->setImageDeProfil($newFilename);
+                } catch (FileException $e) {
+                    // Gérer l'erreur si nécessaire
+                }
+            }
+    
            
                 // Dump form errors to check what's wrong
                 dump($form->getErrors(true)); // This will give you more information about the validation issue

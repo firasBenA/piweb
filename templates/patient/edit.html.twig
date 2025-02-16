@@ -157,45 +157,79 @@
     {{ include('patient/_form.html.twig', {'button_label': 'Modifier'}) }}
     {{ include('patient/_delete_form.html.twig') }}
     
-   <script>
-document.addEventListener('DOMContentLoaded', function () {
-    const passwordField = document.querySelector('input[name="patient[motDePasse]"]'); 
-    const confirmPasswordField = document.querySelector('input[name="patient[confirmMotDePasse]"]');
-    const form = document.querySelector('form');
+  <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const form = document.querySelector('form');
+            const passwordField = document.getElementById("{{ form.motDePasse.vars.id }}");
+            const confirmPasswordField = document.getElementById("{{ form.confirmMotDePasse.vars.id }}");
+            const passwordError = document.createElement('div'); // Create the error message element
+            passwordError.id = "password-error";
+            passwordError.style.color = "red";
+            passwordError.style.display = "none"; // Initially hide the error message
+            confirmPasswordField.parentNode.appendChild(passwordError);
 
-    if (passwordField && confirmPasswordField) {
-        form.addEventListener('submit', function (event) {
-            // Vérifier si les mots de passe sont vides
-            if (!passwordField.value || !confirmPasswordField.value) {
-                event.preventDefault();
-                alert("Veuillez remplir les champs du mot de passe !");
-                return;
+            const requiredFields = document.querySelectorAll('input[required]');
+            
+            // Function to check required fields
+            requiredFields.forEach(field => {
+                field.addEventListener('input', function() {
+                    if (field.value.trim() === "") {
+                        field.style.border = "2px solid red";
+                    } else {
+                        field.style.border = "";
+                    }
+                });
+            });
+
+            // Function to validate passwords
+            function validatePasswords() {
+                if (passwordField.value !== confirmPasswordField.value) {
+                    confirmPasswordField.style.border = "2px solid red";
+                    passwordError.textContent = "Les mots de passe ne correspondent pas !";
+                    passwordError.style.display = "block";
+                    return false;
+                } else {
+                    confirmPasswordField.style.border = "";
+                    passwordError.style.display = "none";
+                    return true;
+                }
             }
 
-            // Vérifier si les mots de passe sont identiques
-            if (passwordField.value !== confirmPasswordField.value) {
-                event.preventDefault(); // Bloquer l'envoi du formulaire
-                alert("Les mots de passe ne correspondent pas !");
-                confirmPasswordField.style.border = "2px solid red"; // Bordure rouge
-                return;
-            }
+            // Check passwords only when confirm password is clicked or typed
+            confirmPasswordField.addEventListener('input', function () {
+                if (passwordField.value !== confirmPasswordField.value) {
+                    confirmPasswordField.style.border = "2px solid red";
+                } else {
+                    confirmPasswordField.style.border = "";
+                }
+            });
 
-            // Réinitialiser la bordure si les mots de passe correspondent
-            confirmPasswordField.style.border = "";
+            // Add event listener for form submission
+            form.addEventListener('submit', function (event) {
+                let isValid = true;
+
+                // Check all required fields
+                requiredFields.forEach(field => {
+                    if (field.value.trim() === "") {
+                        field.style.border = "2px solid red";
+                        isValid = false;
+                    } else {
+                        field.style.border = "";
+                    }
+                });
+
+                // Check passwords
+                if (!validatePasswords()) {
+                    isValid = false;
+                }
+
+                if (!isValid) {
+                    event.preventDefault(); // Prevent form submission if validation fails
+                }
+            });
         });
+    </script>
 
-        confirmPasswordField.addEventListener('input', function () {
-            if (passwordField.value !== confirmPasswordField.value) {
-                confirmPasswordField.style.border = "2px solid red";
-            } else {
-                confirmPasswordField.style.border = "2px solid green";
-            }
-        });
-    } else {
-        console.error("Les champs de mot de passe ne sont pas trouvés !");
-    }
-});
-</script>
 
 
 

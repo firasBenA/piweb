@@ -9,7 +9,12 @@ use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
+#[UniqueEntity(
+    fields: ['email'],
+    message: 'Cet email est déjà utilisé par un autre patient.'
+)]
 #[ORM\Entity(repositoryClass: PatientRepository::class)]
 class Patient implements UserInterface , PasswordAuthenticatedUserInterface
 {
