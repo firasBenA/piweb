@@ -23,7 +23,11 @@
 									</strong>
 								</h1>
 								<p data-animation="fadeInLeft" data-delay="0.1s">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi uquip ex ea commodo consequat is aute irure.</p>
-								<a href="#" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">Appointment
+								{% set patientId = patient is defined and patient.id is not null ? patient.id : 1 %}
+<li>
+    <a href="{{ path('addrendezvous', {'id': patientId}) }}" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">Appointment</a>
+</li>
+								
 									<i class="ti-arrow-right"></i>
 								</a>
 							</div>
@@ -52,7 +56,9 @@
 							</a>
 						</div>
 						<div class="about-btn1 mb-30">
-							<a href="about.html" class="btn about-btn2">Appointment
+
+						{% set patientId = patient is defined and patient.id is not null ? patient.id : 1 %}
+							<a href="{{ path('addrendezvous', {'id': patientId}) }}" class="btn about-btn2">Appointment
 								<i class="ti-arrow-right"></i>
 							</a>
 						</div>

@@ -27,7 +27,7 @@ class ConsultationType extends AbstractType
                 'label' => 'Type de consultation',
             ])
             ->add('cause', TextType::class, [
-                'mapped' => false, // Ce champ vient de RendezVous, donc il ne doit pas être mappé directement
+                'mapped' => false, 
                 'label' => 'Cause du rendez-vous',
                 'required' => false,
             ]);
