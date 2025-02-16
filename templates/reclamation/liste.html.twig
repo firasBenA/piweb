@@ -1,0 +1,47 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h2 class="mb-4">Liste des Réclamations</h2>
+
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Sujet</th>
+                    <th>Description</th>
+                    <th>Date Début</th>
+                    <th>État</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for reclamation in reclamations %}
+                    <tr>
+                        <td>{{ reclamation.id }}</td>
+                        <td>{{ reclamation.sujet }}</td>
+                        <td>{{ reclamation.description }}</td>
+                        <td>{{ reclamation.dateDebut|date('d/m/Y') }}</td>
+                        <td>{{ reclamation.etat }}</td>
+                        <td>
+                            <a href="{{ path('modifier_reclamation', {'id': reclamation.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                            <a href="{{ path('supprimer_reclamation', {'id': reclamation.id}) }}" class="btn btn-danger btn-sm" onclick="return confirm('Voulez-vous vraiment supprimer cette réclamation ?');">Supprimer</a>
+                        </td>
+                    </tr>
+                {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center">Aucune réclamation trouvée.</td>
+                    </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+        <a href="{{ path('ajouter_reclamation') }}" class="btn btn-primary">Ajouter une Réclamation</a>
+    </div>
+{% endblock %}

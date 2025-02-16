@@ -1,4 +1,5 @@
 <?php
+
 namespace App\Form;
 
 use App\Entity\Reclamation;
@@ -29,11 +30,6 @@ class ReclamationType extends AbstractType
                 'widget' => 'single_text',
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('dateFin', DateType::class, [
-                'label' => 'Date de fin',
-                'widget' => 'single_text',
-                'attr' => ['class' => 'form-control']
-            ])
             ->add('etat', ChoiceType::class, [
                 'label' => 'État',
                 'choices' => [
@@ -44,10 +40,7 @@ class ReclamationType extends AbstractType
                 ],
                 'attr' => ['class' => 'form-control']
             ])
-            ->add('save', SubmitType::class, [
-                'label' => 'Ajouter Réclamation',
-                'attr' => ['class' => 'btn btn-primary']
-            ]);
+          ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-4">
+        <h2>Liste des Réclamations</h2>
+
+        {% for reclamation in reclamations %}
+            <div class="card mb-3">
+                <div class="card-body">
+                    <h5 class="card-title">{{ reclamation.sujet }}</h5>
+                    <p class="card-text">{{ reclamation.description }}</p>
+                    <p class="text-muted">Début: {{ reclamation.dateDebut|date('Y-m-d') }}</p>
+
+                    <a href="{{ path('ajouter_reponse', { 'id': reclamation.id }) }}" class="btn btn-success">
+                        Répondre
+                    </a>
+                </div>
+            </div>
+        {% endfor %}
+    </div>
+{% endblock %}

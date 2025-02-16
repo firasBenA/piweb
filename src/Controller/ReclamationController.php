@@ -14,7 +14,7 @@ use App\Entity\Patient; // Ajout de l'entité Patient si elle est liée
 
 final class ReclamationController extends AbstractController
 {
-    #[Route('/liste', name: 'liste_reclamation')]
+    #[Route('/liste', name: 'reclamation_page')]
     public function index(EntityManagerInterface $entityManager): Response
     {
         $reclamations = $entityManager->getRepository(Reclamation::class)->findAll();
@@ -30,29 +30,35 @@ final class ReclamationController extends AbstractController
         $reclamation = new Reclamation();
         $form = $this->createForm(ReclamationType::class, $reclamation);
         $form->handleRequest($request);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer un patient existant (modifie l'ID en fonction de ton besoin)
+
+            // Récupérer un patient existant (remplace l'ID par un ID valide)
             $patient = $entityManager->getRepository(Patient::class)->find(1);
-    
+
             if (!$patient) {
-                throw $this->createNotFoundException("Le patient n'existe pas !");
+                throw $this->createNotFoundException("Le patient avec l'ID 1 n'existe pas !");
             }
-    
-            $reclamation->setPatient($patient); // Associe le patient
-    
+
+            // Associer la réclamation au patient
+            $reclamation->setPatient($patient);
+
+            // Persister la réclamation dans la base de données
             $entityManager->persist($reclamation);
             $entityManager->flush();
-    
+
+            // Ajouter un message flash de succès
             $this->addFlash('success', 'Réclamation ajoutée avec succès !');
-            return $this->redirectToRoute('liste_reclamation');
+
+            // Rediriger vers la liste des réclamations
+            return $this->redirectToRoute('reclamation_page');
         }
-    
+
+        // Rendre le formulaire d'ajout de réclamation
         return $this->render('reclamation/ajouterrec.html.twig', [
             'form' => $form->createView(),
         ]);
     }
-    
 
     #[Route('/modifier/{id}', name: 'modifier_reclamation')]
     public function modifier(Request $request, Reclamation $reclamation, EntityManagerInterface $entityManager): Response
@@ -62,7 +68,11 @@ final class ReclamationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
-            return $this->redirectToRoute('liste_reclamation');
+
+            // Flash message
+            $this->addFlash('success', 'Réclamation mise à jour avec succès !');
+
+            return $this->redirectToRoute('reclamation_page');
         }
 
         return $this->render('reclamation/modifier.html.twig', [
@@ -70,12 +80,13 @@ final class ReclamationController extends AbstractController
         ]);
     }
 
+
     #[Route('/supprimer/{id}', name: 'supprimer_reclamation')]
     public function supprimer(Reclamation $reclamation, EntityManagerInterface $entityManager): Response
     {
         $entityManager->remove($reclamation);
         $entityManager->flush();
 
-        return $this->redirectToRoute('liste_reclamation');
+        return $this->redirectToRoute('reclamation_page');
     }
 }

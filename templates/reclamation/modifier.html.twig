@@ -1,36 +1,35 @@
 {% extends 'base.html.twig' %}
 
+{% block title %} Modifier la Réclamation {% endblock %}
+
 {% block body %}
-    <div class="container mt-4">
-        <h2>Ajouter une Réclamation</h2>
+    <div class="container">
+        <h1>Modifier la Réclamation</h1>
 
         {% for message in app.flashes('success') %}
             <div class="alert alert-success">{{ message }}</div>
         {% endfor %}
 
-        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-            <div class="mb-3">
+        {{ form_start(form) }}
+            <div class="form-group">
                 {{ form_label(form.sujet) }}
                 {{ form_widget(form.sujet, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.sujet) }}
             </div>
-            <div class="mb-3">
+            <div class="form-group">
                 {{ form_label(form.description) }}
                 {{ form_widget(form.description, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.description) }}
             </div>
-            <div class="mb-3">
+            <div class="form-group">
                 {{ form_label(form.dateDebut) }}
                 {{ form_widget(form.dateDebut, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.dateDebut) }}
             </div>
-            <div class="mb-3">
+            <div class="form-group">
                 {{ form_label(form.etat) }}
                 {{ form_widget(form.etat, {'attr': {'class': 'form-control'}}) }}
-                {{ form_errors(form.etat) }}
             </div>
 
-            <button type="submit" class="btn btn-primary">Enregistrer</button>
+            <button type="submit" class="btn btn-primary">Mettre à jour</button>
+            <a href="{{ path('reclamation_page') }}" class="btn btn-secondary">Annuler</a>
         {{ form_end(form) }}
     </div>
 {% endblock %}
