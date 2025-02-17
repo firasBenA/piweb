@@ -78,12 +78,9 @@ class Patient
         $this->consultations = new ArrayCollection();
         $this->reclamations = new ArrayCollection();
         $this->diagnostiques = new ArrayCollection();
-<<<<<<< HEAD
-        $this->dossierMedical = new DossierMedical();
-        $this->dossierMedical->setPatient($this);
-=======
+
         $this->paniers = new ArrayCollection();
->>>>>>> a787fb1 (initial commit)
+
     }
 
     public function getId(): ?int
@@ -293,16 +290,7 @@ class Patient
         return $this;
     }
 
-<<<<<<< HEAD
-    public function getDossierMedical(): ?DossierMedical
-    {
-        return $this->dossierMedical;
-    }
 
-    public function setDossierMedical(DossierMedical $dossierMedical): self
-    {
-        $this->dossierMedical = $dossierMedical;
-=======
     /**
      * @return Collection<int, Panier>
      */
@@ -330,7 +318,7 @@ class Patient
             }
         }
 
->>>>>>> a787fb1 (initial commit)
+
         return $this;
     }
 }
