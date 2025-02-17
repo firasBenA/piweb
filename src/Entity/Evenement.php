@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
@@ -17,21 +18,47 @@ class Evenement
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'Le nom doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'le contenue doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'Le contenue ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $contenue = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Choice(
+        choices: ['conference', 'seminaire', 'workshop'],
+        message: 'Choisissez un type valide'
+    )]
     private ?string $type = null;
 
     #[ORM\Column(length: 255)]
     private ?string $statut = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: 'le lieu doit contenir au moins {{ limit }} caractères',
+        maxMessage: 'le lieu ne peut pas dépasser {{ limit }} caractères'
+    )]
     private ?string $lieux_event = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\GreaterThanOrEqual(
+        'today',
+        message: 'La date doit être ultérieure ou égale à aujourd\'hui'
+    )]
     private ?\DateTimeInterface $date_event = null;
 
     #[ORM\ManyToOne(inversedBy: 'evenements')]
@@ -41,12 +68,13 @@ class Evenement
     /**
      * @var Collection<int, Article>
      */
-    #[ORM\OneToMany(targetEntity: Article::class, mappedBy: 'evenement')]
+    #[ORM\ManyToMany(targetEntity: Article::class)]
     private Collection $article;
 
     public function __construct()
     {
         $this->article = new ArrayCollection();
+        $this->date_event = new \DateTime();
     }
 
     public function getId(): ?int
@@ -156,7 +184,7 @@ class Evenement
         return $this;
     }
 
-    public function removeArticle(article $article): static
+    public function removeArticle(Article $article): static
     {
         if ($this->article->removeElement($article)) {
             // set the owning side to null (unless already changed)

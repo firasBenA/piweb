@@ -1,0 +1,45 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Evenement{% endblock %}
+
+{% block body %}
+    <h1 class="title">Evenement</h1>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Id</th>
+                <th>Nom</th>
+                <th>Contenue</th>
+                <th>Type</th>
+                <th>Statut</th>
+                <th>Lieux event</th>
+                <th>Date event</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+        {% for evenement in evenements %}
+            <tr>
+                <td>{{ evenement.id }}</td>
+                <td>{{ evenement.nom }}</td>
+                <td>{{ evenement.contenue }}</td>
+                <td>{{ evenement.type }}</td>
+                <td>{{ evenement.statut }}</td>
+                <td>{{ evenement.lieuxEvent }}</td>
+                <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : '' }}</td>
+                <td>
+                    <a class="btn btn-info" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
+                    <a class="btn btn-secondary" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}"> Modifier</a>
+                </td>
+            </tr>
+        {% else %}
+            <tr>
+                <td colspan="8">no records found</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <a class="btn btn-primary" href="{{ path('app_evenement_ajouter') }}">Creer un evenement</a>
+{% endblock %}

@@ -72,12 +72,9 @@ class DossierMedical
     public function setPatient(Patient $patient): self
     {
         $this->patient = $patient;
-        return $this;
+        return $this;    
     }
 
-    /**
-     * @return Collection<int, Prescription>
-     */
     public function getPrescriptions(): Collection
     {
         return $this->prescriptions;
