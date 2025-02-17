@@ -1,0 +1,98 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center text-primary fw-bold">📅 Liste des Consultations du Dr. {{ medecin.nom }} {{ medecin.prenom }}</h1>
+
+        {% if rendezVous is empty %}
+            <p class="text-center text-muted mt-4">Aucun rendez-vous trouvé.</p>
+        {% else %}
+            <div class="table-responsive">
+                <table class="table table-hover table-striped align-middle shadow-lg rounded">
+                    <thead class="table-dark text-center">
+                        <tr>
+                            <th>ID</th>
+                            <th>Date</th>
+                            <th>Type</th>
+                            <th>Cause</th>
+                            <th>Patient</th>
+                            <th>Statut</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody class="text-center">
+                        {% for rdv in rendezVous %}
+                            <tr class="bg-white">
+                                <td><strong>#{{ rdv.id }}</strong></td>
+                                <td>{{ rdv.date|date('d/m/Y') }}</td>
+                                <td>{{ rdv.typeRdv }}</td>
+                                <td>{{ rdv.cause }}</td>
+                                <td>{{ rdv.patient.nom }} {{ rdv.patient.prenom }}</td>
+                                <td>
+                                    {% if rdv.statut == 'En attente' %}
+                                        <span class="badge bg-warning text-dark">🕒 En attente</span>
+                                    {% elseif rdv.statut == 'Approuvé' %}
+                                        <span class="badge bg-success">✅ Approuvé</span>
+                                    {% elseif rdv.statut == 'Refusé' %}
+                                        <span class="badge bg-danger">❌ Refusé</span>
+                                    {% else %}
+                                        <span class="badge bg-secondary">❓ En Attente</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="d-flex justify-content-center">
+                                        
+                                            <a href="{{ path('rendezvous_approuver', {'id': rdv.id}) }}" class="btn btn-success btn-sm me-2 shadow-lg">✅ Approuver</a>
+                                            <a href="{{ path('rendezvous_refuser', {'id': rdv.id}) }}" class="btn btn-danger btn-sm me-2 shadow-lg">❌ Refuser</a>
+                                        
+                                        <a href="{{ path('rendezvous_modifier', {'id': rdv.id}) }}" class="btn btn-warning btn-sm shadow-lg">✏ Modifier</a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% endif %}
+
+    </div>
+
+    <style>
+        body {
+            background-color: #f0f8ff;
+            font-family: 'Poppins', sans-serif;
+        }
+        .table {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        .table thead {
+            background-color: #343a40;
+            color: white;
+        }
+        .table tbody tr:hover {
+            background-color: #e3f2fd;
+            transition: 0.3s ease-in-out;
+        }
+        .btn {
+            transition: all 0.3s ease-in-out;
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .table th {
+            font-size: 16px;
+        }
+        .table td {
+            font-size: 14px;
+        }
+    </style>
+{% endblock %}

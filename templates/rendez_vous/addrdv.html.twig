@@ -1,0 +1,81 @@
+{# templates/rendezvous/addrdv.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center text-primary fw-bold">📅 Réservation de Rendez-vous</h1>
+
+        {# Display Flash Messages #}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card p-4 shadow-lg rounded">
+                    {{ form_start(form, {'attr': {'class': 'form'}}) }}
+
+                    <div class="mb-3">
+                        {{ form_label(form.date, 'Date du rendez-vous', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.date, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.date) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.type_rdv, 'Type de rendez-vous', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.type_rdv, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.type_rdv) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.cause, 'Cause du rendez-vous', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.cause, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.cause) }}
+                    </div>
+
+                    <div class="mb-3">
+                        {{ form_label(form.medecin, 'Médecin', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.medecin, {'attr': {'class': 'form-control'}}) }}
+                        {{ form_errors(form.medecin) }}
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success btn-lg shadow px-5 py-2 fw-bold">Réserver</button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+        }
+        .form-control, .btn {
+            transition: all 0.3s ease-in-out;
+        }
+        .form-control:focus {
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+        }
+        .btn:hover {
+            transform: scale(1.05);
+        }
+        .card {
+            background-color: #ffffff;
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+{% endblock %}
