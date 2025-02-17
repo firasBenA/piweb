@@ -1,0 +1,41 @@
+{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    {{ form_errors(form) }}
+
+    <div class="mb-3">
+        {{ form_label(form.titre, 'Titre', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.titre) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.contenue, 'Contenu', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.contenue, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.contenue) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.image, 'Image (URL)', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.image, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.image) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.prix_article, 'Prix', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.prix_article, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.prix_article) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.commantaire, 'Commentaire', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.commantaire, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.commantaire) }}
+    </div>
+
+    <div class="mb-3">
+        {{ form_label(form.nbJaime, 'Nombre de J\'aime', {'label_attr': {'class': 'form-label'}}) }}
+        {{ form_widget(form.nbJaime, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.nbJaime) }}
+    </div>
+
+    <button class="btn btn-primary">{{ button_label|default('Enregistrer') }}</button>
+{{ form_end(form) }}
