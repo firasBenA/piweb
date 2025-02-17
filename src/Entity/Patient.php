@@ -66,14 +66,24 @@ class Patient
     #[ORM\OneToMany(targetEntity: Diagnostique::class, mappedBy: 'Patient')]
     private Collection $diagnostiques;
 
+    /**
+     * @var Collection<int, Panier>
+     */
+    #[ORM\OneToMany(targetEntity: Panier::class, mappedBy: 'user')]
+    private Collection $paniers;
+
     public function __construct()
     {
         $this->rendezVouses = new ArrayCollection();
         $this->consultations = new ArrayCollection();
         $this->reclamations = new ArrayCollection();
         $this->diagnostiques = new ArrayCollection();
+<<<<<<< HEAD
         $this->dossierMedical = new DossierMedical();
         $this->dossierMedical->setPatient($this);
+=======
+        $this->paniers = new ArrayCollection();
+>>>>>>> a787fb1 (initial commit)
     }
 
     public function getId(): ?int
@@ -283,6 +293,7 @@ class Patient
         return $this;
     }
 
+<<<<<<< HEAD
     public function getDossierMedical(): ?DossierMedical
     {
         return $this->dossierMedical;
@@ -291,6 +302,35 @@ class Patient
     public function setDossierMedical(DossierMedical $dossierMedical): self
     {
         $this->dossierMedical = $dossierMedical;
+=======
+    /**
+     * @return Collection<int, Panier>
+     */
+    public function getPaniers(): Collection
+    {
+        return $this->paniers;
+    }
+
+    public function addPanier(Panier $panier): static
+    {
+        if (!$this->paniers->contains($panier)) {
+            $this->paniers->add($panier);
+            $panier->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePanier(Panier $panier): static
+    {
+        if ($this->paniers->removeElement($panier)) {
+            // set the owning side to null (unless already changed)
+            if ($panier->getUser() === $this) {
+                $panier->setUser(null);
+            }
+        }
+
+>>>>>>> a787fb1 (initial commit)
         return $this;
     }
 }

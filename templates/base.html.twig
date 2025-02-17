@@ -6,10 +6,12 @@
 			{% block title %}templates
 			{% endblock %}
 		</title>
-		<link rel="icon" href="{{asset('assets/img/favicon.ico')}}">
+		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
+		<link rel="manifest" href="site.webmanifest">
+		
+
 		{% block stylesheets %}
-			<link rel="manifest" href="site.webmanifest">
-			<link rel="shortcut icon" type="image/x-icon" href="{{asset('assets/img/favicon.ico')}}">
+
 			<!-- CSS here -->
 			<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
 			<link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.min.css') }}">
@@ -29,8 +31,6 @@
 
 			<!-- CSS MEDECIN here -->
 			<link rel="stylesheet" href="{{asset('medecin/assets/css/tailwind.output.css')}}"/>
-
-			<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css" rel="stylesheet">
 
 		{% endblock %}
 
@@ -107,140 +107,149 @@
 												<a href="{{ path('home_page') }}">Home</a>
 											</li>
 											<li>
-												<a href="{{ path('diagnose_form') }}">Diagnostique</a>
+												<a href="{{ path('diagnostique_page') }}">Diagnostique</a>
 											</li>
 											<li>
 												<a href="{{ path('doctors_page') }}">Doctors</a>
 											</li>
-											<li>{% set patientId = patient is defined and patient.id is not null ? patient.id : 1 %}
+											<li>
+												<a href="{{ path('appointment_page') }}">Appointment</a>
 											</li>
 											<li>
-												<a href="{{ path('addrendezvous', {'id': patientId}) }}">Appointment</a>
+												<a href="{{ path('blog_page') }}">Blog</a>
+												<ul class="submenu">
+													<li>
+														<a href="{{ path('blog_page') }}">Blog</a>
+													</li>
+													<li>
+														<a href="{{ path('blog_details_page') }}">Blog Details</a>
+													</li>
+												</ul>
 											</li>
-
-
-										</li>
-										<li>
-											<a href="{{ path('blog_page') }}">Blog</a>
-											<ul class="submenu">
-												<li>
-													<a href="{{ path('blog_page') }}">Blog</a>
-												</li>
-												<li>
-													<a href="{{ path('blog_details_page') }}">Blog Details</a>
-												</li>
-											</ul>
-										</li>
-										<li>
-											<a href="{{ path('reclamation_page') }}">Reclamation</a>
-										</li>
-									</ul>
-								</nav>
-							</div>
-							<div class="header-right-btn f-right d-none d-lg-block ml-30">
-								<a href="#" class="btn header-btn">Sign-In</a>
+											<li>
+												<a href="{{ path('reclamation_page') }}">Reclamation</a>
+											</li>
+										</ul>
+									</nav>
+								</div>
+								<div class="header-right-btn f-right d-none d-lg-block ml-30">
+									<a href="#" class="btn header-btn">Sign-In</a>
+								</div>
 							</div>
 						</div>
-					</div>
-					<!-- Mobile Menu -->
-					<div class="col-12">
-						<div class="mobile_menu d-block d-lg-none"></div>
+						<!-- Mobile Menu -->
+						<div class="col-12">
+							<div class="mobile_menu d-block d-lg-none"></div>
+						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-	</div>
-	<!-- Header End -->
-</html></header>{% block body %}{% endblock %}<footer>
-<!--? Footer Start-->
-<div class="footer-area section-bg" data-background="assets/img/gallery/footer_bg.jpg">
-	<div class="container">
-		<div class="footer-top footer-padding">
-			<div class="row d-flex justify-content-between">
-				<div class="col-xl-3 col-lg-3 col-md-4 col-sm-8">
-					<div
-						class="single-footer-caption mb-50">
-						<!-- logo -->
-						<div class="footer-logo">
-							<a href="{{ path('home_page') }}"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
-						</div>
-					</div>
-				</div>
-				<div class="col-xl-3 col-lg-4 col-md-6 col-sm-5">
-					<div class="single-footer-caption mb-50">
-						<div class="footer-tittle">
-							<h4>About Us</h4>
-							<div class="footer-pera">
-								<p class="info1">Lorem igpsum doldfor sit amet, adipiscing elit, sed do eiusmod tempor cergelit rgh.
-								</p>
-								<p class="info1">Lorem ipsum dolor sit amet, adipiscing elit.</p>
+		<!-- Header End -->
+	</header>
+
+
+	{% block body %}{% endblock %}
+
+	<footer>
+		<!--? Footer Start-->
+		<div class="footer-area section-bg" data-background="assets/img/gallery/footer_bg.jpg">
+			<div class="container">
+				<div class="footer-top footer-padding">
+					<div class="row d-flex justify-content-between">
+						<div class="col-xl-3 col-lg-3 col-md-4 col-sm-8">
+							<div
+								class="single-footer-caption mb-50">
+								<!-- logo -->
+								<div class="footer-logo">
+									<a href="{{ path('home_page') }}"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
+								</div>
 							</div>
 						</div>
-					</div>
-				</div>
-				<div class="col-xl-4 col-lg-4 col-md-6 col-sm-8">
-					<div class="single-footer-caption mb-50">
-						<div class="footer-number mb-50">
-							<h4>
-								<span>+564
-								</span>7885 3222</h4>
-							<p>youremail@gmail.com</p>
-						</div>
-						<!-- Form -->
-						<div class="footer-form">
-							<div id="mc_embed_signup">
-								<form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
-									<input type="email" name="EMAIL" id="newsletter-form-email" placeholder=" Email Address " class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your email address'">
-									<div class="form-icon">
-										<button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">
-											Send
-										</button>
+						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-5">
+							<div class="single-footer-caption mb-50">
+								<div class="footer-tittle">
+									<h4>About Us</h4>
+									<div class="footer-pera">
+										<p class="info1">Lorem igpsum doldfor sit amet, adipiscing elit, sed do eiusmod tempor cergelit rgh.
+										</p>
+										<p class="info1">Lorem ipsum dolor sit amet, adipiscing elit.</p>
 									</div>
-									<div class="mt-10 info"></div>
-								</form>
+								</div>
+							</div>
+						</div>
+						<div class="col-xl-4 col-lg-4 col-md-6 col-sm-8">
+							<div class="single-footer-caption mb-50">
+								<div class="footer-number mb-50">
+									<h4>
+										<span>+564
+										</span>7885 3222</h4>
+									<p>youremail@gmail.com</p>
+								</div>
+								<!-- Form -->
+								<div class="footer-form">
+									<div id="mc_embed_signup">
+										<form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
+											<input type="email" name="EMAIL" id="newsletter-form-email" placeholder=" Email Address " class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your email address'">
+											<div class="form-icon">
+												<button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">
+													Send
+												</button>
+											</div>
+											<div class="mt-10 info"></div>
+										</form>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+				<div class="footer-bottom">
+					<div class="row d-flex justify-content-between align-items-center">
+						<div class="col-xl-9 col-lg-8">
+							<div class="footer-copy-right">
+								<p>
+									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+									Copyright &copy;
+																																																																																										All rights reserved | This template is made with
+									Copyright &copy;<script>
+										
+									</script>
+									All rights reserved | This template is made with
+									<i class="fa fa-heart" aria-hidden="true"></i>
+									by
+									<a href="https://colorlib.com" target="_blank">Colorlib</a>
+									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+								</p>
+							</div>
+						</div>
+						<div
+							class="col-xl-3 col-lg-4">
+							<!-- Footer Social -->
+							<div class="footer-social f-right">
+								<a href="#">
+									<i class="fab fa-twitter"></i>
+								</a>
+								<a href="https://www.facebook.com/sai4ull">
+									<i class="fab fa-facebook-f"></i>
+								</a>
+								<a href="#">
+									<i class="fas fa-globe"></i>
+								</a>
+								<a href="#">
+									<i class="fab fa-instagram"></i>
+								</a>
 							</div>
 						</div>
 					</div>
 				</div>
 			</div>
 		</div>
-		<div class="footer-bottom">
-			<div class="row d-flex justify-content-between align-items-center">
-				<div class="col-xl-9 col-lg-8">
-					<div class="footer-copy-right">
-						<p>
-							<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-							Copyright &copy;
-																																																																																																																																											All rights reserved | This template is made withAll rights reserved | This template is made with
-							<i class="fa fa-heart" aria-hidden="true"></i>
-							by
-							<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-						</p>
-					</div>
-				</div>
-				<div
-					class="col-xl-3 col-lg-4">
-					<!-- Footer Social -->
-					<div class="footer-social f-right">
-						<a href="#">
-							<i class="fab fa-twitter"></i>
-						</a>
-						<a href="https://www.facebook.com/sai4ull">
-							<i class="fab fa-facebook-f"></i>
-						</a>
-						<a href="#">
-							<i class="fas fa-globe"></i>
-						</a>
-						<a href="#">
-							<i class="fab fa-instagram"></i>
-						</a>
-					</div>
-				</div>
-			</div>
-		</div>
+		<!-- Footer End-->
+	</footer><!-- Scroll Up --><div id="back-top">
+		<a title="Go to Top" href="#">
+			<i class="fas fa-level-up-alt"></i>
+		</a>
 	</div>
-</div>
-<!-- Footer End--></footer><!-- Scroll Up --><div id="back-top">
-<a title="Go to Top" href="#">
-	<i class="fas fa-level-up-alt"></i>
-</a></div></html>
+
+</html>

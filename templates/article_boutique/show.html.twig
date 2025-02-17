@@ -1,0 +1,21 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}ArticleBoutique - {{ articleBoutique.nom }}{% endblock %}
+
+{% block body %}
+    <h1>{{ articleBoutique.nom }}</h1>
+
+    <p><strong>Description:</strong> {{ articleBoutique.description }}</p>
+    <p><strong>Prix:</strong> {{ articleBoutique.prix }}</p>
+    <p><strong>Stock:</strong> {{ articleBoutique.stock }}</p>
+    <p><strong>Date de Creation:</strong> {{ articleBoutique.creeLe ? articleBoutique.creeLe|date('Y-m-d H:i:s') : '' }}</p>
+
+    <!-- Display the image -->
+    {% if articleBoutique.image %}
+        <img src="{{ asset('uploads/images/' ~ articleBoutique.image) }}" alt="Article Image" style="max-width: 200px; height: auto;">
+    {% endif %}
+
+    <a href="{{ path('app_article_boutique_edit', {'id': articleBoutique.id}) }}" class="btn btn-primary">Edit</a>
+
+    {{ include('article_boutique/_delete_form.html.twig') }}
+{% endblock %}
