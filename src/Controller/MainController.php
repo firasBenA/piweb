@@ -20,16 +20,16 @@ class MainController extends AbstractController
         return $this->render('main/doctors.html.twig'); 
     }
 
-    #[Route('/blog', name: 'blog_page')]
-    public function blog(): Response
+    #[Route('/evenement', name: 'evenement_page')]
+    public function evenement(): Response
     {
-        return $this->render('main/blog.html.twig'); 
+        return $this->render('main/evenement.html.twig'); 
     }
     
-    #[Route('/blog_details', name: 'blog_details_page')]
-    public function blog_details(): Response
+    #[Route('/article', name: 'article_page')]
+    public function article(): Response
     {
-        return $this->render('main/blog_details.html.twig'); 
+        return $this->render('main/article.html.twig'); 
     }
 
     #[Route('/reclamation', name: 'reclamation_page')]
