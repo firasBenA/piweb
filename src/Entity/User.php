@@ -28,6 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column]
+    #[Assert\NotBlank(message: 'Le rôle est obligatoire.')]
     private array $roles = [];
 
     /**
@@ -35,7 +36,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
-
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Veuillez entrer votre nom.')]
     #[Assert\Length(min: 2, max: 50, minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.', maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.')]
@@ -52,11 +52,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $age = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le champ adresse est requis.')]
+    #[Assert\NotBlank(message: 'Veuillez entrer votre adresse .')]
     private ?string $adresse = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Le champ sexe est requis.')]
+    #[Assert\NotBlank(message: 'Veuillez choisir votre sexe .')]
     private ?string $sexe = null;
 
     #[ORM\Column]

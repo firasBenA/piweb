@@ -1,48 +1,160 @@
-{% extends 'base.html.twig' %}
+<!DOCTYPE html>
+<html :class="{ 'theme-dark': dark }" x-data="data()" lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>
+        {% block title %}Créer compte{% endblock %}
+    </title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
 
-{% block title %}Register{% endblock %}
+    {% block stylesheets %}
+        <link rel="stylesheet" href="{{ asset('./medecin/assets/css/tailwind.output.css') }}"/>
+    {% endblock %}
 
+    {% block javascripts %}
+        <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+        <script src="{{ asset('./medecin/assets/js/init-alpine.js') }}"></script>
+        {{ importmap('app') }}
+    {% endblock %}
+</head>
 {% block body %}
-    <h1>Register</h1>
+<body>
+    <div class="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
+        <div class="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl dark:bg-gray-800">
+            <div class="flex flex-col overflow-y-auto md:flex-row">
+                <div class="h-32 md:h-auto md:w-1/2">
+                    <img aria-hidden="true" class="object-cover w-full h-full dark:hidden" src="{{ asset('./medecin/assets/img/create-account-office.jpeg') }}" alt="Office"/>
+                    <img aria-hidden="true" class="hidden object-cover w-full h-full dark:block" src="{{ asset('./medecin/assets/img/create-account-office-dark.jpeg') }}" alt="Office"/>
+                </div>
+                <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
+                    <div class="w-full">
+                        <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
+                            Créer compte
+                        </h1>
 
-    {{ form_errors(registrationForm) }}
+                        {# Début du formulaire Symfony #}
+                        {{ form_start(registrationForm, {'attr': {'class': 'space-y-4', 'id': 'registration-form', 'enctype': 'multipart/form-data','novalidate':'novalidate'}}) }}
 
-    {{ form_start(registrationForm, {'attr': {'enctype': 'multipart/form-data'}}) }}
-        {{ form_row(registrationForm.nom) }}
-        {{ form_row(registrationForm.prenom) }}
-        {{ form_row(registrationForm.sexe) }}
-        {{ form_row(registrationForm.adresse) }}
-        {{ form_row(registrationForm.age) }}
-        {{ form_row(registrationForm.telephone) }}
-        {{ form_row(registrationForm.email) }}
-        {{ form_row(registrationForm.plainPassword, {
-            label: 'Password'
-        }) }}
-        {{ form_row(registrationForm.role) }}
-        {{ form_row(registrationForm.imageProfil) }}
+                            {# Champ Nom #}
+                            <div class="block text-sm">
+                                {{ form_label(registrationForm.nom, 'Nom', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.nom, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre nom'}}) }}
+                                <div id="nom-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.nom) }}</div> {# Message d'erreur pour le nom #}
+                            </div>
 
-        <div id="medecin-fields" style="display: none;">
-            {{ form_row(registrationForm.specialite) }}
-            {{ form_row(registrationForm.certificat) }}
+                            {# Champ Prénom #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(registrationForm.prenom, 'Prénom', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.prenom, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre prénom'}}) }}
+                                <div id="prenom-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.prenom) }}</div> {# Message d'erreur pour le prénom #}
+                            </div>
+
+                            {# Champ Email #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(registrationForm.email, 'Email', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.email, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre email'}}) }}
+                                <div id="email-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.email) }}</div> {# Message d'erreur pour l'email #}
+                            </div>
+
+                            {# Champ Âge #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(registrationForm.age, 'Âge', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.age, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre âge'}}) }}
+                                <div id="age-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.age) }}</div> {# Message d'erreur pour l'âge #}
+                            </div>
+
+                            {# Champ Adresse #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(registrationForm.adresse, 'Adresse', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.adresse, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre adresse'}}) }}
+                                <div id="adresse-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.adresse) }}</div> {# Message d'erreur pour l'adresse #}
+                            </div>
+
+                            {# Champ Sexe #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(registrationForm.sexe, 'Sexe', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.sexe, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-select', 'placeholder': 'Sélectionnez votre sexe'}}) }}
+                                <div id="sexe-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.sexe) }}</div> {# Message d'erreur pour le sexe #}
+                            </div>
+
+                            {# Champ Téléphone #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(registrationForm.telephone, 'Téléphone', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.telephone, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre téléphone'}}) }}
+                                <div id="telephone-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.telephone) }}</div> {# Message d'erreur pour le téléphone #}
+                            </div>
+
+                            {# Champ Mot de passe #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(registrationForm.plainPassword, 'Mot de passe', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.plainPassword, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': '***************'}}) }}
+                                <div id="plainPassword-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.plainPassword) }}</div> {# Message d'erreur pour le mot de passe #}
+                            </div>
+
+                            {# Champ Rôle #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(registrationForm.role, 'Rôle', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.role, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-select', 'placeholder': 'Sélectionnez votre rôle'}}) }}
+                                <div id="role-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.role) }}</div> {# Message d'erreur pour le rôle #}
+                            </div>
+
+                            <div id="medecin-fields" style="display: none;">
+                                {# Champ Spécialité #}
+                                <div class="block mt-4 text-sm">
+                                    {{ form_label(registrationForm.specialite, 'Spécialité', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                    {{ form_widget(registrationForm.specialite, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre spécialité'}}) }}
+                                    <div id="specialite-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.specialite) }}</div> {# Message d'erreur pour la spécialité #}
+                                </div>
+
+                                {# Champ Certificat #}
+                                <div class="block mt-4 text-sm">
+                                    {{ form_label(registrationForm.certificat, 'Certificat', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                    {{ form_widget(registrationForm.certificat, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'Votre certificat'}}) }}
+                                    <div id="certificat-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.certificat) }}</div> {# Message d'erreur pour le certificat #}
+                                </div>
+                            </div>
+
+                            {# Champ Image de Profil #}
+                            <div class="block mt-4 text-sm">
+                                {{ form_label(registrationForm.imageProfil, 'Image de Profil', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.imageProfil, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'URL de votre image de profil', 'type': 'file'}}) }}
+                                <div id="imageProfil-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.imageProfil) }}</div> {# Message d'erreur pour l'image de profil #}
+                            </div>
+
+                            {# Bouton de soumission #}
+                            <button type="submit" class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
+                                Créer un compte
+                            </button>
+
+                        {{ form_end(registrationForm) }}
+                        {# Fin du formulaire Symfony #}
+
+                        <hr class="my-8"/>
+                    </div>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <script>
-            document.addEventListener('DOMContentLoaded', function() {
-                var roleField = document.getElementById('registration_form_role');
-                var medecinFields = document.getElementById('medecin-fields');
+    {# Script JavaScript pour afficher/masquer les champs médecin #}
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const roleField = document.getElementById('registration_form_role');
+            const medecinFields = document.getElementById('medecin-fields');
 
-                function toggleMedecinFields() {
-                    if (roleField.value === 'medecin') {
-                        medecinFields.style.display = 'block';
-                    } else {
-                        medecinFields.style.display = 'none';
-                    }
+            function toggleMedecinFields() {
+                if (roleField.value === 'medecin') {
+                    medecinFields.style.display = 'block';
+                } else {
+                    medecinFields.style.display = 'none';
                 }
+            }
 
-                roleField.addEventListener('change', toggleMedecinFields);
-                toggleMedecinFields(); // Initial check
-            });
-        </script>
-        <button type="submit" class="btn">Register</button>
-    {{ form_end(registrationForm) }}
+            roleField.addEventListener('change', toggleMedecinFields);
+            toggleMedecinFields(); // Initial check
+        });
+    </script>
+</body>
 {% endblock %}
+</html>

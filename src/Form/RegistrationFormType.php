@@ -83,11 +83,11 @@ class RegistrationFormType extends AbstractType
             ])
             ->add('specialite', TextType::class, [
                 'label' => 'Spécialité',
-                'required' => false,
+                
             ])
             ->add('certificat', FileType::class, [
                 'label' => 'Certificat',
-                'required' => false,
+                
             ])
             ->add('imageProfil', FileType::class, [
                 'label' => 'Image de Profil',
