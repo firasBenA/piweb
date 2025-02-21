@@ -29,10 +29,12 @@ public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Respo
     $form->handleRequest($req);
 
     if ($form->isSubmitted() && $form->isValid()) {
-        if ($rdv->getDate() < new \DateTime('today')) {
-            // Modify the error message here
-            $this->addFlash('error', 'La date choisie doit être aujourd\'hui ou à une date ultérieure. Veuillez sélectionner une date valide.');
-            return $this->redirectToRoute('addrendezvous', ['id' => $id]);
+        if ($rdv->getDate() === null) {
+            $this->addFlash('error', 'La date ne peut pas être vide.');
+            return $this->render('rendez_vous/addrdv.html.twig', [
+                'form' => $form->createView(),
+                'patient' => $patient,
+            ]);
         }
 
         $rdv->setPatient($patient);
@@ -41,19 +43,19 @@ public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Respo
         $entityManager->persist($rdv);
         $entityManager->flush();
 
-        // 🔹 Création automatique de la consultation associée
+        // Création de la consultation
         $consultation = new Consultation();
         $consultation->setRendezVous($rdv);
         $consultation->setPatient($patient);
         $consultation->setMedecin($rdv->getMedecin());
         $consultation->setDate($rdv->getDate());
         $consultation->setTypeConsultation($rdv->getTypeRdv());
-        $consultation->setPrix(0); // Prix par défaut
+        $consultation->setPrix(0);
 
         $entityManager->persist($consultation);
         $entityManager->flush();
 
-        $this->addFlash('success', 'Votre rendez-vous a été enregistré avec succès. Une consultation a été créée.');
+        $this->addFlash('success', 'Votre rendez-vous a été enregistré avec succès.');
 
         return $this->redirectToRoute('listrdv', ['id' => $id]);
     }
@@ -63,7 +65,6 @@ public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Respo
         'patient' => $patient,
     ]);
 }
-
 
     #[Route('/listrdv/{id}', name: 'listrdv')]
     public function listRendezVous(ManagerRegistry $rm, int $id): Response
@@ -76,8 +77,6 @@ public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Respo
         }
 
         $rendezVous = $entityManager->getRepository(RendezVous::class)->findBy(['patient' => $patient]);
-
-        $this->addFlash('info', 'Vous pouvez réserver un nouveau rendez-vous.');
 
         return $this->render('rendez_vous/listrdv.html.twig', [
             'rendezVous' => $rendezVous,
@@ -110,63 +109,72 @@ public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Respo
     {
         $entityManager = $rm->getManager();
         $rdv = $entityManager->getRepository(RendezVous::class)->find($id);
-
+    
         if (!$rdv) {
             throw $this->createNotFoundException('Le rendez-vous n\'existe pas.');
         }
-
+    
+        // ✅ Vérification et affectation des valeurs par défaut pour éviter les erreurs "null"
+        if ($rdv->getTypeRdv() === null) {
+            $rdv->setTypeRdv('consultation'); // Valeur par défaut
+        }
+    
+        if ($rdv->getCause() === null) {
+            $rdv->setCause('Non spécifié'); // Valeur par défaut
+        }
+    
+        if ($rdv->getDate() === null) {
+            $rdv->setDate(new \DateTime()); // Date actuelle par défaut
+        }
+    
         $form = $this->createForm(RendezVousType::class, $rdv);
         $form->handleRequest($req);
-
+    
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($rdv->getDate() < new \DateTime('today')) {
-                $this->addFlash('error', 'Vous ne pouvez pas choisir une date antérieure à aujourd\'hui.');
-                return $this->redirectToRoute('edit_rdv', ['id' => $id]);
-            }
-
             $entityManager->flush();
-
             $this->addFlash('success', 'Votre rendez-vous a été modifié avec succès.');
-
+    
             return $this->redirectToRoute('listrdv', ['id' => $rdv->getPatient()->getId()]);
         }
-
+    
         return $this->render('rendez_vous/editrdv.html.twig', [
             'form' => $form->createView(),
         ]);
     }
-
+    
     #[Route('/details/{id}', name: 'detail_rdv')]
-public function details(ManagerRegistry $rm, int $id): Response
-{
-    $entityManager = $rm->getManager();
-    // Retrieve the appointment by its ID
-    $rendezVous = $entityManager->getRepository(RendezVous::class)->find($id);
+    public function details(ManagerRegistry $rm, int $id): Response
+    {
+        $entityManager = $rm->getManager();
+        $rendezVous = $entityManager->getRepository(RendezVous::class)->find($id);
 
-    // Check if the appointment exists
-    if (!$rendezVous) {
-        $this->addFlash('error', 'Rendez-vous non trouvé.');
-        return $this->redirectToRoute('listrdv'); // Redirect to a list page
+        if (!$rendezVous) {
+            $this->addFlash('error', 'Rendez-vous non trouvé.');
+            return $this->redirectToRoute('listrdv');
+        }
+
+        $medecin = $rendezVous->getMedecin();
+
+        return $this->render('rendez_vous/detrdv.html.twig', [
+            'date_rdv' => $rendezVous->getDate(),
+            'type_rdv' => $rendezVous->getTypeRdv(),
+            'cause' => $rendezVous->getCause(),
+            'statut' => $rendezVous->getStatut(),
+            'adresse' => $medecin->getAdresse(),
+            'nom_medecin' => $medecin->getNom(),
+            'prenom_medecin' => $medecin->getPrenom(),
+            'specialite_medecin' => $medecin->getSpecialite(),
+            'image_medecin' => $medecin->getImageDeProfil(),
+        ]);
     }
 
-    // Retrieve the doctor information
-    $medecin = $rendezVous->getMedecin(); // Ensure getMedecin() is a valid method
 
-    return $this->render('rendez_vous/detrdv.html.twig', [
-        'date_rdv' => $rendezVous->getDate(), // Pass the DateTime object directly
-        'type_rdv' => $rendezVous->getTypeRdv(),
-        'cause' => $rendezVous->getCause(),
-        'statut' => $rendezVous->getStatut(),
-        'adresse' => $medecin->getAdresse(),
-        'nom_medecin' => $medecin->getNom(),
-        'prenom_medecin' => $medecin->getPrenom(),
-        'specialite_medecin' => $medecin->getSpecialite(),
-        'image_medecin' => $medecin->getImageDeProfil(),
-    ]);
-}
 
-    
-
-    
-
+    #[Route('patdash/{id}', name: 'patient_dashboard')]
+    public function dashboard(Patient $patient): Response
+    {
+        return $this->render('consultation/patdash.html.twig', [
+            'patient' => $patient,
+        ]);
+    }
 }

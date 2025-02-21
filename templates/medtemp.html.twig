@@ -1,97 +1,48 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>
-        {% block title %}Templates{% endblock %}
-    </title>
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 128 128'><text y='1.2em' font-size='96'>⚫️</text><text y='1.3em' x='0.2em' font-size='76' fill='#fff'>sf</text></svg>">
-    {% block stylesheets %}
-        <link rel="manifest" href="site.webmanifest">
-        <link rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/favicon.ico') }}">
-        <!-- CSS here -->
-        <link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/slicknav.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/flaticon.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/gijgo.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/animated-headline.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/magnific-popup.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/fontawesome-all.min.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/themify-icons.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/slick.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/nice-select.css') }}">
-        <link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
-    {% endblock %}
-</head>
-<body>
 
+<!-- Header Section -->
 <header>
-    <!-- Header Start -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
     <div class="header-area">
         <div class="main-header header-sticky">
             <div class="container-fluid">
                 <div class="row align-items-center">
-                    <!-- Logo -->
                     <div class="col-xl-2 col-lg-2 col-md-1">
                         <div class="logo">
-                            <a href="{{ path('home_page') }}"><img src="assets/img/logo/logo.png" alt=""></a>
+                            <a href="#"><img src="assets/img/logo/logo.png" alt="Medical Logo"></a>
                         </div>
                     </div>
                     <div class="col-xl-10 col-lg-10 col-md-10">
                         <div class="menu-main d-flex align-items-center justify-content-end">
-                            <!-- Main-menu -->
                             <div class="main-menu f-right d-none d-lg-block">
                                 <nav>
                                     <ul id="navigation">
                                         <li><a href="{{ path('home_page') }}">Home</a></li>
-                                        <li><a href="{{ path('diagnostique_page') }}">Diagnostique</a></li>
-                                        <li><a href="{{ path('doctors_page') }}">Doctors</a></li>
-                                        <li>
-                                            {% set patientId = patient is defined and patient.id is not null ? patient.id : 1 %}
-                                            <a href="{{ path('addrendezvous', {'id': patientId}) }}">Appointment</a>
-                                        </li>
-                                        <li>
-                                            <a href="{{ path('blog_page') }}">Blog</a>
-                                            <ul class="submenu">
-                                                <li><a href="{{ path('blog_page') }}">Blog</a></li>
-                                                <li><a href="{{ path('blog_details_page') }}">Blog Details</a></li>
-                                                <li><a href="elements.html">Element</a></li>
-                                            </ul>
-                                        </li>
-                                        <li><a href="{{ path('reclamation_page') }}">Reclamation</a></li>
+                                        <li><a href="{{ path('medecin_dashboard', {'id': medecin.id}) }}">Tableau De Board</a></li>
+                                        <li><a href="{{ path('consultation_medecin_list', {'id': medecin.id}) }}">Consultations</a></li>
+                                        <li><a href="{{ path('infomed', {'id': medecin.id}) }}">Mes Informations</a></li>
                                     </ul>
                                 </nav>
                             </div>
                             <div class="header-right-btn f-right d-none d-lg-block ml-30">
-                                <a href="#" class="btn header-btn">Sign-In</a>
+                                <a href="#" class="btn header-btn" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Sign-In</a>
                             </div>
                         </div>
-                    </div>
-                    <!-- Mobile Menu -->
-                    <div class="col-12">
-                        <div class="mobile_menu d-block d-lg-none"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
-    <!-- Header End -->
 </header>
 
-{% block body %}{% endblock %}
-
+<!-- Footer Section -->
 <footer>
-    <!-- Footer Start -->
     <div class="footer-area section-bg" data-background="assets/img/gallery/footer_bg.jpg">
         <div class="container">
             <div class="footer-top footer-padding">
                 <div class="row d-flex justify-content-between">
                     <div class="col-xl-3 col-lg-3 col-md-4 col-sm-8">
                         <div class="single-footer-caption mb-50">
-                            <!-- logo -->
                             <div class="footer-logo">
                                 <a href="index.html"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
                             </div>
@@ -114,7 +65,6 @@
                                 <h4><span>+564</span> 7885 3222</h4>
                                 <p>youremail@gmail.com</p>
                             </div>
-                            <!-- Form -->
                             <div class="footer-form">
                                 <div id="mc_embed_signup">
                                     <form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
@@ -142,7 +92,6 @@
                         </div>
                     </div>
                     <div class="col-xl-3 col-lg-4">
-                        <!-- Footer Social -->
                         <div class="footer-social f-right">
                             <a href="#"><i class="fab fa-twitter"></i></a>
                             <a href="https://www.facebook.com/sai4ull"><i class="fab fa-facebook-f"></i></a>
@@ -154,38 +103,91 @@
             </div>
         </div>
     </div>
-    <!-- Footer End -->
 </footer>
 
-<!-- Scroll Up -->
-<div id="back-top">
-    <a title="Go to Top" href="#">
-        <i class="fas fa-level-up-alt"></i>
-    </a>
-</div>
+<!-- Styles -->
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+    }
 
-{% block javascripts %}
-    <!-- JS here -->
-    <script src="{{ asset('assets/js/vendor/modernizr-3.5.0.min.js') }}"></script>
-    <!-- Jquery, Popper, Bootstrap -->
-    <script src="{{ asset('assets/js/vendor/jquery-1.12.4.min.js') }}"></script>
-    <script src="{{ asset('assets/js/popper.min.js') }}"></script>
-    <script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>
-    <!-- Jquery Mobile Menu -->
-    <script src="{{ asset('assets/js/jquery.slicknav.min.js') }}"></script>
-    <!-- Jquery Slick, Owl-Carousel Plugins -->
-    <script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>
-    <script src="{{ asset('assets/js/slick.min.js') }}"></script>
-    <!-- One Page, Animated-HeadLine -->
-    <script src="{{ asset('assets/js/wow.min.js') }}"></script>
-    <script src="{{ asset('assets/js/animated.headline.js') }}"></script>
-    <!-- Jquery Magnific Popup -->
-    <script src="{{ asset('assets/js/jquery.magnific-popup.js') }}"></script>
-    <!-- Scrollup, nice-select -->
-    <script src="{{ asset('assets/js/jquery.scrollUp.min.js') }}"></script>
-    <script src="{{ asset('assets/js/jquery.nice-select.min.js') }}"></script>
-    <!-- main JS -->
-    <script src="{{ asset('assets/js/main.js') }}"></script>
-{% endblock %}
-</body>
-</html>
+    .header-area {
+        background: #fff;
+        padding: 10px 0;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .main-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+    }
+
+    .menu-main {
+        display: flex;
+        align-items: center;
+    }
+
+    .main-menu nav ul {
+        list-style: none;
+        padding: 0;
+        margin: 0;
+        display: flex;
+    }
+
+    .main-menu nav ul li {
+        position: relative;
+        margin: 0 15px;
+    }
+
+    .main-menu nav ul li a {
+        text-decoration: none;
+        color: #000;
+        font-weight: 600;
+        font-size: 16px;
+        padding: 10px 15px;
+        display: block;
+    }
+
+    .main-menu nav ul li a:hover {
+        color: #007bff;
+    }
+
+    .header-right-btn {
+        margin-left: 30px;
+    }
+
+    .header-btn {
+        background-color: #007bff;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        text-decoration: none;
+        font-weight: bold;
+    }
+
+    .header-btn:hover {
+        background-color: #0056b3;
+    }
+
+    .footer-area {
+        background: #f8f9fa;
+        padding: 30px 0;
+        border-top: 1px solid #ddd;
+    }
+
+    .footer-logo img {
+        width: 150px;
+    }
+
+    .footer-tittle h4 {
+        font-weight: bold;
+    }
+
+    .footer-social a {
+        margin-right: 15px;
+        color: #555;
+        font-size: 20px;
+    }
+</style>
