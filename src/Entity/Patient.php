@@ -6,6 +6,7 @@ use App\Repository\PatientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Proxies\__CG__\App\Entity\Medecin;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PatientRepository::class)]
@@ -32,14 +33,14 @@ class Patient
     #[ORM\Column]
     private ?int $age = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $telephone = null;
 
     #[ORM\ManyToOne(targetEntity: Medecin::class, inversedBy: 'patients')]
-    #[ORM\JoinColumn(nullable: true)] // Allowing the medecin to be nullable if needed
+    #[ORM\JoinColumn(nullable: false)]
     private ?Medecin $medecin = null;
 
-    #[ORM\OneToOne(mappedBy: 'patient', targetEntity: DossierMedical::class)]
+    #[ORM\OneToOne(mappedBy: 'patient', targetEntity: DossierMedical::class, cascade: ['persist'])]
     private ?DossierMedical $dossierMedical = null;
 
     /**
@@ -65,6 +66,14 @@ class Patient
      */
     #[ORM\OneToMany(targetEntity: Diagnostique::class, mappedBy: 'Patient')]
     private Collection $diagnostiques;
+
+    #[ORM\OneToOne(inversedBy: 'patient', targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+
+
+
 
     public function __construct()
     {
@@ -291,6 +300,17 @@ class Patient
     public function setDossierMedical(DossierMedical $dossierMedical): self
     {
         $this->dossierMedical = $dossierMedical;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 }

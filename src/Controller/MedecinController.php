@@ -4,8 +4,8 @@ namespace App\Controller;
 
 use App\Entity\Diagnostique;
 use App\Entity\DossierMedical;
-use App\Entity\Medecin;
 use App\Entity\Patient;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -13,11 +13,35 @@ use Symfony\Component\Routing\Attribute\Route;
 
 final class MedecinController extends AbstractController
 {
-    #[Route('/medecin/dashboard/{id}', name: 'medecinDashboard_page')]
+
+
+    #[Route('medash/{id}', name: 'medecin_dashboard')]
+    public function dashboard(User $user): Response
+    {
+        return $this->render('consultation/meddash.html.twig', [
+            'medecin' => $user,
+        ]);
+    }
+
+    #[Route('/infomed/{id}', name: 'infomed')]
+    public function show(int $id, EntityManagerInterface $entityManager): Response
+    {
+        $medecin = $entityManager->getRepository(User::class)->find($id);
+
+        if (!$medecin) {
+            throw $this->createNotFoundException('Médecin non trouvé.');
+        }
+
+        return $this->render('consultation/infomed.html.twig', [
+            'medecin' => $medecin,
+        ]);
+    }
+
+
+    /*#[Route('/medecin/dashboard/{id}', name: 'medecinDashboard_page')]
     public function dashboard(int $id, EntityManagerInterface $entityManager): Response
     {
         // Fetch the doctor (medecin) by its ID
-
         $medecin = $entityManager->getRepository(Medecin::class)->find($id);
 
         if (!$medecin) {
@@ -25,13 +49,14 @@ final class MedecinController extends AbstractController
         }
 
         // Fetch patients related to the doctor (medecin)
-        $patients = $entityManager->getRepository(Patient::class)->findBy(['medecin' => $medecin]);
+        $patients = $medecin->getPatients(); // Directly using the relation
 
         return $this->render('medecin/index.html.twig', [
             'medecin' => $medecin,
             'patients' => $patients,
         ]);
-    }
+    }*/
+
 
 
     #[Route('/medecin/dossierMedicalByPatient/{id}', name: 'medecinDossierMedicalByPatient_page')]

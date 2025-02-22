@@ -10,7 +10,7 @@ use Doctrine\Migrations\AbstractMigration;
 /**
  * Auto-generated Migration: Please modify to your needs!
  */
-final class Version20250217003106 extends AbstractMigration
+final class Version20250219120453 extends AbstractMigration
 {
     public function getDescription(): string
     {
@@ -25,7 +25,10 @@ final class Version20250217003106 extends AbstractMigration
         $this->addSql('ALTER TABLE evenement_article ADD CONSTRAINT FK_13F19BAFD02F13 FOREIGN KEY (evenement_id) REFERENCES evenement (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE evenement_article ADD CONSTRAINT FK_13F19BA7294869C FOREIGN KEY (article_id) REFERENCES article (id) ON DELETE CASCADE');
         $this->addSql('ALTER TABLE reponse ADD CONSTRAINT FK_5FB6DEC72D6BA2D92D6BA2D9 FOREIGN KEY (reclamation_id) REFERENCES reclamation (id) ON DELETE CASCADE');
-        $this->addSql('ALTER TABLE reclamation DROP date_fin');
+        $this->addSql('ALTER TABLE consultation CHANGE patient_id patient_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE patient CHANGE telephone telephone INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE reclamation CHANGE patient_id patient_id INT DEFAULT NULL');
+        $this->addSql('ALTER TABLE user ADD prenom VARCHAR(50) DEFAULT NULL, ADD age INT DEFAULT NULL, ADD telephone INT DEFAULT NULL, CHANGE nom_utilisateur nom VARCHAR(50) DEFAULT NULL');
     }
 
     public function down(Schema $schema): void
@@ -36,6 +39,9 @@ final class Version20250217003106 extends AbstractMigration
         $this->addSql('ALTER TABLE reponse DROP FOREIGN KEY FK_5FB6DEC72D6BA2D92D6BA2D9');
         $this->addSql('DROP TABLE evenement_article');
         $this->addSql('DROP TABLE reponse');
-        $this->addSql('ALTER TABLE reclamation ADD date_fin DATE NOT NULL');
+        $this->addSql('ALTER TABLE consultation CHANGE patient_id patient_id INT NOT NULL');
+        $this->addSql('ALTER TABLE patient CHANGE telephone telephone INT NOT NULL');
+        $this->addSql('ALTER TABLE reclamation CHANGE patient_id patient_id INT NOT NULL');
+        $this->addSql('ALTER TABLE user ADD nom_utilisateur VARCHAR(50) DEFAULT NULL, DROP nom, DROP prenom, DROP age, DROP telephone');
     }
 }

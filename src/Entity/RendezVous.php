@@ -14,7 +14,7 @@ class RendezVous
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(inversedBy: 'rendezVouses')]
+    #[ORM\ManyToOne(targetEntity: Patient::class, inversedBy: 'rendezVouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?Patient $patient = null;
 
@@ -110,17 +110,16 @@ class RendezVous
     }
 
     #[ORM\OneToOne(mappedBy: 'rendezVous', cascade: ['persist', 'remove'])]
-private ?Consultation $consultation = null;
+    private ?Consultation $consultation = null;
 
-public function getConsultation(): ?Consultation
-{
-    return $this->consultation;
-}
+    public function getConsultation(): ?Consultation
+    {
+        return $this->consultation;
+    }
 
-public function setConsultation(?Consultation $consultation): static
-{
-    $this->consultation = $consultation;
-    return $this;
-}
-
+    public function setConsultation(?Consultation $consultation): static
+    {
+        $this->consultation = $consultation;
+        return $this;
+    }
 }

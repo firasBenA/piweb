@@ -3,17 +3,44 @@
 namespace App\Controller;
 
 use App\Entity\DossierMedical;
+use App\Entity\Patient;
 use App\Repository\MedecinRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class MainController extends AbstractController
 {
     #[Route('/', name: 'home_page')]
-    public function index(): Response
+    public function index(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage): Response
     {
-        return $this->render('main/index.html.twig');
+        $token = $tokenStorage->getToken();
+        $user = $token?->getUser();
+
+        // Default values
+        $patient = $entityManager->getRepository(Patient::class)->findOneBy(['user' => $user]);
+        $dossierMedicalId = $entityManager->getRepository(DossierMedical::class)->findOneBy(['patient' => $patient]);;
+
+        if ($user) {
+            // Find patient
+            $patient = $entityManager->getRepository(Patient::class)->findOneBy(['user' => $user]);
+
+            if ($patient) {
+                // Find their medical record
+                $dossierMedical = $entityManager->getRepository(DossierMedical::class)->findOneBy(['patient' => $patient]);
+                if ($dossierMedical) {
+                    $dossierMedicalId = $dossierMedical->getId();
+                }
+            }
+        }
+
+
+        return $this->render('main/index.html.twig', [
+            'patient' => $patient,
+            'dossierMedicalId' => $dossierMedicalId,
+        ]);
     }
 
     #[Route('/doctors', name: 'doctors_page')]
@@ -52,7 +79,7 @@ class MainController extends AbstractController
         return $this->render('main/createAccount.html.twig');
     }
 
-    #[Route('/login', name: 'login_page')]
+    #[Route('/Login', name: 'createAccount_page')]
     public function Login(): Response
     {
         return $this->render('main/login.html.twig', [

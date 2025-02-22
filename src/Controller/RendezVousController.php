@@ -15,54 +15,54 @@ use Symfony\Component\Routing\Annotation\Route;
 final class RendezVousController extends AbstractController
 {
     #[Route('/addrendezvous/{id}', name: 'addrendezvous')]
-public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Response
-{
-    $entityManager = $rm->getManager();
-    $patient = $entityManager->getRepository(Patient::class)->find($id);
+    public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Response
+    {
+        $entityManager = $rm->getManager();
+        $patient = $entityManager->getRepository(Patient::class)->find($id);
 
-    if (!$patient) {
-        throw $this->createNotFoundException("Le patient avec l'ID $id n'existe pas.");
-    }
-
-    $rdv = new RendezVous();
-    $form = $this->createForm(RendezVousType::class, $rdv);
-    $form->handleRequest($req);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        if ($rdv->getDate() < new \DateTime('today')) {
-            // Modify the error message here
-            $this->addFlash('error', 'La date choisie doit être aujourd\'hui ou à une date ultérieure. Veuillez sélectionner une date valide.');
-            return $this->redirectToRoute('addrendezvous', ['id' => $id]);
+        if (!$patient) {
+            throw $this->createNotFoundException("Le patient avec l'ID $id n'existe pas.");
         }
 
-        $rdv->setPatient($patient);
-        $rdv->setStatut('en attente');
+        $rdv = new RendezVous();
+        $form = $this->createForm(RendezVousType::class, $rdv);
+        $form->handleRequest($req);
 
-        $entityManager->persist($rdv);
-        $entityManager->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            if ($rdv->getDate() < new \DateTime('today')) {
+                // Modify the error message here
+                $this->addFlash('error', 'La date choisie doit être aujourd\'hui ou à une date ultérieure. Veuillez sélectionner une date valide.');
+                return $this->redirectToRoute('addrendezvous', ['id' => $id]);
+            }
 
-        // 🔹 Création automatique de la consultation associée
-        $consultation = new Consultation();
-        $consultation->setRendezVous($rdv);
-        $consultation->setPatient($patient);
-        $consultation->setMedecin($rdv->getMedecin());
-        $consultation->setDate($rdv->getDate());
-        $consultation->setTypeConsultation($rdv->getTypeRdv());
-        $consultation->setPrix(0); // Prix par défaut
+            $rdv->setPatient($patient);
+            $rdv->setStatut('en attente');
 
-        $entityManager->persist($consultation);
-        $entityManager->flush();
+            $entityManager->persist($rdv);
+            $entityManager->flush();
 
-        $this->addFlash('success', 'Votre rendez-vous a été enregistré avec succès. Une consultation a été créée.');
+            // 🔹 Création automatique de la consultation associée
+            $consultation = new Consultation();
+            $consultation->setRendezVous($rdv);
+            $consultation->setPatient($patient);
+            $consultation->setMedecin($rdv->getMedecin());
+            $consultation->setDate($rdv->getDate());
+            $consultation->setTypeConsultation($rdv->getTypeRdv());
+            $consultation->setPrix(0); // Prix par défaut
 
-        return $this->redirectToRoute('listrdv', ['id' => $id]);
+            $entityManager->persist($consultation);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Votre rendez-vous a été enregistré avec succès. Une consultation a été créée.');
+
+            return $this->redirectToRoute('listrdv', ['id' => $id]);
+        }
+
+        return $this->render('rendez_vous/addrdv.html.twig', [
+            'form' => $form->createView(),
+            'patient' => $patient,
+        ]);
     }
-
-    return $this->render('rendez_vous/addrdv.html.twig', [
-        'form' => $form->createView(),
-        'patient' => $patient,
-    ]);
-}
 
 
     #[Route('/listrdv/{id}', name: 'listrdv')]
@@ -137,36 +137,31 @@ public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Respo
     }
 
     #[Route('/details/{id}', name: 'detail_rdv')]
-public function details(ManagerRegistry $rm, int $id): Response
-{
-    $entityManager = $rm->getManager();
-    // Retrieve the appointment by its ID
-    $rendezVous = $entityManager->getRepository(RendezVous::class)->find($id);
+    public function details(ManagerRegistry $rm, int $id): Response
+    {
+        $entityManager = $rm->getManager();
+        // Retrieve the appointment by its ID
+        $rendezVous = $entityManager->getRepository(RendezVous::class)->find($id);
 
-    // Check if the appointment exists
-    if (!$rendezVous) {
-        $this->addFlash('error', 'Rendez-vous non trouvé.');
-        return $this->redirectToRoute('listrdv'); // Redirect to a list page
+        // Check if the appointment exists
+        if (!$rendezVous) {
+            $this->addFlash('error', 'Rendez-vous non trouvé.');
+            return $this->redirectToRoute('listrdv'); // Redirect to a list page
+        }
+
+        // Retrieve the doctor information
+        $medecin = $rendezVous->getMedecin(); // Ensure getMedecin() is a valid method
+
+        return $this->render('rendez_vous/detrdv.html.twig', [
+            'date_rdv' => $rendezVous->getDate(), // Pass the DateTime object directly
+            'type_rdv' => $rendezVous->getTypeRdv(),
+            'cause' => $rendezVous->getCause(),
+            'statut' => $rendezVous->getStatut(),
+            'adresse' => $medecin->getAdresse(),
+            'nom_medecin' => $medecin->getNom(),
+            'prenom_medecin' => $medecin->getPrenom(),
+            'specialite_medecin' => $medecin->getSpecialite(),
+            'image_medecin' => $medecin->getImageDeProfil(),
+        ]);
     }
-
-    // Retrieve the doctor information
-    $medecin = $rendezVous->getMedecin(); // Ensure getMedecin() is a valid method
-
-    return $this->render('rendez_vous/detrdv.html.twig', [
-        'date_rdv' => $rendezVous->getDate(), // Pass the DateTime object directly
-        'type_rdv' => $rendezVous->getTypeRdv(),
-        'cause' => $rendezVous->getCause(),
-        'statut' => $rendezVous->getStatut(),
-        'adresse' => $medecin->getAdresse(),
-        'nom_medecin' => $medecin->getNom(),
-        'prenom_medecin' => $medecin->getPrenom(),
-        'specialite_medecin' => $medecin->getSpecialite(),
-        'image_medecin' => $medecin->getImageDeProfil(),
-    ]);
-}
-
-    
-
-    
-
 }

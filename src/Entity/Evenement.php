@@ -15,7 +15,7 @@ class Evenement
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(
@@ -65,10 +65,8 @@ class Evenement
     #[ORM\JoinColumn(nullable: false)]
     private ?Medecin $medecin = null;
 
-    /**
-     * @var Collection<int, Article>
-     */
-    #[ORM\ManyToMany(targetEntity: Article::class)]
+    #[ORM\ManyToMany(targetEntity: Article::class, inversedBy: "evenements")]
+    #[ORM\JoinTable(name: "evenement_article")]
     private Collection $article;
 
     public function __construct()
@@ -169,29 +167,23 @@ class Evenement
     /**
      * @return Collection<int, Article>
      */
-    public function getArticle(): Collection
+    public function getArticles(): Collection
     {
         return $this->article;
     }
 
-    public function addArticle(Article $article): static
+    public function addArticle(Article $article): self
     {
         if (!$this->article->contains($article)) {
-            $this->article->add($article);
-            $article->setEvenement($this);
+            $this->article[] = $article;
         }
 
         return $this;
     }
 
-    public function removeArticle(Article $article): static
+    public function removeArticle(Article $article): self
     {
-        if ($this->article->removeElement($article)) {
-            // set the owning side to null (unless already changed)
-            if ($article->getEvenement() === $this) {
-                $article->setEvenement(null);
-            }
-        }
+        $this->article->removeElement($article);
 
         return $this;
     }

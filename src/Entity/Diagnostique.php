@@ -18,20 +18,27 @@ class Diagnostique
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateDiagnostique = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255, nullable: true)]  
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
+    #[ORM\ManyToOne(targetEntity: DossierMedical::class)]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotBlank(message: "La date du diagnostic est obligatoire.")]
     private ?DossierMedical $dossierMedical = null;
 
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: 'Please select a body zone.')]
+    private ?string $zoneCorps = null;
 
-    #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
-    private ?Patient $Patient = null;
+    #[Assert\Type(type: \DateTimeInterface::class, message: "The date must be a valid date.")]
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    private ?\DateTimeInterface $dateSymptomes = null;
+    
+
+    #[ORM\ManyToOne(targetEntity: Patient::class, inversedBy: 'diagnostiques')]
+    private ?Patient $patient = null;
 
     #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
     private ?Medecin $medecin = null;
@@ -39,9 +46,11 @@ class Diagnostique
     #[ORM\Column]
     private ?int $status = null;
 
-    #[ORM\Column(type: 'json')]
-    #[Assert\NotBlank(message: "La date du diagnostic est obligatoire.")]
-    private array $symptoms = [];
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: 'Please select at least one symptom.')]
+    #[Assert\Length(min: 1, minMessage: 'Please select at least one symptom.')]
+    private ?string $selectedSymptoms = null;
+
 
 
     public function getStatus(): ?int
@@ -75,9 +84,33 @@ class Diagnostique
         return $this;
     }
 
+    public function getDateSymptomes(): ?\DateTimeInterface
+    {
+        return $this->dateSymptomes;
+    }
+
+    public function setDateSymptomes(\DateTimeInterface $dateSymptomes): static
+    {
+        $this->dateSymptomes = $dateSymptomes;
+
+        return $this;
+    }
+
     public function getNom(): ?string
     {
         return $this->nom;
+    }
+
+    public function setZoneCorps(string $zoneCorps): static
+    {
+        $this->zoneCorps = $zoneCorps;
+
+        return $this;
+    }
+
+    public function getZoneCorps(): ?string
+    {
+        return $this->zoneCorps;
     }
 
     public function setNom(string $nom): static
@@ -116,9 +149,9 @@ class Diagnostique
         return $this->patient;
     }
 
-    public function setPatient(?Patient $Patient): static
+    public function setPatient(?Patient $patient): static
     {
-        $this->Patient = $Patient;
+        $this->patient = $patient;
 
         return $this;
     }
@@ -135,14 +168,14 @@ class Diagnostique
         return $this;
     }
 
-    public function getSymptoms(): array
+    public function getSelectedSymptoms(): String
     {
-        return $this->symptoms;
+        return $this->selectedSymptoms;
     }
 
-    public function setSymptoms(array $symptoms): self
+    public function setSelectedSymptoms(String $selectedSymptoms): self
     {
-        $this->symptoms = $symptoms;
+        $this->selectedSymptoms = $selectedSymptoms;
         return $this;
     }
 }

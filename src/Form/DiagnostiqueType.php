@@ -5,13 +5,13 @@
 namespace App\Form;
 
 use App\Entity\Diagnostique;
-use App\Entity\DossierMedical;
-use App\Entity\Symptomes;
+use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Symfony\Component\Form\Extension\Core\Type\TextType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
-use Symfony\Component\Form\Extension\Core\Type\HiddenType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
+use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 use Symfony\Component\Validator\Constraints\NotBlank;
@@ -20,32 +20,50 @@ class DiagnostiqueType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
-        // Retrieve symptoms from the database
-        $symptoms = $options['symptoms']; // List of Symptomes
+        $symptomsDict = $options['symptoms_dict']; // Access the symptoms_dict from the options
 
         $builder
-            ->add('dossierMedical', EntityType::class, [
-                'class' => DossierMedical::class,
-                'choice_label' => 'id', // Adapter selon le besoin
-                'label' => 'Dossier Medical ID',
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Dossier Medical ID cannot be empty.',
-                    ]),
+            ->add('selectedSymptoms', TextareaType::class, [
+                'mapped' => true,
+                'attr' => [
+                    'class' => 'form-control',
+                    'readonly' => true,
+                    'style' => 'width: 100%; padding: 10px;',
+                    'placeholder' => 'Entrer vos symptomes'
                 ],
+                'required' => true,
+            ])
+            ->add('zoneCorps', TextType::class, [
+                'label' => 'Zone du Corps',
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Enter la zone du corps'
+                ],
+                'required' => true,  // Ensure the field is required
+            ])
+            ->add('dateSymptomes', DateType::class, [
+                'label' => 'Date of Symptoms',
+                'widget' => 'single_text',
+                'required' => false,
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Select the date when symptoms began'
+                ]
             ])
             ->add('submit', SubmitType::class, [
-                'label' => 'Diagnose'
+                'label' => 'Save it!',
+                'attr' => ['class' => 'btn btn-primary', 'id' => 'submitSymptoms', 'style' => 'width: 100%; margin-bottom:8px;'],
+
             ]);
     }
+
+
 
     public function configureOptions(OptionsResolver $resolver)
     {
         $resolver->setDefaults([
             'data_class' => Diagnostique::class,
-            'symptoms' => [],  // List of symptoms to pass to the form
-            'symptoms_dict' => [], // ✅ Add this to resolve the error
-            'dossierMedicalId' => null,  // DossierMedical ID for the form
+            'symptoms_dict' => [],
         ]);
     }
 }

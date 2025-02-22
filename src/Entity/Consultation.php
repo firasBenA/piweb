@@ -18,9 +18,8 @@ class Consultation
     #[ORM\JoinColumn(nullable: false)]
     private ?RendezVous $rendezVous = null;
 
-    #[ORM\ManyToOne(inversedBy: 'consultations')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Patient $Patient = null;
+    #[ORM\ManyToOne(targetEntity: Patient::class, inversedBy: 'consultations')]
+    private ?Patient $patient = null;
 
     #[ORM\ManyToOne(inversedBy: 'consultations')]
     #[ORM\JoinColumn(nullable: false)]
@@ -54,12 +53,12 @@ class Consultation
 
     public function getPatient(): ?Patient
     {
-        return $this->Patient;
+        return $this->patient;
     }
 
-    public function setPatient(?Patient $Patient): static
+    public function setPatient(?Patient $patient): static
     {
-        $this->Patient = $Patient;
+        $this->patient = $patient;
 
         return $this;
     }

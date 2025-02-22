@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Diagnostique;
 use App\Entity\DossierMedical;
 use App\Entity\Symptomes;
+use App\Form\DiagnostiqueType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -17,10 +18,30 @@ use Symfony\Contracts\HttpClient\HttpClientInterface;
 
 final class DiagnostiqueController extends AbstractController
 {
-    // Route for displaying the form (GET request)
-    #[Route('/diagnose', name: 'diagnose_form', methods: ['GET'])]
-    public function diagnoseForm(): \Symfony\Component\HttpFoundation\Response
+    private $entityManager;
+
+    public function __construct(EntityManagerInterface $entityManager)
     {
+        $this->entityManager = $entityManager;
+    }
+
+    #[Route('/diagnose', name: 'diagnose_form', methods: ['GET', 'POST'])]
+    public function diagnoseForm(Request $request, HttpClientInterface $httpClient): \Symfony\Component\HttpFoundation\Response
+    {
+
+        $id = $request->query->get('id');
+
+
+        if (!$id) {
+            return new JsonResponse(['error' => 'ID manquant'], 400);
+        }
+
+        $dossierMedical = $this->entityManager->getRepository(DossierMedical::class)->find($id);
+        if (!$dossierMedical) {
+            return new JsonResponse(['error' => 'Dossier médical introuvable'], 404);
+        }
+
+        // Define the symptoms dictionary
         $symptomsDict = [
             'itching' => 0,
             'skin_rash' => 1,
@@ -68,65 +89,140 @@ final class DiagnostiqueController extends AbstractController
             'yellowing_of_eyes' => 43
         ];
 
-        return $this->render('main/diagnostique.html.twig', [
+
+        // Create the Diagnostique entity
+        $diagnostique = new Diagnostique();
+
+        // Create the form
+        $form = $this->createForm(DiagnostiqueType::class, $diagnostique, [
             'symptoms_dict' => $symptomsDict
+        ]);
+
+        $form->handleRequest($request);
+
+        // Check if the form is submitted and valid
+        if ($form->isSubmitted() && $form->isValid()) {
+
+            $symptoms = $form->get('selectedSymptoms')->getData();
+            try {
+                // 4️⃣ Envoi des symptômes à l'API Flask
+                $response = $httpClient->request('POST', 'http://127.0.0.1:5000/predict', [
+                    'json' => ['symptoms' => $symptoms]
+                ]);
+
+                if ($response->getStatusCode() !== 200) {
+                    return new JsonResponse(['error' => 'Erreur API Flask', 'status' => $response->getStatusCode()], 500);
+                }
+
+                $diagnosisData = $response->toArray();
+                $diagnosisName = $diagnosisData['disease'] ?? 'Maladie inconnue';
+            } catch (\Exception $e) {
+                return new JsonResponse(['error' => 'Échec de communication avec l\'API Flask', 'details' => $e->getMessage()], 500);
+            }
+
+            $zoneCorps = $form->get('zoneCorps')->getData();
+            $dateSymptomes = $form->get('dateSymptomes')->getData();
+
+            if ($dateSymptomes instanceof \DateTimeInterface || $dateSymptomes === null) {
+                $diagnostique->setDateSymptomes($dateSymptomes);
+            } else {
+                $diagnostique->setDateSymptomes(new \DateTime()); // Default to today if necessary
+            }
+            $diagnostique->setNom($diagnosisName);
+            $diagnostique->setStatus(0);
+            $diagnostique->setDossierMedical($dossierMedical); // Associate DossierMedical
+            $diagnostique->setDateDiagnostique(new \DateTime());
+            $diagnostique->setSelectedSymptoms($symptoms);
+            $diagnostique->setZoneCorps($zoneCorps);
+            $diagnostique->setDescription($diagnosisData['description'] ?? 'Pas de description disponible.');
+
+            // Persist the Diagnostique entity to the database
+            $this->entityManager->persist($diagnostique);
+            $this->entityManager->flush();
+
+            // Redirect to another route after successful submission
+            return $this->redirect($request->getUri());
+        }
+
+        // Render the form in the template
+        return $this->render('main/diagnostique.html.twig', [
+            'form' => $form->createView(),
+            'symptoms_dict' => $symptomsDict,
+            'dossierMedical' => $dossierMedical,
         ]);
     }
 
-    // Route for processing the diagnosis (POST request)
-    #[Route('/diagnose', name: 'diagnose_api', methods: ['POST'])]
+
+    #[Route('/diagnose-api', name: 'diagnose', methods: ['POST'])] // ✅ Autoriser POST
     public function diagnose(Request $request, EntityManagerInterface $entityManager, HttpClientInterface $httpClient): JsonResponse
     {
+        // 1️⃣ Récupération de l'ID depuis l'URL
+        $id = $request->query->get('id');
+
+        // 2️⃣ Vérification de l'existence du dossier médical
+        $dossierMedical = $entityManager->getRepository(DossierMedical::class)->find($id);
+
+        if (!$dossierMedical) {
+            return new JsonResponse(['error' => 'Dossier médical introuvable'], 404);
+        }
+
+        // 3️⃣ Récupération des symptômes envoyés
         $data = json_decode($request->getContent(), true);
         $symptoms = $data['symptoms'] ?? [];
-        $dossierMedicalId = $data['dossierMedicalId'] ?? null;
+
+        // Vérifier que c'est bien un tableau avant de le convertir en string
+        if (is_array($symptoms)) {
+            $symptoms = implode(',', $symptoms);
+        }
+        $dateSymptomes = $data['dateSymptomes'];
 
         if (empty($symptoms)) {
-            return new JsonResponse(['error' => 'No symptoms provided'], 400);
-        }
-
-        if (!$dossierMedicalId) {
-            return new JsonResponse(['error' => 'No dossierMedicalId provided'], 400);
-        }
-
-        // Retrieve the DossierMedical entity
-        $dossierMedical = $entityManager->getRepository(DossierMedical::class)->find($dossierMedicalId);
-        if (!$dossierMedical) {
-            return new JsonResponse(['error' => 'Dossier Medical not found'], 404);
+            return new JsonResponse(['error' => 'Aucun symptôme fourni'], 400);
         }
 
         try {
-            // Call Flask API
+            // 4️⃣ Envoi des symptômes à l'API Flask
             $response = $httpClient->request('POST', 'http://127.0.0.1:5000/predict', [
                 'json' => ['symptoms' => $symptoms]
             ]);
 
             if ($response->getStatusCode() !== 200) {
-                return new JsonResponse(['error' => 'Flask API error', 'status' => $response->getStatusCode()], 500);
+                return new JsonResponse(['error' => 'Erreur API Flask', 'status' => $response->getStatusCode()], 500);
             }
 
             $diagnosisData = $response->toArray();
-            $diagnosisName = $diagnosisData['disease'] ?? 'Unknown Disease';
+            $diagnosisName = $diagnosisData['disease'] ?? 'Maladie inconnue';
         } catch (\Exception $e) {
-            return new JsonResponse(['error' => 'Failed to communicate with Flask API', 'details' => $e->getMessage()], 500);
+            return new JsonResponse(['error' => 'Échec de communication avec l\'API Flask', 'details' => $e->getMessage()], 500);
         }
 
-        // Save diagnosis to the database
+        $zoneCorps = $data['zoneCorps'] ?? 'unknown';
+
+        // 5️⃣ Enregistrement du diagnostic en base de données
         $diagnosis = new Diagnostique();
         $diagnosis->setNom($diagnosisName);
         $diagnosis->setDateDiagnostique(new \DateTime());
         $diagnosis->setDossierMedical($dossierMedical);
-        $diagnosis->setDescription($diagnosisData['description'] ?? 'No description available.');
+        $diagnosis->setDescription($diagnosisData['description'] ?? 'Pas de description disponible.');
         $diagnosis->setStatus(0);
-        $diagnosis->setSymptoms($symptoms);
+        $diagnosis->setSelectedSymptoms($symptoms);
+        $diagnosis->setZoneCorps($zoneCorps);
+        if ($dateSymptomes) {
+            try {
+                $dateSymptomes = new \DateTime($dateSymptomes);
+            } catch (\Exception $e) {
+                return new JsonResponse(['error' => 'Invalid date format. Expected YYYY-MM-DD.'], 400);
+            }
+            $diagnosis->setDateSymptomes($dateSymptomes);
+        }
 
         $entityManager->persist($diagnosis);
         $entityManager->flush();
 
         return new JsonResponse([
-            'message' => 'Diagnosis saved successfully',
+            'message' => 'Diagnostic enregistré avec succès',
             'disease' => $diagnosisName,
-            'dossierMedicalId' => $dossierMedicalId
+            'dossierMedicalId' => $dossierMedical->getId() // Correction ici
         ]);
     }
 }
