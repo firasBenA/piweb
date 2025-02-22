@@ -12,6 +12,7 @@ use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\NumberType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
+use Symfony\Component\Form\FormInterface;
 use Symfony\Component\Validator\Constraints\IsTrue;
 use Symfony\Component\Validator\Constraints\Email;
 use Symfony\Component\Validator\Constraints\Length;
@@ -25,11 +26,9 @@ class RegistrationFormType extends AbstractType
         $builder
         ->add('nom', TextType::class, [
             'label' => 'Nom',
-            
         ])
         ->add('prenom', TextType::class, [
             'label' => 'Prénom',
-            
         ])
         ->add('sexe', ChoiceType::class, [
             'label' => 'Sexe',
@@ -45,62 +44,71 @@ class RegistrationFormType extends AbstractType
             'label' => 'Adresse',
             'required' => false,
         ])
-    
         ->add('age', NumberType::class, [
             'label' => 'Âge',
-            
         ])
         ->add('telephone', TextType::class, [
             'label' => 'Numéro de Téléphone',
+        ])
+        ->add('email')
+        ->add('plainPassword', PasswordType::class, [
+            'mapped' => false,
+            'attr' => ['autocomplete' => 'new-password'],
+            'constraints' => [
+                new NotBlank([
+                    'message' => 'Entrer votre mot de passe',
+                ]),
+                new Length([
+                    'min' => 6,
+                    'minMessage' => 'ton mot de passe doit étre {{ limit }} caractére',
+                    'max' => 4096,
+                ]),
+            ],
+        ])
+        ->add('roles', ChoiceType::class, [
+            'label' => 'Rôle',
+            'mapped' => false,
+            'choices' => [
+            'Patient' => 'PATIENT',
+            'Médecin' => 'MEDECIN',
+            ],
+            'multiple' => false, 
+            'placeholder' => 'Sélectionnez votre rôle',
+            'required' => true,
+            'constraints' => [
+            new NotBlank([
+                'message' => 'Veuillez sélectionner un rôle',
+            ]),
+            ],
+        ])
+        ->add('specialite', TextType::class, [
+            'label' => 'Spécialité',
+            'required' => false,
             
         ])
-            ->add('email')
-            ->add('plainPassword', PasswordType::class, [
-                // instead of being set onto the object directly,
-                // this is read and encoded in the controller
-                'mapped' => false,
-                'attr' => ['autocomplete' => 'new-password'],
-                'constraints' => [
-                    new NotBlank([
-                        'message' => 'Please enter a password',
-                    ]),
-                    new Length([
-                        'min' => 6,
-                        'minMessage' => 'Your password should be at least {{ limit }} characters',
-                        // max length allowed by Symfony for security reasons
-                        'max' => 4096,
-                    ]),
-                ],
-            ])
-            ->add('role', ChoiceType::class, [
-                'label' => 'Rôle',
-                'choices' => [
-                    'Patient' => 'patient',
-                    'Médecin' => 'medecin',
-                ],
-                'placeholder' => 'Sélectionnez votre rôle',
-                'mapped' => false,
-            ])
-            ->add('specialite', TextType::class, [
-                'label' => 'Spécialité',
-                
-            ])
-            ->add('certificat', FileType::class, [
-                'label' => 'Certificat',
-                
-            ])
-            ->add('imageProfil', FileType::class, [
-                'label' => 'Image de Profil',
-                'required' => false,
-            ])
-
-        ;
+        ->add('certificat', FileType::class, [
+            'label' => 'Certificat',
+            'required' => false,
+            
+        ])
+        ->add('imageProfil', FileType::class, [
+            'label' => 'Image de Profil',
+            'required' => false,
+        ]);
     }
 
     public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([
             'data_class' => User::class,
+            'validation_groups' => function (FormInterface $form) {
+                $data = $form->getData();
+                if ($form->get('roles')->getData() === 'MEDECIN') 
+                    {
+                    return ['Default', 'medecin'];
+                }
+                return ['Default'];
+            },
         ]);
     }
 }

@@ -124,8 +124,20 @@
 									</nav>
 								</div>
 								<div class="header-right-btn f-right d-none d-lg-block ml-30">
-									<a href="{{ path('app_register') }}" class="btn header-btn">Inscription</a>
+									{% if app.user %}
+										<div class="profile-dropdown">
+											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
+											<div class="profile-dropdown-content">
+												<a href="{{ path('app_logout') }}">
+													<i class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
+												</a>
+											</div>
+										</div>
+									{% else %}
+										<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
+									{% endif %}
 								</div>
+								
 							</div>
 						</div>
 						<!-- Mobile Menu -->

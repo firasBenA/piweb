@@ -15,7 +15,7 @@
     {% block javascripts %}
         <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
         <script src="{{ asset('./medecin/assets/js/init-alpine.js') }}"></script>
-        {{ importmap('app') }}
+        
     {% endblock %}
 </head>
 {% block body %}
@@ -94,9 +94,9 @@
 
                             {# Champ Rôle #}
                             <div class="block mt-4 text-sm">
-                                {{ form_label(registrationForm.role, 'Rôle', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
-                                {{ form_widget(registrationForm.role, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-select', 'placeholder': 'Sélectionnez votre rôle'}}) }}
-                                <div id="role-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.role) }}</div> {# Message d'erreur pour le rôle #}
+                                {{ form_label(registrationForm.roles, 'Rôle', {'label_attr': {'class': 'text-gray-700 dark:text-gray-400'}}) }}
+                                {{ form_widget(registrationForm.roles, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-select', 'placeholder': 'Sélectionnez votre rôle'}}) }}
+                                <div id="role-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.roles) }}</div> {# Message d'erreur pour le rôle #}
                             </div>
 
                             <div id="medecin-fields" style="display: none;">
@@ -121,11 +121,18 @@
                                 {{ form_widget(registrationForm.imageProfil, {'attr': {'class': 'block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input', 'placeholder': 'URL de votre image de profil', 'type': 'file'}}) }}
                                 <div id="imageProfil-error" class="text-red-500 text-sm mt-1">{{ form_errors(registrationForm.imageProfil) }}</div> {# Message d'erreur pour l'image de profil #}
                             </div>
-
+                            
                             {# Bouton de soumission #}
                             <button type="submit" class="block w-full px-4 py-2 mt-4 text-sm font-medium leading-5 text-center text-white transition-colors duration-150 bg-purple-600 border border-transparent rounded-lg active:bg-purple-600 hover:bg-purple-700 focus:outline-none focus:shadow-outline-purple">
                                 Créer un compte
                             </button>
+
+                            <p class="mt-4 text-sm text-center text-gray-600 dark:text-gray-400">
+                                Tu as déjà un compte ?
+                                <a href="{{ path('app_login2') }}" class="text-purple-600 hover:underline">
+                                    Connecte-toi
+                                </a>
+                            </p>
 
                         {{ form_end(registrationForm) }}
                         {# Fin du formulaire Symfony #}
@@ -140,11 +147,11 @@
     {# Script JavaScript pour afficher/masquer les champs médecin #}
     <script>
         document.addEventListener('DOMContentLoaded', function () {
-            const roleField = document.getElementById('registration_form_role');
+            const roleField = document.getElementById('registration_form_roles');
             const medecinFields = document.getElementById('medecin-fields');
 
             function toggleMedecinFields() {
-                if (roleField.value === 'medecin') {
+                if (roleField.value === 'MEDECIN') {
                     medecinFields.style.display = 'block';
                 } else {
                     medecinFields.style.display = 'none';
@@ -153,6 +160,11 @@
 
             roleField.addEventListener('change', toggleMedecinFields);
             toggleMedecinFields(); // Initial check
+
+            // Keep fields visible if there are validation errors
+            if (roleField.value === 'MEDECIN' || {{ form_errors(registrationForm.specialite) is not empty or form_errors(registrationForm.certificat) is not empty ? 'true' : 'false' }}) {
+                medecinFields.style.display = 'block';
+            }
         });
     </script>
 </body>

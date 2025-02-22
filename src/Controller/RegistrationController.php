@@ -30,7 +30,7 @@ class RegistrationController extends AbstractController
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
             // set the roles for the user
-            $selectedRole = $form->get('role')->getData();
+            $selectedRole = $form->get('roles')->getData();
             $user->setRoles([$selectedRole]);
 
             // handle file uploads

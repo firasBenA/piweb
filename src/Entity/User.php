@@ -11,7 +11,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
-#[UniqueEntity(fields: ['email'], message: 'il exeiste déjà un compte avec cet email.')]
+#[UniqueEntity(fields: ['email'], message: 'il existe déjà un compte avec cet email.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface
 {
     #[ORM\Id]
@@ -28,7 +28,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    #[Assert\NotBlank(message: 'Le rôle est obligatoire.')]
+    
     private array $roles = [];
 
     /**
@@ -36,6 +36,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      */
     #[ORM\Column]
     private ?string $password = null;
+
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Veuillez entrer votre nom.')]
     #[Assert\Length(min: 2, max: 50, minMessage: 'Le nom doit contenir au moins {{ limit }} caractères.', maxMessage: 'Le nom ne peut pas dépasser {{ limit }} caractères.')]
@@ -52,11 +53,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?int $age = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Veuillez entrer votre adresse .')]
+    #[Assert\NotBlank(message: 'Veuillez entrer votre adresse.')]
     private ?string $adresse = null;
 
     #[ORM\Column(length: 255)]
-    #[Assert\NotBlank(message: 'Veuillez choisir votre sexe .')]
+    #[Assert\NotBlank(message: 'Veuillez choisir votre sexe.')]
     private ?string $sexe = null;
 
     #[ORM\Column]
@@ -72,16 +73,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     private ?string $imageProfil = null;
 
-
     #[ORM\Column(length: 255, nullable: true)]
+    #[Assert\NotBlank(message: 'Veuillez entrer votre spécialité.', groups: ['medecin'])]
     private ?string $specialite = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\File(
         maxSize: '5M',
         mimeTypes: ['image/jpeg', 'image/png'],
-        mimeTypesMessage: 'Veuillez télécharger une image au format JPEG ou PNG.'
+        mimeTypesMessage: 'Veuillez télécharger une image au format JPEG ou PNG.',
+        groups: ['medecin']
     )]
+    #[Assert\NotBlank(message: 'Veuillez télécharger votre certificat.', groups: ['medecin'])]
     private ?string $certificat = null;
 
     public function getId(): ?int
@@ -242,8 +245,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
-
 
     public function getSpecialite(): ?string
     {
