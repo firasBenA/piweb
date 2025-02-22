@@ -2,81 +2,80 @@
 
 namespace App\Controller;
 
-use App\Entity\DossierMedical;
-use App\Entity\Medecin;
-use App\Entity\Patient;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
-use App\Security\AppAuthenticator;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 class RegistrationController extends AbstractController
 {
     #[Route('/register', name: 'app_register')]
-    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, Security $security, EntityManagerInterface $entityManager): Response
+    public function register(Request $request, UserPasswordHasherInterface $userPasswordHasher, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $role = $form->get('role')->getData();
-            $user->setRoles([$role]);
-
-            // Hash the password
+            /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
+
+            // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-            $user->setIsVerified(false);
 
-            // Persist the user
+            // set the roles for the user
+            $selectedRole = $form->get('roles')->getData();
+            $user->setRoles([$selectedRole]);
+
+            // handle file uploads
+            $certificatFile = $form->get('certificat')->getData();
+            $imageProfilFile = $form->get('imageProfil')->getData();
+
+            if ($certificatFile) {
+                $certificatFileName = $this->uploadFile($certificatFile, $slugger, 'certificats_directory');
+                $user->setCertificat($certificatFileName);
+            }
+
+            if ($imageProfilFile) {
+                $imageProfilFileName = $this->uploadFile($imageProfilFile, $slugger, 'images_directory');
+                $user->setImageProfil($imageProfilFileName);
+            }
+            dump($request->request->all());
+
             $entityManager->persist($user);
-
-            // If the user is a patient, create and persist the associated entities
-            if ($role === 'ROLE_PATIENT') {
-                $patient = new Patient();
-                $patient->setNom($form->get('nom')->getData());
-                $patient->setPrenom($form->get('prenom')->getData());
-                $patient->setEmail($form->get('email')->getData());
-                $patient->setMotDePasse($plainPassword);
-                $patient->setAge($form->get('age')->getData());
-                $patient->setUser($user);
-
-                // Create and associate DossierMedical
-                $dossierMedical = new DossierMedical();
-                $dossierMedical->setPatient($patient);
-                $dossierMedical->setDatePrescription(new \DateTime());
-                $patient->setDossierMedical($dossierMedical);
-
-                $entityManager->persist($patient);
-            }
-
-            // If the user is a doctor, create and persist the Medecin entity
-            if ($role === 'ROLE_MEDECIN') {
-                $medecin = new Medecin();
-                $medecin->setNom($form->get('nom')->getData());
-                $medecin->setPrenom($form->get('prenom')->getData());
-                $medecin->setEmail($form->get('email')->getData());
-                $medecin->setUser($user);
-                $medecin->setMotDePasse($plainPassword);
-                $medecin->setAge($form->get('age')->getData());
-
-                $entityManager->persist($medecin);
-            }
-
             $entityManager->flush();
 
-            // Log the user in
-            return $security->login($user, AppAuthenticator::class, 'main');
+            // do anything else you need here, like send an email
+
+            return $this->redirectToRoute('app_login');
         }
 
         return $this->render('registration/register.html.twig', [
-            'registrationForm' => $form->createView(),
+            'registrationForm' => $form,
         ]);
+    }
+
+    private function uploadFile($file, SluggerInterface $slugger, $directoryParameter): string
+    {
+        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $slugger->slug($originalFilename);
+        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+
+        try {
+            $file->move(
+                $this->getParameter($directoryParameter),
+                $newFilename
+            );
+        } catch (FileException $e) {
+            // handle exception if something happens during file upload
+        }
+
+        return $newFilename;
     }
 }

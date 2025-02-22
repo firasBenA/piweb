@@ -47,18 +47,6 @@
             "./migrations/.gitignore"
         ]
     },
-    "lexik/jwt-authentication-bundle": {
-        "version": "2.18",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "2.5",
-            "ref": "e9481b233a11ef7e15fe055a2b21fd3ac1aa2bb7"
-        },
-        "files": [
-            "./config/packages/lexik_jwt_authentication.yaml"
-        ]
-    },
     "phpunit/phpunit": {
         "version": "9.6",
         "recipe": {
@@ -316,31 +304,7 @@
             "./config/routes/web_profiler.yaml"
         ]
     },
-    "symfonycasts/reset-password-bundle": {
-        "version": "1.23",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "1.0",
-            "ref": "97c1627c0384534997ae1047b93be517ca16de43"
-        },
-        "files": [
-            "./config/packages/reset_password.yaml"
-        ]
-    },
     "twig/extra-bundle": {
         "version": "v3.19.0"
-    },
-    "zenstruck/foundry": {
-        "version": "2.3",
-        "recipe": {
-            "repo": "github.com/symfony/recipes",
-            "branch": "main",
-            "version": "2.0",
-            "ref": "56bc588a1b6d5d218319f70c64c2f0fbebe30ec7"
-        },
-        "files": [
-            "./config/packages/zenstruck_foundry.yaml"
-        ]
     }
 }

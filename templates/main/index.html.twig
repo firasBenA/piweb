@@ -22,9 +22,9 @@
 								</h1>
 								<p data-animation="fadeInLeft" data-delay="0.1s">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi uquip ex ea commodo consequat is aute irure.</p>
 
-								{% if patient %}
+								{% if user %}
 									<li>
-										<a href="{{ path('addrendezvous', {'id': patient.id}) }}" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">
+										<a href="{{ path('addrendezvous', {'id': user.id}) }}" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">
 											Appointment
 										</a>
 									</li>
@@ -67,8 +67,8 @@
 						</a>
 					</div>
 					<div class="about-btn1 mb-30">
-						{% if patient %}
-							<a href="{{ path('addrendezvous', {'id': patient.id}) }}" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">Appointment
+						{% if user %}
+							<a href="{{ path('addrendezvous', {'id': user.id}) }}" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">Appointment
 								<i class="ti-arrow-right"></i>
 							</a>
 						{% else %}
@@ -170,9 +170,9 @@
 									scaler near patient</h3>
 								<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Quis ipsum suspendisse ultrices gravida. Risus commodo viverra maecenas accumsan lacus vel facilisis.
 								</p>
-								{% if patient %}
+								{% if user %}
 
-									<a href="{{ path('addrendezvous', {'id': patient.id}) }}" class="dep-btn">Appointment<i class="ti-arrow-right"></i>
+									<a href="{{ path('addrendezvous', {'id': user.id}) }}" class="dep-btn">Appointment<i class="ti-arrow-right"></i>
 									</a>
 								{% else %}
 									<li>

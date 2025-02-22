@@ -83,7 +83,6 @@
 			{% endblock %}
 		{% endblock %}
 	</head>
-
 	<header>
 		<!--? Header Start -->
 		<div class="header-area">
@@ -122,8 +121,6 @@
 											<li>
 												<a href="#">Appointment</a>
 											</li>
-
-
 										</li>
 										<li>
 											<a href="{{ path('blog_page') }}">Blog</a>
@@ -151,7 +148,7 @@
 											{% if dossierMedicalId is defined and dossierMedicalId is not null %}
 												<a href="{{ path('patientDashboard_page', {'id': dossierMedicalId }) }}">Profile</a>
 											{% else %}
-												<p>No medical record found.</p>
+												<p>No medical record found. $</p>
 											{% endif %}
 											<ul class="submenu">
 												<li>

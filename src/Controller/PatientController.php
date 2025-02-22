@@ -1,7 +1,7 @@
 <?php
 
 namespace App\Controller;
-
+/*
 use App\Entity\Diagnostique;
 use App\Entity\Patient;
 use App\Entity\DossierMedical;
@@ -110,5 +110,139 @@ class PatientController extends AbstractController
         return $this->render('patient/index.html.twig', [
             'patients' => $patients,
         ]);
+
+        */
+
+use App\Entity\Diagnostique;
+use App\Entity\DossierMedical;
+use App\Entity\User;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+
+class PatientController extends AbstractController
+{
+
+    #[Route('/dashboard/{id}', name: 'patientDashboard_page')]
+    public function dashboard(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage, int $id): Response
+    {
+        $token = $tokenStorage->getToken();
+        $user = $token?->getUser();
+
+        if (!$user) {
+            throw $this->createAccessDeniedException('You are not logged in.');
+        }
+
+        // Retrieve the dossierMedical by ID and ensure it belongs to the patient
+        $dossierMedical = $entityManager->getRepository(DossierMedical::class)->findOneBy([
+            'id' => $id,
+            'user' => $user
+        ]);
+
+        if (!$dossierMedical) {
+            throw $this->createNotFoundException('Medical record not found for this patient.');
+        }
+
+        // Retrieve related data
+        $prescriptions = $dossierMedical->getPrescriptions();
+        $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy([
+            'dossierMedical' => $dossierMedical
+        ]);
+
+        // Collect medecins from prescriptions (avoid duplicates)
+        $medecins = [];
+        foreach ($prescriptions as $prescription) {
+            $medecin = $prescription->getMedecin();
+            if ($medecin && !in_array($medecin, $medecins, true)) {
+                $medecins[] = $medecin;
+            }
+        }
+
+        // Pass `dossierMedicalId` explicitly
+        return $this->render('patient/dossierMedical.html.twig', [
+            'user' => $user,
+            'dossierMedical' => $dossierMedical,
+            'prescriptions' => $prescriptions,
+            'medecins' => $medecins,
+            'diagnostiques' => $diagnostiques,
+            'dossierMedicalId' => $dossierMedical->getId(), // ✅ Pass this explicitly
+        ]);
+    }
+
+
+    #[Route('/patient', name: 'patient_dashboard')]
+    public function index(): Response
+    {
+        return $this->render('patient_dashboard.html.twig');
+    }
+
+    #[Route('/patient/update-profile', name: 'patient_update_profile', methods: ['POST'])]
+    public function updateProfile(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $user->setNom($request->request->get('nom'));
+        $user->setPrenom($request->request->get('prenom'));
+        $user->setEmail($request->request->get('email'));
+        $user->setTelephone($request->request->get('telephone'));
+        $user->setAdresse($request->request->get('adresse'));
+        $user->setAge($request->request->get('age'));
+        $user->setSexe($request->request->get('sexe'));
+
+        // Handle file uploads
+        $imageProfilFile = $request->files->get('imageProfil');
+
+        if ($imageProfilFile) {
+            $imageProfilFileName = $this->uploadFile($imageProfilFile, $slugger, 'images_directory');
+            $user->setImageProfil($imageProfilFileName);
+        }
+
+        $entityManager->persist($user);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('patient_dashboard');
+    }
+
+    #[Route('/patient/delete-profile', name: 'patient_delete_profile')]
+    public function deleteProfile(EntityManagerInterface $entityManager): Response
+    {
+        $user = $this->getUser();
+
+        if (!$user) {
+            return $this->redirectToRoute('app_login');
+        }
+
+        $entityManager->remove($user);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_logout');
+    }
+
+    private function uploadFile($file, SluggerInterface $slugger, $directoryParameter): string
+    {
+        $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
+        $safeFilename = $slugger->slug($originalFilename);
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+
+        try {
+            $file->move(
+                $this->getParameter($directoryParameter),
+                $newFilename
+            );
+        } catch (FileException $e) {
+            // handle exception if something happens during file upload
+            throw new \Exception('File upload error: ' . $e->getMessage());
+        }
+
+        return $newFilename;
     }
 }

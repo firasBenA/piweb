@@ -222,7 +222,7 @@ final class DiagnostiqueController extends AbstractController
         return new JsonResponse([
             'message' => 'Diagnostic enregistré avec succès',
             'disease' => $diagnosisName,
-            'dossierMedicalId' => $dossierMedical->getId() // Correction ici
+            'dossierMedicalId' => $dossierMedical->getId() 
         ]);
     }
 }

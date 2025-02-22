@@ -4,7 +4,14 @@ controllers:
         namespace: App\Controller
     type: attribute
 
-    
-formMed_page:
-    path: /formMed/{id}
-    controller: App\Controller\MedecinController::formMed
+admin_dashboard:
+    path: /admin
+    controller: App\Controller\AdminController::index
+
+medecin_dashboard:
+    path: /medecin
+    controller: App\Controller\MedecinController::dashboard
+
+patient_dashboard:
+    path: /patient
+    controller: App\Controller\PatientController::index
