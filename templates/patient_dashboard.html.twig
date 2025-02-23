@@ -221,6 +221,7 @@
 {% endblock %}
 
 {% block profile_image_dropdown %}
+
     <div class="profile-dropdown">
         <img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
         <div class="profile-dropdown-content">
@@ -256,37 +257,75 @@
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
-        <form method="post" action="{{ path('patient_update_profile') }}" enctype="multipart/form-data" class="modal-form">
-            <label for="nom">Nom</label>
-            <input type="text" id="nom" name="nom" value="{{ app.user.nom }}" placeholder="Nom">
-
-            <label for="prenom">Prénom</label>
-            <input type="text" id="prenom" name="prenom" value="{{ app.user.prenom }}" placeholder="Prénom">
-
-            <label for="email">Email</label>
-            <input type="email" id="email" name="email" value="{{ app.user.email }}" placeholder="Email">
-
-            <label for="telephone">Téléphone</label>
-            <input type="text" id="telephone" name="telephone" value="{{ app.user.telephone }}" placeholder="Téléphone">
-
-            <label for="adresse">Adresse</label>
-            <input type="text" id="adresse" name="adresse" value="{{ app.user.adresse }}" placeholder="Adresse">
-
-            <label for="age">Âge</label>
-            <input type="number" id="age" name="age" value="{{ app.user.age }}" placeholder="Âge">
-
-            <label for="sexe">Sexe</label>
-            <select id="sexe" name="sexe">
-                <option value="homme" {% if app.user.sexe == 'homme' %}selected{% endif %}>Homme</option>
-                <option value="femme" {% if app.user.sexe == 'femme' %}selected{% endif %}>Femme</option>
-                <option value="autre" {% if app.user.sexe == 'autre' %}selected{% endif %}>Autre</option>
-            </select>
-
-            <label for="imageProfil">Image de Profil</label>
-            <input type="file" id="imageProfil" name="imageProfil" placeholder="Image de Profil">
-
+        {{ form_start(form, {'attr': {'class': 'modal-form', 'novalidate': 'novalidate'}}) }}
+            <div>
+                {{ form_label(form.nom) }}
+                {{ form_errors(form.nom) }}
+                {{ form_widget(form.nom) }}
+            </div>
+            <div>
+                {{ form_label(form.prenom) }}
+                {{ form_errors(form.prenom) }}
+                {{ form_widget(form.prenom) }}
+            </div>
+            <div>
+                {{ form_label(form.email) }}
+                {{ form_errors(form.email) }}
+                {{ form_widget(form.email) }}
+            </div>
+            <div>
+                {{ form_label(form.telephone) }}
+                {{ form_errors(form.telephone) }}
+                {{ form_widget(form.telephone) }}
+            </div>
+            <div>
+                {{ form_label(form.adresse) }}
+                {{ form_errors(form.adresse) }}
+                {{ form_widget(form.adresse) }}
+            </div>
+            <div>
+                {{ form_label(form.age) }}
+                {{ form_errors(form.age) }}
+                {{ form_widget(form.age) }}
+            </div>
+            <div>
+                {{ form_label(form.sexe) }}
+                {{ form_errors(form.sexe) }}
+                {{ form_widget(form.sexe) }}
+            </div>
+            <div>
+                {{ form_label(form.imageProfil) }}
+                {{ form_errors(form.imageProfil) }}
+                {{ form_widget(form.imageProfil) }}
+            </div>
             <button type="submit" class="save-button">Enregistrer</button>
-        </form>
+            <button type="button" class="save-button" onclick="openPasswordModal()">Changer le mot de passe</button>
+        {{ form_end(form) }}
+    </div>
+</div>
+
+<!-- Password Change Modal -->
+<div id="passwordModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closePasswordModal()">&times;</span>
+        {{ form_start(passwordForm, {'attr': {'class': 'modal-form', 'novalidate': 'novalidate'}}) }}
+            <div>
+                {{ form_label(passwordForm.oldPassword) }}
+                {{ form_errors(passwordForm.oldPassword) }}
+                {{ form_widget(passwordForm.oldPassword) }}
+            </div>
+            <div>
+                {{ form_label(passwordForm.newPassword) }}
+                {{ form_errors(passwordForm.newPassword) }}
+                {{ form_widget(passwordForm.newPassword) }}
+            </div>
+            <div>
+                {{ form_label(passwordForm.confirmPassword) }}
+                {{ form_errors(passwordForm.confirmPassword) }}
+                {{ form_widget(passwordForm.confirmPassword) }}
+            </div>
+            <button type="submit" class="save-button">Changer le mot de passe</button>
+        {{ form_end(passwordForm) }}
     </div>
 </div>
 
@@ -299,9 +338,20 @@
         document.getElementById('editModal').style.display = 'none';
     }
 
+    function openPasswordModal() {
+        document.getElementById('passwordModal').style.display = 'block';
+    }
+
+    function closePasswordModal() {
+        document.getElementById('passwordModal').style.display = 'none';
+    }
+
     window.onclick = function(event) {
         if (event.target == document.getElementById('editModal')) {
             closeModal();
+        }
+        if (event.target == document.getElementById('passwordModal')) {
+            closePasswordModal();
         }
     }
 
