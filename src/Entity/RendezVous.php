@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\RendezVousRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: RendezVousRepository::class)]
 class RendezVous
@@ -20,19 +21,38 @@ class RendezVous
 
     #[ORM\ManyToOne(inversedBy: 'rendezVouses')]
     #[ORM\JoinColumn(nullable: false)]
+    #[Assert\NotNull(message: "Le médecin est obligatoire.")]
     private ?Medecin $medecin = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotNull(message: "La date est obligatoire.")]
+    #[Assert\Type("\DateTimeInterface", message: "La date doit être valide.")]
+    #[Assert\GreaterThanOrEqual(
+        value: 'today',
+        message: "La date ne peut pas être antérieure à aujourd'hui."
+    )]
     private ?\DateTimeInterface $date = null;
 
     #[ORM\Column(length: 255)]
     private ?string $statut = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le type de rendez-vous est obligatoire.")]
+    
     private ?string $type_rdv = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La cause est obligatoire.")]
+    #[Assert\Length(
+        min: 5,
+        max: 255,
+        minMessage: "La cause doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "La cause ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $cause = null;
+
+    #[ORM\OneToOne(mappedBy: 'rendezVous', cascade: ['persist', 'remove'])]
+    private ?Consultation $consultation = null;
 
     public function getId(): ?int
     {
@@ -47,7 +67,6 @@ class RendezVous
     public function setPatient(?Patient $patient): static
     {
         $this->patient = $patient;
-
         return $this;
     }
 
@@ -59,7 +78,6 @@ class RendezVous
     public function setMedecin(?Medecin $medecin): static
     {
         $this->medecin = $medecin;
-
         return $this;
     }
 
@@ -71,7 +89,6 @@ class RendezVous
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -83,7 +100,6 @@ class RendezVous
     public function setStatut(string $statut): static
     {
         $this->statut = $statut;
-
         return $this;
     }
 
@@ -108,9 +124,6 @@ class RendezVous
         $this->cause = $cause;
         return $this;
     }
-
-    #[ORM\OneToOne(mappedBy: 'rendezVous', cascade: ['persist', 'remove'])]
-    private ?Consultation $consultation = null;
 
     public function getConsultation(): ?Consultation
     {
