@@ -73,7 +73,7 @@
         <div class="event-container" id="eventList">
             {% for evenement in evenements %}
                 <div class="event-card">
-                    <img src="{{ asset('uploads/event.jpg') }}" class="event-img" alt="Evenement image">
+                    <img src="{{ asset('uploads/images/event1.jpg') }}" class="event-img" alt="Evenement image">
                     <div class="event-content">
                         <span class="badge bg-primary">{{ evenement.dateEvent|date('d M') }}</span>
                         <h2 class="event-title">{{ evenement.nom }}</h2>
@@ -84,7 +84,9 @@
                         </div>
                         <div class="event-actions">
                             <a class="btn btn-primary btn-sm" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
-                            <a class="btn btn-warning btn-sm" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
+                            {% if is_granted('ROLE_MEDECIN') %}
+                                <a class="btn btn-warning btn-sm" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -93,9 +95,12 @@
             {% endfor %}
         </div>
         
+        {% if is_granted('ROLE_MEDECIN') %}
         <div class="text-center">
-            <a class="btn btn-success" href="{{ path('app_evenement_ajouter') }}">Créer un événement</a>
+        <a class="btn btn-success" href="{{ path('app_evenement_ajouter') }}">Créer un événement</a>
         </div>
+        {% endif %}
+>
     </div>
 
     <script>

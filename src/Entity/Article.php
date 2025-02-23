@@ -3,7 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -24,14 +28,23 @@ class Article
     
     private ?string $contenue = '';
 
+    #[Route('/article/{id}/like', name: 'article_like', methods: ['POST'])]
+    #[IsGranted('ROLE_PATIENT')]
+    public function like(Article $article, EntityManagerInterface $entityManager): JsonResponse
+    {
+        $article->setNbJaime($article->getNbJaime() + 1);
+        $entityManager->persist($article);
+        $entityManager->flush();
+
+        return new JsonResponse(['success' => true, 'likes' => $article->getNbJaime()]);
+    }
     #[ORM\Column(length: 255, nullable: false)]
-    #[Assert\NotBlank(message: 'L\'image est obligatoire.')]
-    #[Assert\Url(message: 'L\'URL de l\'image n\'est pas valide.')]
     #[Assert\File(
         maxSize: '5M',
-        mimeTypes: ['image/jpeg', 'image/png'],
-        mimeTypesMessage: 'Veuillez télécharger une image au format JPEG ou PNG.'
+        mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'],
+        mimeTypesMessage: 'Veuillez télécharger une image au format JPEG, PNG, ou GIF.'
     )]
+    
     private ?string $image = null;
 
 
@@ -79,11 +92,11 @@ class Article
         return $this->image;
     }
 
-    public function setImage(string $image): static
-    {
-        $this->image = $image;
-        return $this;
-    }
+    public function setImage(?string $image): static
+{
+    $this->image = $image;
+    return $this;
+}
 
     public function getCommantaire(): ?string
     {

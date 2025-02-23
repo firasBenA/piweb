@@ -7,6 +7,7 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
 use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
@@ -63,7 +64,7 @@ class Evenement
 
     #[ORM\ManyToOne(inversedBy: 'evenements')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Medecin $medecin = null;
+    private ?User $user = null;
 
     /**
      * @var Collection<int, Article>
@@ -154,17 +155,26 @@ class Evenement
         return $this;
     }
 
-    public function getMedecin(): ?Medecin
-    {
-        return $this->medecin;
+    
+
+public function getUser(): ?User
+{
+    return $this->user;
+}
+
+public function setUser(?User $user): static
+{
+    // Ensure only users with ROLE_MEDECIN can be assigned
+    if (!in_array('ROLE_MEDECIN', $user->getRoles())) {
+        throw new \InvalidArgumentException('L\'utilisateur doit avoir le rôle MEDECIN.');
     }
 
-    public function setMedecin(?Medecin $medecin): static
-    {
-        $this->medecin = $medecin;
+    $this->user = $user;
 
-        return $this;
-    }
+    return $this;
+}
+
+    
 
     /**
      * @return Collection<int, Article>

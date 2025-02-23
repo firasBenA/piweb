@@ -11,15 +11,15 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
-class MedecinController extends AbstractController
+class PatientController extends AbstractController
 {
-    #[Route('/medecin', name: 'medecin_dashboard')]
+    #[Route('/patient', name: 'patient_dashboard')]
     public function index(): Response
     {
-        return $this->render('medecin_dashboard.html.twig');
+        return $this->render('patient_dashboard.html.twig');
     }
 
-    #[Route('/medecin/update-profile', name: 'medecin_update_profile', methods: ['POST'])]
+    #[Route('/patient/update-profile', name: 'patient_update_profile', methods: ['POST'])]
     public function updateProfile(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger): Response
     {
         $user = $this->getUser();
@@ -35,16 +35,9 @@ class MedecinController extends AbstractController
         $user->setAdresse($request->request->get('adresse'));
         $user->setAge($request->request->get('age'));
         $user->setSexe($request->request->get('sexe'));
-        $user->setSpecialite($request->request->get('specialite'));
 
         // Handle file uploads
-        $certificatFile = $request->files->get('certificat');
         $imageProfilFile = $request->files->get('imageProfil');
-
-        if ($certificatFile) {
-            $certificatFileName = $this->uploadFile($certificatFile, $slugger, 'certificats_directory');
-            $user->setCertificat($certificatFileName);
-        }
 
         if ($imageProfilFile) {
             $imageProfilFileName = $this->uploadFile($imageProfilFile, $slugger, 'images_directory');
@@ -54,10 +47,10 @@ class MedecinController extends AbstractController
         $entityManager->persist($user);
         $entityManager->flush();
 
-        return $this->redirectToRoute('medecin_dashboard');
+        return $this->redirectToRoute('patient_dashboard');
     }
 
-    #[Route('/medecin/delete-profile', name: 'medecin_delete_profile')]
+    #[Route('/patient/delete-profile', name: 'patient_delete_profile')]
     public function deleteProfile(EntityManagerInterface $entityManager): Response
     {
         $user = $this->getUser();

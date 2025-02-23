@@ -5,6 +5,8 @@ namespace App\Form;
 use App\Entity\Evenement;
 use App\Entity\Medecin;
 use App\Entity\Article;
+use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -63,22 +65,19 @@ class EvenementType extends AbstractType
                 'attr' => ['class' => 'form-control'],
                 
             ])
-            ->add('medecin', EntityType::class, [
-                'class' => Medecin::class,
+            ->add('user', EntityType::class, [
+                'class' => User::class,
                 'choice_label' => 'id',
+                'query_builder' => function (UserRepository $userRepository) {
+                    return $userRepository->createQueryBuilder('u')
+                        ->where('u.roles LIKE :role')
+                        ->setParameter('role', '%"ROLE_MEDECIN"%'); // Filters only medecin users
+                },
                 'required' => true,
                 'empty_data' => '', // Forces an empty string if the field is left empty
                 'attr' => ['class' => 'form-control'],
             ])
-            ->add('article', EntityType::class, [
-                'class' => Article::class,
-                'choice_label' => 'titre',
-                'multiple' => true,
-                'expanded' => false,
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ])
+            
         ;
     }
 

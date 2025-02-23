@@ -39,9 +39,11 @@
             </table>
 
             <a href="{{ path('app_article_index') }}" class="btn btn-secondary">Retour</a>
+            {% if is_granted('ROLE_MEDECIN') %}
             <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-warning">Modifier</a>
             
             {{ include('article/_delete_form.html.twig') }}
+            {% endif %}
         </div>
     </div>
 </div>
