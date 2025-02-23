@@ -138,9 +138,17 @@
 										</ul>
 									</nav>
 								</div>
-								<div class="header-right-btn f-right d-none d-lg-block ml-30">
-									<a href="{{ path('createAccount_page') }}" class="btn header-btn">Sign-In</a>
-								</div>
+								{% if user %}
+									<div class="header-right-btn f-right d-none d-lg-block ml-30">
+										<a href="{{ path('patientDashboard_page' ,{ 'id': user.id }) }}" class="btn header-btn">Profile</a>
+										<a href="{{ path('app_logout') }}" class="btn header-btn" style="background-color: red;">Logout</a>
+									</div>
+								{% else %}
+									<div class="header-right-btn f-right d-none d-lg-block ml-30">
+										<a href="{{ path('createAccount_page') }}" class="btn header-btn">Sign-In</a>
+									</div>
+								{% endif %}
+
 							</div>
 						</div>
 					</div>
@@ -213,7 +221,7 @@
 								<p>
 									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 									Copyright &copy;
-																																																																																																																																																																																																																																																																																																																																																																																	All rights reserved | This template is made withAll rights reserved | This template is made with
+																																																																																																																																																																																																																																																																																																																																																																																										All rights reserved | This template is made withAll rights reserved | This template is made with
 									<i class="fa fa-heart" aria-hidden="true"></i>
 									by
 									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
@@ -247,8 +255,5 @@
 		</a>
 	</div>
 
-	
+
 </html></html>
-
-
-
