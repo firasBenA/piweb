@@ -1,107 +1,162 @@
-{# templates/patient/dashboard.html.twig #}
-{% extends 'base.html.twig' %}
-
 {% block stylesheets %}
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
-    <div class="container mt-5">
-        <div class="text-center mb-4">
-            <h1>Bienvenue {{ patient.nom }} {{ patient.prenom }}</h1>
-            <p>Voici votre espace personnel</p>
-        </div>
-
-        <div class="row">
-            {# Carte des informations du patient #}
-            <div class="col-md-4">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body text-center">
-                        <h5 class="card-title">Mes Informations</h5>
-                        <p><strong>Email :</strong> {{ patient.email }}</p>
-                        <p><strong>Âge :</strong> {{ patient.age }} ans</p>
-                        <p><strong>Telephone :</strong> {{ patient.telephone }}</p>
+<header class="header-area">
+    <div class="main-header header-sticky">
+        <div class="container-fluid">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto">
+                    <div class="logo">
+                        <a href="#"><img src="{{ asset('assets/img/logo/logo.png') }}" alt="Medical Logo"></a>
                     </div>
                 </div>
-            </div>
-
-            {# Carte des rendez-vous et consultations #}
-            <div class="col-md-8">
-                <div class="card shadow-sm mb-4">
-                    <div class="card-body">
-                        <h5 class="card-title">Mes Rendez-vous</h5>
-
-                        {# Bouton Ajouter Rendez-vous #}
-                        <a href="{{ path('addrendezvous', {'id': patient.id}) }}" class="btn btn-success mb-3">
-                            <i class="fas fa-calendar-plus"></i> Ajouter un Rendez-vous
-                        </a>
-
-                        <table class="table table-striped">
-                            <thead>
-                                <tr>
-                                    <th>Date</th>
-                                    <th>Médecin</th>
-                                    <th>Statut</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for rendezVous in patient.rendezVouses %}
-                                    <tr>
-                                        <td>{{ rendezVous.date|date('d/m/Y H:i') }}</td>
-                                        <td>Dr. {{ rendezVous.medecin.nom }} {{ rendezVous.medecin.prenom }}</td>
-                                        <td>
-                                            {% if rendezVous.statut == 'confirmé' %}
-                                                <span class="badge badge-success">Confirmé</span>
-                                            {% elseif rendezVous.statut == 'annulé' %}
-                                                <span class="badge badge-danger">Annulé</span>
-                                            {% else %}
-                                                <span class="badge badge-warning">En attente</span>
-                                            {% endif %}
-                                        </td>
-                                    </tr>
-                                {% else %}
-                                    <tr>
-                                        <td colspan="3" class="text-center">Aucun rendez-vous à venir</td>
-                                    </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-
-                <div class="card shadow-sm">
-                    <div class="card-body">
-                        <h5 class="card-title">Mes Consultations Passées</h5>
-                        <a href="{{ path('listrdv', {'id': patient.id}) }}" class="btn btn-primary mb-3">
-                            Voir mes consultations
-                        </a>
-                    </div>
+                <div class="col-auto">
+                    <nav class="d-flex align-items-center">
+                        <ul class="nav">
+                            <li class="nav-item"><a class="nav-link" href="{{ path('home_page') }}">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('diagnostique_page') }}">Diagnostique</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('doctors_page') }}">Doctors</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('listrdv', {'id': patient.id}) }}">Appointment</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('blog_page') }}">Blog</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('reclamation_page') }}">Reclamation</a></li>
+                        </ul>
+                        <a href="#" class="btn btn-primary ml-3 sign-in-btn">Sign-In</a>
+                    </nav>
                 </div>
             </div>
         </div>
     </div>
+</header>
 
-    <style>
-        body {
-            background-color: #f8f9fa;
-            font-family: 'Poppins', sans-serif;
-        }
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1>Bienvenue {{ patient.nom }} {{ patient.prenom }}</h1>
+        <p>Voici votre espace personnel</p>
+    </div>
 
-        .card {
-            border-radius: 10px;
-        }
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Mes Informations</h5>
+                    <p><strong>Email :</strong> {{ patient.email }}</p>
+                    <p><strong>Âge :</strong> {{ patient.age }} ans</p>
+                    <p><strong>Téléphone :</strong> {{ patient.telephone }}</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Mes Rendez-vous</h5>
+                    <a href="{{ path('addrendezvous', {'id': patient.id}) }}" class="btn btn-success mb-3">
+                        <i class="fas fa-calendar-plus"></i> Ajouter un Rendez-vous
+                    </a>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Médecin</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for rendezVous in patient.rendezVouses %}
+                                <tr>
+                                    <td>{{ rendezVous.date|date('d/m/Y H:i') }}</td>
+                                    <td>Dr. {{ rendezVous.medecin.nom }} {{ rendezVous.medecin.prenom }}</td>
+                                    <td>
+                                        {% if rendezVous.statut == 'Approuvé' %}
+                                            <span class="badge badge-success">Confirmé</span>
+                                        {% elseif rendezVous.statut == 'Refusé' %}
+                                            <span class="badge badge-danger">Annulé</span>
+                                        {% else %}
+                                            <span class="badge badge-warning">En attente</span>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                            {% else %}
+                                <tr>
+                                    <td colspan="3" class="text-center">Aucun rendez-vous à venir</td>
+                                </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 
-        .table th, .table td {
-            vertical-align: middle;
-        }
+<footer class="bg-light text-center py-4 mt-4">
+    <p>&copy; 2025 Medical. Tous droits réservés.</p>
+</footer>
 
-        .btn {
-            border-radius: 20px;
-        }
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+    }
 
-        .badge {
-            font-size: 0.9em;
-        }
-    </style>
+    .header-area {
+        background: #fff;
+        padding: 15px 0;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav .nav-item .nav-link {
+        color: #1d1d1d;
+        font-weight: 500;
+        padding: 10px 15px;
+        transition: color 0.3s ease-in-out;
+        text-decoration: none;
+    }
+
+    .nav .nav-item .nav-link:hover {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .sign-in-btn {
+        background: linear-gradient(90deg, #2979FF, #005BEA);
+        color: white;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 4px 6px rgba(0, 91, 234, 0.3);
+        border: none;
+    }
+
+    .sign-in-btn:hover {
+        background: linear-gradient(90deg, #005BEA, #2979FF);
+        color: white;
+    }
+
+    .sign-in-btn:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .btn {
+        border-radius: 20px;
+    }
+
+    .row > .col-md-6 {
+        display: flex;
+        flex-direction: column;
+    }
+</style>
 {% endblock %}
