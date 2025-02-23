@@ -10,8 +10,8 @@ admin_dashboard:
 
 medecin_dashboard:
     path: /medecin
-    controller: App\Controller\MedecinController::index
+    controller: App\Controller\ConsultationController::index
 
 patient_dashboard:
     path: /patient
-    controller: App\Controller\PatientController::index
+    controller: App\Controller\RendezVousController::index

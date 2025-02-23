@@ -170,7 +170,7 @@ public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Respo
 
 
 
-    #[Route('patdash/{id}', name: 'patient_dashboard')]
+    #[Route('patdash/{id}', name: 'patient_dashboard1')]
     public function dashboard(Patient $patient): Response
     {
         return $this->render('consultation/patdash.html.twig', [
