@@ -25,10 +25,9 @@ class DossierMedical
     #[Assert\Type("\DateTimeInterface", message: "Please provide a valid date.")]
     private ?\DateTimeInterface $datePrescription = null;
 
-    #[ManyToOne(targetEntity: User::class, inversedBy: 'dossierMedical')]
-    #[JoinColumn(nullable: false)]
-    private $user;
-
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'dossierMedical')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
 
     /**
      * @var Collection<int, Prescription>

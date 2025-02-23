@@ -86,13 +86,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         mimeTypesMessage: 'Veuillez télécharger une image au format JPEG ou PNG.',
         groups: ['medecin']
     )]
+    
     #[Assert\NotBlank(message: 'Veuillez télécharger votre certificat.', groups: ['medecin'])]
     private ?string $certificat = null;
 
 
-
-    #[OneToOne(mappedBy: 'user', targetEntity: DossierMedical::class)]
-    private $dossierMedical;
+    #[ORM\OneToOne(targetEntity: DossierMedical::class, mappedBy: 'user')]
+    private ?DossierMedical $dossierMedical = null;
     
     public function getId(): ?int
     {

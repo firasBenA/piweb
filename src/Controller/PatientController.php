@@ -175,7 +175,7 @@ class PatientController extends AbstractController
     }
 
 
-    #[Route('/patient', name: 'patient_dashboard')]
+    /*#[Route('/patient', name: 'patient_dashboard')]
     public function index(): Response
     {
         return $this->render('patient_dashboard.html.twig');
@@ -210,7 +210,7 @@ class PatientController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('patient_dashboard');
-    }
+    }*/
 
     #[Route('/patient/delete-profile', name: 'patient_delete_profile')]
     public function deleteProfile(EntityManagerInterface $entityManager): Response

@@ -186,7 +186,7 @@ final class RendezVousController extends AbstractController
 
 
 
-    #[Route('patdash/{id}', name: 'patient_dashboard')]
+    #[Route('patdash/{id}', name: 'patientDashboard')]
     public function dashboard(Patient $patient): Response
     {
         return $this->render('consultation/patdash.html.twig', [
