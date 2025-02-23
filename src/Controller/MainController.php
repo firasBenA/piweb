@@ -43,4 +43,10 @@ class MainController extends AbstractController
     {
         return $this->render('main/diagnostique.html.twig'); 
     }
+
+    #[Route('/appointment', name: 'appointment_page')]
+    public function appointment(): Response
+    {
+        return $this->render('main/appointment.html.twig'); 
+    }
 }

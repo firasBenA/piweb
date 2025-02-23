@@ -23,11 +23,15 @@
 									</strong>
 								</h1>
 								<p data-animation="fadeInLeft" data-delay="0.1s">Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi uquip ex ea commodo consequat is aute irure.</p>
+<<<<<<< HEAD
 								{% set patientId = patient is defined and patient.id is not null ? patient.id : 1 %}
 <li>
     <a href="{{ path('addrendezvous', {'id': patientId}) }}" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">Appointment</a>
 </li>
 								
+=======
+								<a href="{{ path('appointment_page') }}" class="btn hero-btn" data-animation="fadeInLeft" data-delay="0.5s">Appointment
+>>>>>>> origin/userV1
 									<i class="ti-arrow-right"></i>
 								</a>
 							</div>
@@ -52,6 +56,7 @@
 						</div>
 						<p>There arge many variations ohf pacgssages of sorem gpsum ilable, but the majority have suffered alteration in some form, by ected humour, or randomised words whi.</p>
 						<div class="about-btn1 mb-30">
+<<<<<<< HEAD
 							<a href="about.html" class="btn about-btn">Find Doctors .<i class="ti-arrow-right"></i>
 							</a>
 						</div>
@@ -59,11 +64,22 @@
 
 						{% set patientId = patient is defined and patient.id is not null ? patient.id : 1 %}
 							<a href="{{ path('addrendezvous', {'id': patientId}) }}" class="btn about-btn2">Appointment
+=======
+							<a href="{{ path('doctors_page') }}" class="btn about-btn">Find Doctors .<i class="ti-arrow-right"></i>
+							</a>
+						</div>
+						<div class="about-btn1 mb-30">
+							<a href="{{ path('appointment_page') }}" class="btn about-btn2">Appointment
+>>>>>>> origin/userV1
 								<i class="ti-arrow-right"></i>
 							</a>
 						</div>
 						<div class="about-btn1 mb-30">
+<<<<<<< HEAD
 							<a href="about.html" class="btn about-btn2">Emargency 1
+=======
+							<a href="{{ path('diagnostique_page') }}" class="btn about-btn2">Diagnostique
+>>>>>>> origin/userV1
 								<i class="ti-arrow-right"></i>
 							</a>
 						</div>

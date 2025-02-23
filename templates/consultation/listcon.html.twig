@@ -2,44 +2,62 @@
 {% block body %}
     <!-- Navbar Start -->
     <header>
-        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
-        <div class="header-area">
-            <div class="main-header header-sticky">
-                <div class="container-fluid">
-                    <div class="row align-items-center">
-                        <div class="col-xl-2 col-lg-2 col-md-1">
-                            <div class="logo">
-                                <a href="#"><img src="assets/img/logo/logo.png" alt="Medical Logo"></a>
-                            </div>
+    <div class="header-area">
+        <div class="main-header header-sticky">
+            <div class="container-fluid">
+                <div class="row align-items-center">
+                    <div class="col-xl-2 col-lg-2 col-md-1">
+                        <div class="logo">
+                            <a href="#"><img src="assets/img/logo/logo.png" alt="Medical Logo"></a>
                         </div>
-                        <div class="col-xl-10 col-lg-10 col-md-10">
-                            <div class="menu-main d-flex align-items-center justify-content-end">
-                                <div class="main-menu f-right d-none d-lg-block">
-                                    <nav>
-                                        <ul id="navigation" class="d-flex justify-content-end">
-                                            <li><a href="{{ path('home_page') }}">Home</a></li>
-                                            <li><a href="{{ path('medecin_dashboard', {'id': medecin.id}) }}">Tableau De Board</a></li>
-                                            <li><a href="{{ path('consultation_medecin_list', {'id': medecin.id}) }}">Consultations</a></li>
-                                            <li><a href="{{ path('infomed', {'id': medecin.id}) }}">Mes Informations</a></li>
-                                        </ul>
-                                    </nav>
-                                </div>
-                                <div class="header-right-btn f-right d-none d-lg-block ml-30">
-                                    <a href="#" class="btn header-btn" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Sign-In</a>
+                    </div>
+                    <div class="col-xl-10 col-lg-10 col-md-10">
+                        <div class="menu-main d-flex align-items-center justify-content-end">
+                            <div class="main-menu f-right d-none d-lg-block">
+                                <nav>
+                                    <ul id="navigation" class="d-flex justify-content-end">
+                                        <li><a href="{{ path('home_page') }}">Home</a></li>
+                                        <li><a href="{{ path('medecin_dashboard1', {'id': medecin.id}) }}">Tableau De Board</a></li>
+                                        <li><a href="{{ path('consultation_medecin_list', {'id': medecin.id}) }}">Consultations</a></li>
+                                        <li><a href="{{ path('infomed', {'id': medecin.id}) }}">Mes Informations</a></li>
+                                    </ul>
+                                </nav>
+                            </div>
+                            
+                            <!-- Dropdown menu corrigé -->
+                            <div class="header-right-btn f-right d-none d-lg-block ml-30">
+                                <div class="dropdown">
+                                    <a href="#" class="btn dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                        <img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
+                                    </a>
+                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
+                                        <li><a class="dropdown-item" href="{{ path('medecin_update_profile') }}">
+                                            <i class="fas fa-user-edit"></i> Modifier profil
+                                        </a></li>
+                                        <li><hr class="dropdown-divider"></li>
+                                        <li><a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
+                                            <i class="fas fa-sign-out-alt"></i> Déconnexion
+                                        </a></li>
+                                    </ul>
                                 </div>
                             </div>
+                            <!-- Fin dropdown -->
+                            
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-    </header>
+    </div>
+</header>
+
     <!-- Navbar End -->
 
     <!-- Main Content Start -->
     <div class="container mt-5">
-        <h1 class="text-center text-primary fw-bold">📅 Liste des Consultations du Dr. {{ medecin.nom }} {{ medecin.prenom }}</h1>
+        <h1 class="text-center text-primary fw-bold">📅 Liste des Consultations du Dr. {{ app.user.nom }} {{ app.user.prenom }}</h1>
 
         {% if rendezVous is empty %}
             <p class="text-center text-muted mt-4">Aucun rendez-vous trouvé.</p>
@@ -92,84 +110,81 @@
         
         <!-- Retour au Dashboard Button -->
         <div class="text-center mt-4">
-            <a href="{{ path('medecin_dashboard', {'id': medecin.id}) }}" class="btn btn-secondary">Retour au Dashboard</a>
+            <a href="{{ path('medecin_dashboard1') }}" class="btn btn-secondary">Retour au Dashboard</a>
         </div>
     </div>
     <!-- Main Content End -->
 
     <!-- Footer Start -->
     <footer class="bg-dark text-white text-center py-4 mt-5">
-        <!-- Footer Start -->
-<div class="footer-area section-bg" style="background-color: #343a40; padding: 60px 0;">
-    <div class="container">
-        <div class="footer-top footer-padding">
-            <div class="row d-flex justify-content-between">
-                <div class="col-xl-3 col-lg-3 col-md-4 col-sm-8">
-                    <div class="single-footer-caption mb-50">
-                        <div class="footer-logo">
-                            <a href="index.html"><img src="assets/img/logo/logo2_footer.png" alt="" style="max-width: 180px;"></a>
-                        </div>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-4 col-md-6 col-sm-5">
-                    <div class="single-footer-caption mb-50">
-                        <div class="footer-tittle">
-                            <h4 class="text-white">About Us</h4>
-                            <div class="footer-pera">
-                                <p class="info1 text-white">Lorem ipsum dolor sit amet, adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                                <p class="info1 text-white">Lorem ipsum dolor sit amet, adipiscing elit.</p>
+        <div class="footer-area section-bg" style="background-color: #343a40; padding: 60px 0;">
+            <div class="container">
+                <div class="footer-top footer-padding">
+                    <div class="row d-flex justify-content-between">
+                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-8">
+                            <div class="single-footer-caption mb-50">
+                                <div class="footer-logo">
+                                    <a href="index.html"><img src="assets/img/logo/logo2_footer.png" alt="" style="max-width: 180px;"></a>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </div>
-                <div class="col-xl-4 col-lg-4 col-md-6 col-sm-8">
-                    <div class="single-footer-caption mb-50">
-                        <div class="footer-number mb-50">
-                            <h4 class="text-white"><span>+564</span> 7885 3222</h4>
-                            <p class="text-white">youremail@gmail.com</p>
-                        </div>
-                        <div class="footer-form">
-                            <div id="mc_embed_signup">
-                                <form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
-                                    <input type="email" name="EMAIL" id="newsletter-form-email" placeholder=" Email Address " class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your email address'">
-                                    <div class="form-icon">
-                                        <button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">Send</button>
+                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-5">
+                            <div class="single-footer-caption mb-50">
+                                <div class="footer-tittle">
+                                    <h4 class="text-white">About Us</h4>
+                                    <div class="footer-pera">
+                                        <p class="info1 text-white">Lorem ipsum dolor sit amet, adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
+                                        <p class="info1 text-white">Lorem ipsum dolor sit amet, adipiscing elit.</p>
                                     </div>
-                                    <div class="mt-10 info"></div>
-                                </form>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-8">
+                            <div class="single-footer-caption mb-50">
+                                <div class="footer-number mb-50">
+                                    <h4 class="text-white"><span>+564</span> 7885 3222</h4>
+                                    <p class="text-white">youremail@gmail.com</p>
+                                </div>
+                                <div class="footer-form">
+                                    <div id="mc_embed_signup">
+                                        <form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
+                                            <input type="email" name="EMAIL" id="newsletter-form-email" placeholder=" Email Address " class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your email address'">
+                                            <div class="form-icon">
+                                                <button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">Send</button>
+                                            </div>
+                                            <div class="mt-10 info"></div>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="footer-bottom">
+                    <div class="row d-flex justify-content-between align-items-center">
+                        <div class="col-xl-9 col-lg-8">
+                            <div class="footer-copy-right">
+                                <p class="text-white">
+                                    Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with
+                                    <i class="fa fa-heart" aria-hidden="true"></i> by
+                                    <a href="https://colorlib.com" target="_blank" style="color: #fff; text-decoration: none;">Colorlib</a>
+                                </p>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-lg-4">
+                            <div class="footer-social f-right">
+                                <a href="#"><i class="fab fa-twitter" style="color: #fff;"></i></a>
+                                <a href="https://www.facebook.com/sai4ull"><i class="fab fa-facebook-f" style="color: #fff;"></i></a>
+                                <a href="#"><i class="fas fa-globe" style="color: #fff;"></i></a>
+                                <a href="#"><i class="fab fa-instagram" style="color: #fff;"></i></a>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
-        <div class="footer-bottom">
-            <div class="row d-flex justify-content-between align-items-center">
-                <div class="col-xl-9 col-lg-8">
-                    <div class="footer-copy-right">
-                        <p class="text-white">
-                            Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with
-                            <i class="fa fa-heart" aria-hidden="true"></i> by
-                            <a href="https://colorlib.com" target="_blank" style="color: #fff; text-decoration: none;">Colorlib</a>
-                        </p>
-                    </div>
-                </div>
-                <div class="col-xl-3 col-lg-4">
-                    <div class="footer-social f-right">
-                        <a href="#"><i class="fab fa-twitter" style="color: #fff;"></i></a>
-                        <a href="https://www.facebook.com/sai4ull"><i class="fab fa-facebook-f" style="color: #fff;"></i></a>
-                        <a href="#"><i class="fas fa-globe" style="color: #fff;"></i></a>
-                        <a href="#"><i class="fab fa-instagram" style="color: #fff;"></i></a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-<!-- Footer End -->
     </footer>
     <!-- Footer End -->
-
 {% endblock %}
 
 {% block stylesheets %}
@@ -178,10 +193,21 @@
 {% endblock %}
 
 {% block javascripts %}
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <!-- Corrected jQuery and Bootstrap version -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
     <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <script>
+        $(document).ready(function() {
+            // Bootstrap dropdown initialization
+            $('#profileDropdown').dropdown();
+        });
+    </script>
 {% endblock %}
+
+
+
 
 <style>
     body {
