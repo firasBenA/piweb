@@ -50,6 +50,10 @@ class Consultation
     )]
     private ?string $type_consultation = null;
 
+    #[ORM\ManyToOne(targetEntity: 'App\Entity\User', inversedBy: 'consultations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private User $user;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -123,6 +127,18 @@ class Consultation
     public function setTypeConsultation(string $type_consultation): static
     {
         $this->type_consultation = $type_consultation;
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): self
+    {
+        $this->user = $user;
 
         return $this;
     }

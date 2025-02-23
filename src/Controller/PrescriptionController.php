@@ -10,6 +10,7 @@ use App\Repository\PatientRepository;
 use App\Repository\PrescriptionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -43,9 +44,17 @@ class PrescriptionController extends AbstractController
     public function new(
         Request $request,
         DiagnostiqueRepository $diagnostiqueRepository,
-        MedecinRepository $medecinRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        Security $security // Inject Security service to get the logged-in user (medecin)
     ) {
+        // Get the currently logged-in user (medecin)
+        $user = $security->getUser();
+
+        // Make sure the logged-in user is a medecin
+        if (!$user || !$user->getRoles('ROLE_MEDECIN')) {
+            throw $this->createAccessDeniedException('You are not authorized to create prescriptions.');
+        }
+
         $diagnostiqueId = $request->query->get('diagnostique_id');
 
         if (!$diagnostiqueId) {
@@ -59,40 +68,44 @@ class PrescriptionController extends AbstractController
         }
 
         $dossierMedical = $diagnostique->getDossierMedical();
-        $patient = $dossierMedical->getPatient();
+        $patient = $dossierMedical->getUser(); // This is now the patient user
 
-        $medecin = $medecinRepository->findOneBy([]);
-        if (!$medecin) {
-            throw $this->createNotFoundException('Medecin not found!');
-        }
-
+        // Create a new Prescription instance
         $prescription = new Prescription();
         $prescription->setDiagnostique($diagnostique);
         $prescription->setDossierMedical($dossierMedical);
-        $prescription->setMedecin($medecin);
+        $prescription->setMedecin($user); // Set the logged-in medecin as the prescriber
+        $prescription->setPatient($patient); // Set the patient associated with the prescription
         $prescription->setDatePrescription(new \DateTime());
 
+        // Create and handle the form
         $form = $this->createForm(PrescriptionType::class, $prescription);
-
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $diagnostique->setStatus(1); 
+            // Update the diagnostique status if needed
+            $diagnostique->setStatus(1);
 
+            // Persist the prescription
             $entityManager->persist($prescription);
             $entityManager->flush();
 
-            return $this->redirectToRoute('medecinDossierMedicalByPatient_page', [
-                'id' => $patient->getId()
+            // Redirect to the patient's dossier
+            return $this->redirectToRoute('PrescriptionMedecin_page', [
+                'id' => $patient->getId(),
+                'user' => $user
             ]);
         }
 
+        // Render the form view
         return $this->render('prescription/new.html.twig', [
             'form' => $form->createView(),
             'diagnostique' => $diagnostique,
             'patient' => $patient,
+            'user' => $user
         ]);
     }
+
 
 
 
@@ -110,14 +123,14 @@ class PrescriptionController extends AbstractController
         }
 
         $dossierMedical = $diagnostique->getDossierMedical();
-        $patient = $dossierMedical->getPatient();
+        $patient = $dossierMedical->getUser();
 
         $form = $this->createForm(PrescriptionType::class, $prescription);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->flush(); 
+            $entityManager->flush();
 
             return $this->redirectToRoute('medecinDossierMedicalByPatient_page', [
                 'id' => $patient->getId()
@@ -140,7 +153,7 @@ class PrescriptionController extends AbstractController
         }
 
         $dossierMedical = $diagnostique->getDossierMedical();
-        $patient = $dossierMedical->getPatient();
+        $patient = $dossierMedical->getUser();
 
         $entityManager->remove($prescription);
         $entityManager->flush();

@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
@@ -86,13 +88,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         mimeTypesMessage: 'Veuillez télécharger une image au format JPEG ou PNG.',
         groups: ['medecin']
     )]
-    
+
     #[Assert\NotBlank(message: 'Veuillez télécharger votre certificat.', groups: ['medecin'])]
     private ?string $certificat = null;
 
-
     #[ORM\OneToOne(targetEntity: DossierMedical::class, mappedBy: 'user')]
     private ?DossierMedical $dossierMedical = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: RendezVous::class)]
+    private Collection $rendezVouses;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'App\Entity\Consultation')]
+    private Collection $consultations;
+    
+
+    public function __construct()
+    {
+        $this->rendezVouses = new ArrayCollection();
+        $this->consultations = new ArrayCollection();
+    }
     
     public function getId(): ?int
     {
@@ -285,6 +299,58 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setDossierMedical(?DossierMedical $dossierMedical): self
     {
         $this->dossierMedical = $dossierMedical;
+
+        return $this;
+    }
+
+    public function getRendezVouses(): Collection
+    {
+        return $this->rendezVouses;
+    }
+
+    public function addRendezVouse(RendezVous $rendezvous): self
+    {
+        if (!$this->rendezVouses->contains($rendezvous)) {
+            $this->rendezVouses[] = $rendezvous;
+            $rendezvous->setUser($this); // set the user in the rendezvous
+        }
+
+        return $this;
+    }
+
+    public function removeRendezVouse(RendezVous $rendezvous): self
+    {
+        $this->rendezVouses->removeElement($rendezvous);
+        // set the owning side to null (unless already changed)
+        if ($rendezvous->getUser() === $this) {
+            $rendezvous->setUser(null);
+        }
+
+        return $this;
+    }
+
+    public function getConsultations(): Collection
+    {
+        return $this->consultations;
+    }
+
+    public function addConsultation(Consultation $consultation): self
+    {
+        if (!$this->consultations->contains($consultation)) {
+            $this->consultations[] = $consultation;
+            $consultation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsultation(Consultation $consultation): self
+    {
+        if ($this->consultations->removeElement($consultation)) {
+            if ($consultation->getUser() === $this) {
+                $consultation->setUser(null);
+            }
+        }
 
         return $this;
     }

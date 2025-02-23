@@ -12,9 +12,14 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;  // <-- Correct import here
 use Symfony\Component\Mailer\Exception\TransportExceptionInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\HttpClient\Exception\ClientExceptionInterface;
 use Symfony\Contracts\HttpClient\Exception\ServerExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
+use Knp\Snappy\Pdf;
+use Symfony\Component\HttpFoundation\ResponseHeaderBag;
+use Symfony\Component\HttpFoundation\Response;
+
 
 final class DiagnostiqueController extends AbstractController
 {
@@ -28,6 +33,13 @@ final class DiagnostiqueController extends AbstractController
     #[Route('/diagnose', name: 'diagnose_form', methods: ['GET', 'POST'])]
     public function diagnoseForm(Request $request, HttpClientInterface $httpClient): \Symfony\Component\HttpFoundation\Response
     {
+
+        $user = $this->getUser();
+
+        // Check if a user is logged in
+        if (!$user instanceof UserInterface) {
+            throw $this->createAccessDeniedException('You are not logged in.');
+        }
 
         $id = $request->query->get('id');
 
@@ -149,6 +161,8 @@ final class DiagnostiqueController extends AbstractController
             'form' => $form->createView(),
             'symptoms_dict' => $symptomsDict,
             'dossierMedical' => $dossierMedical,
+            'user' => $user, // Pass the user to the view
+            'diagnostique' => $diagnostique
         ]);
     }
 
@@ -222,7 +236,32 @@ final class DiagnostiqueController extends AbstractController
         return new JsonResponse([
             'message' => 'Diagnostic enregistré avec succès',
             'disease' => $diagnosisName,
-            'dossierMedicalId' => $dossierMedical->getId() 
+            'dossierMedicalId' => $dossierMedical->getId()
         ]);
+    }
+
+
+
+
+    #[Route('/diagnostique/pdf/{id}', name: 'diagnostique_pdf')]
+    public function generatePdf(Diagnostique $diagnostique, Pdf $pdf): Response
+    {
+        // Convert the Twig template to HTML
+        $html = $this->renderView('diagnostique/pdf.html.twig', [
+            'diagnostique' => $diagnostique,
+        ]);
+
+        // Generate PDF from HTML
+        $pdfContent = $pdf->getOutputFromHtml($html);
+
+        // Create a response to download the PDF
+        $response = new Response($pdfContent);
+        $response->headers->set('Content-Type', 'application/pdf');
+        $response->headers->set('Content-Disposition', $response->headers->makeDisposition(
+            ResponseHeaderBag::DISPOSITION_ATTACHMENT,
+            'diagnosis_' . $diagnostique->getId() . '.pdf'
+        ));
+
+        return $response;
     }
 }

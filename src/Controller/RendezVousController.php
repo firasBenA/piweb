@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\RendezVous;
 use App\Entity\Consultation;
 use App\Entity\Patient;
+use App\Entity\User;
 use App\Form\RendezVousType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -187,10 +188,10 @@ final class RendezVousController extends AbstractController
 
 
     #[Route('patdash/{id}', name: 'patientDashboard')]
-    public function dashboard(Patient $patient): Response
+    public function dashboard(User $user): Response
     {
         return $this->render('consultation/patdash.html.twig', [
-            'patient' => $patient,
+            'user' => $user,
         ]);
     }
 }

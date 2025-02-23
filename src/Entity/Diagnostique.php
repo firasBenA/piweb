@@ -36,12 +36,11 @@ class Diagnostique
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
     private ?\DateTimeInterface $dateSymptomes = null;
     
-
-    #[ORM\ManyToOne(targetEntity: Patient::class, inversedBy: 'diagnostiques')]
-    private ?Patient $patient = null;
-
-    #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
-    private ?Medecin $medecin = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'diagnostiques')]
+    private ?User $patient = null;
+    
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'diagnostiques')]
+    private ?User $medecin = null;
 
     #[ORM\Column]
     private ?int $status = null;

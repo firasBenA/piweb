@@ -137,4 +137,18 @@ console.error("Error:", error);
 document.getElementById("diagnosisResult").innerText = "An error occurred while processing the diagnosis.";
 });
 });
+
+document.addEventListener("DOMContentLoaded", function () {
+    fetch('/diagnostique/pdf/{{ diagnostique.id }}')
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'diagnosis_{{ diagnostique.id }}.pdf';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+});
 </script>{% endblock %}

@@ -54,6 +54,10 @@ class RendezVous
     #[ORM\OneToOne(mappedBy: 'rendezVous', cascade: ['persist', 'remove'])]
     private ?Consultation $consultation = null;
 
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'rendezVouses')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
     public function getId(): ?int
     {
         return $this->id;
@@ -133,6 +137,18 @@ class RendezVous
     public function setConsultation(?Consultation $consultation): static
     {
         $this->consultation = $consultation;
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+    {
+        $this->user = $user;
+
         return $this;
     }
 }

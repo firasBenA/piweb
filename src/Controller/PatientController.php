@@ -128,8 +128,8 @@ use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInt
 class PatientController extends AbstractController
 {
 
-    #[Route('/dashboard/{id}', name: 'patientDashboard_page')]
-    public function dashboard(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage, int $id): Response
+    #[Route('/patient', name: 'patient_dashboard')]
+    public function dashboard(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage): Response
     {
         $token = $tokenStorage->getToken();
         $user = $token?->getUser();
@@ -138,9 +138,8 @@ class PatientController extends AbstractController
             throw $this->createAccessDeniedException('You are not logged in.');
         }
 
-        // Retrieve the dossierMedical by ID and ensure it belongs to the patient
+        // Retrieve the patient's dossier medical for the logged-in user
         $dossierMedical = $entityManager->getRepository(DossierMedical::class)->findOneBy([
-            'id' => $id,
             'user' => $user
         ]);
 
@@ -174,7 +173,6 @@ class PatientController extends AbstractController
         ]);
     }
 
-
     /*#[Route('/patient', name: 'patient_dashboard')]
     public function index(): Response
     {
@@ -187,7 +185,7 @@ class PatientController extends AbstractController
         $user = $this->getUser();
 
         if (!$user) {
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_login2');
         }
 
         $user->setNom($request->request->get('nom'));
@@ -218,7 +216,7 @@ class PatientController extends AbstractController
         $user = $this->getUser();
 
         if (!$user) {
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_login2');
         }
 
         $entityManager->remove($user);

@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\Diagnostique;
 use App\Entity\DossierMedical;
 use App\Entity\Patient;
+use App\Entity\Prescription;
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -27,7 +28,24 @@ final class MedecinController extends AbstractController
             'medecin' => $user,
         ]);
     }
-    
+
+    #[Route('/prescription', name: 'PrescriptionMedecin_page')]
+    public function prescriptionDashboard(Security $security, EntityManagerInterface $entityManager): Response
+    {
+        // Fetch the currently authenticated user (Medecin)
+        $user = $security->getUser();
+
+        // Retrieve the 'prescriptions' related to the logged-in Medecin
+        $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy(['medecin' => $user]);
+
+        // Return the dashboard view for the medecin with the prescriptions
+        return $this->render('consultation/prescriptionDashboard.html.twig', [
+            'medecin' => $user,
+            'diagnostiques' => $diagnostiques,  // Pass prescriptions to the template
+        ]);
+    }
+
+
     #[Route('/infomed/{id}', name: 'infomed')]
     public function show(int $id, EntityManagerInterface $entityManager): Response
     {
@@ -138,7 +156,7 @@ class MedecinController extends AbstractController
         $user = $this->getUser();
 
         if (!$user) {
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_login2');
         }
 
         $user->setNom($request->request->get('nom'));
@@ -176,7 +194,7 @@ class MedecinController extends AbstractController
         $user = $this->getUser();
 
         if (!$user) {
-            return $this->redirectToRoute('app_login');
+            return $this->redirectToRoute('app_login2');
         }
 
         $entityManager->remove($user);
@@ -203,5 +221,5 @@ class MedecinController extends AbstractController
 
         return $newFilename;
     }*/
-}}
-
+    }
+}

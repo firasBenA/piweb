@@ -40,9 +40,12 @@ class Prescription
     #[ORM\JoinColumn(nullable: false)]
     private ?Diagnostique $diagnostique = null;
 
-    #[ORM\ManyToOne(targetEntity: Medecin::class, inversedBy: 'prescriptions')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Medecin $medecin = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'prescriptions')]
+    private ?User $medecin = null;
+    
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'prescriptions')]
+    private ?User $patient = null;
+    
 
     public function getId(): ?int
     {
@@ -104,14 +107,25 @@ class Prescription
         return $this;
     }
 
-    public function getMedecin(): ?Medecin
+    public function getMedecin(): ?User
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?Medecin $medecin): static
+    public function setMedecin(?User $medecin): static
     {
         $this->medecin = $medecin;
+        return $this;
+    }
+
+    public function getPatient(): ?User
+    {
+        return $this->patient;
+    }
+
+    public function setPatient(?User $patient): static
+    {
+        $this->patient = $patient;
         return $this;
     }
 }

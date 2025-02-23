@@ -20,8 +20,8 @@ security:
             entry_point: form_login
             
             form_login:
-                login_path: app_login
-                check_path: app_login
+                login_path: app_login2
+                check_path: app_login2
                 default_target_path: app_home
                 always_use_default_target_path: false
                 use_referer: true
@@ -29,7 +29,7 @@ security:
 
             logout:
                 path: /logout
-                target: app_login
+                target: app_login2
 
             custom_authenticator: App\Security\AppAuthenticator
 

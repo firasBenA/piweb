@@ -9,7 +9,7 @@
 {% block body %}
     <div class="container mt-5">
         <div class="text-center mb-4">
-            <h1>Bienvenue {{ patient.nom }} {{ patient.prenom }}</h1>
+            <h1>Bienvenue {{ user.nom }} {{ user.prenom }}</h1>
             <p>Voici votre espace personnel</p>
         </div>
 
@@ -19,9 +19,9 @@
                 <div class="card shadow-sm mb-4">
                     <div class="card-body text-center">
                         <h5 class="card-title">Mes Informations</h5>
-                        <p><strong>Email :</strong> {{ patient.email }}</p>
-                        <p><strong>Âge :</strong> {{ patient.age }} ans</p>
-                        <p><strong>Telephone :</strong> {{ patient.telephone }}</p>
+                        <p><strong>Email :</strong> {{ user.email }}</p>
+                        <p><strong>Âge :</strong> {{ user.age }} ans</p>
+                        <p><strong>Telephone :</strong> {{ user.telephone }}</p>
                     </div>
                 </div>
             </div>
@@ -33,7 +33,7 @@
                         <h5 class="card-title">Mes Rendez-vous</h5>
 
                         {# Bouton Ajouter Rendez-vous #}
-                        <a href="{{ path('addrendezvous', {'id': patient.id}) }}" class="btn btn-success mb-3">
+                        <a href="{{ path('addrendezvous', {'id': user.id}) }}" class="btn btn-success mb-3">
                             <i class="fas fa-calendar-plus"></i> Ajouter un Rendez-vous
                         </a>
 
@@ -46,7 +46,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                {% for rendezVous in patient.rendezVouses %}
+                                {% for rendezVous in user.rendezVouses %}
                                     <tr>
                                         <td>{{ rendezVous.date|date('d/m/Y H:i') }}</td>
                                         <td>Dr. {{ rendezVous.medecin.nom }} {{ rendezVous.medecin.prenom }}</td>
@@ -73,7 +73,7 @@
                 <div class="card shadow-sm">
                     <div class="card-body">
                         <h5 class="card-title">Mes Consultations Passées</h5>
-                        <a href="{{ path('listrdv', {'id': patient.id}) }}" class="btn btn-primary mb-3">
+                        <a href="{{ path('listrdv', {'id': user.id}) }}" class="btn btn-primary mb-3">
                             Voir mes consultations
                         </a>
                     </div>
