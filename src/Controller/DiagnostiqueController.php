@@ -4,8 +4,10 @@ namespace App\Controller;
 
 use App\Entity\Diagnostique;
 use App\Entity\DossierMedical;
+use App\Entity\Patient;
 use App\Entity\Symptomes;
 use App\Form\DiagnostiqueType;
+use App\Repository\DiagnostiqueRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -35,7 +37,6 @@ final class DiagnostiqueController extends AbstractController
     {
 
         $user = $this->getUser();
-
         // Check if a user is logged in
         if (!$user instanceof UserInterface) {
             throw $this->createAccessDeniedException('You are not logged in.');
@@ -147,6 +148,7 @@ final class DiagnostiqueController extends AbstractController
             $diagnostique->setSelectedSymptoms($symptoms);
             $diagnostique->setZoneCorps($zoneCorps);
             $diagnostique->setDescription($diagnosisData['description'] ?? 'Pas de description disponible.');
+            $diagnostique->setPatient($user);  
 
             // Persist the Diagnostique entity to the database
             $this->entityManager->persist($diagnostique);
@@ -221,6 +223,8 @@ final class DiagnostiqueController extends AbstractController
         $diagnosis->setStatus(0);
         $diagnosis->setSelectedSymptoms($symptoms);
         $diagnosis->setZoneCorps($zoneCorps);
+        $diagnosis->setPatient($id);  
+
         if ($dateSymptomes) {
             try {
                 $dateSymptomes = new \DateTime($dateSymptomes);
@@ -240,6 +244,20 @@ final class DiagnostiqueController extends AbstractController
         ]);
     }
 
+
+    #[Route('/diagnostique/delete/{id}', name: 'app_diagnostique_delete', methods: ['POST'])]
+    public function delete(int $id, DiagnostiqueRepository $diagnostiqueRepository, EntityManagerInterface $em): Response
+    {
+        $diagnostique = $diagnostiqueRepository->find($id);
+
+        if ($diagnostique) {
+
+            $em->remove($diagnostique);
+            $em->flush();
+        }
+
+        return $this->redirectToRoute('prescriptionAdmin');
+    }
 
 
 

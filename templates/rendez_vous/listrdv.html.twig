@@ -2,7 +2,7 @@
 
 {% block body %}
     <div class="container mt-5">
-        <h1 class="text-center text-primary fw-bold">📅 Liste des Rendez-vous de {{ patient.nom }} {{ patient.prenom }}</h1>
+        <h1 class="text-center text-primary fw-bold">📅 Liste des Rendez-vous de {{ user.nom }} {{ user.prenom }}</h1>
 
         {% if rendezVous is empty %}
             <p class="text-center text-muted mt-4">Aucun rendez-vous trouvé.</p>
@@ -57,7 +57,7 @@
         {% endif %}
 
         <div class="text-center mt-4">
-            <a href="{{ path('addrendezvous', {'id': patient.id}) }}" class="btn btn-success btn-lg shadow px-5 py-2 fw-bold">
+            <a href="{{ path('addrendezvous', {'id': user.id}) }}" class="btn btn-success btn-lg shadow px-5 py-2 fw-bold">
                 ➕ Réserver un Nouveau Rendez-vous
             </a>
         </div>

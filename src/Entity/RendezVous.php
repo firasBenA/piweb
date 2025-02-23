@@ -15,14 +15,14 @@ class RendezVous
     #[ORM\Column]
     private ?int $id = null;
 
-    #[ORM\ManyToOne(targetEntity: Patient::class, inversedBy: 'rendezVouses')]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'rendezVouses')]
     #[ORM\JoinColumn(nullable: false)]
-    private ?Patient $patient = null;
+    private ?User $patient = null;
 
     #[ORM\ManyToOne(inversedBy: 'rendezVouses')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Le médecin est obligatoire.")]
-    private ?Medecin $medecin = null;
+    private ?User  $medecin = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotNull(message: "La date est obligatoire.")]
@@ -63,23 +63,23 @@ class RendezVous
         return $this->id;
     }
 
-    public function getPatient(): ?Patient
+    public function getPatient(): ?User
     {
         return $this->patient;
     }
 
-    public function setPatient(?Patient $patient): static
+    public function setPatient(?User $patient): static
     {
         $this->patient = $patient;
         return $this;
     }
 
-    public function getMedecin(): ?Medecin
+    public function getMedecin(): ?User 
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?Medecin $medecin): static
+    public function setMedecin(?User  $medecin): static
     {
         $this->medecin = $medecin;
         return $this;

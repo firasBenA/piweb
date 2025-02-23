@@ -143,12 +143,12 @@ class Diagnostique
         return $this;
     }
 
-    public function getPatient(): ?Patient
+    public function getPatient(): ?User
     {
         return $this->patient;
     }
 
-    public function setPatient(?Patient $patient): static
+    public function setPatient(?User $patient): static
     {
         $this->patient = $patient;
 

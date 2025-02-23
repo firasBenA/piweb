@@ -114,8 +114,11 @@ class PrescriptionController extends AbstractController
         Request $request,
         Prescription $prescription,
         EntityManagerInterface $entityManager,
-        DiagnostiqueRepository $diagnostiqueRepository
+        Security $security
     ) {
+
+        $user = $security->getUser();
+
         $diagnostique = $prescription->getDiagnostique();
 
         if (!$diagnostique) {
@@ -132,20 +135,23 @@ class PrescriptionController extends AbstractController
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            return $this->redirectToRoute('medecinDossierMedicalByPatient_page', [
+            return $this->redirectToRoute('PrescriptionMedecin_page', [
                 'id' => $patient->getId()
             ]);
         }
 
         return $this->render('prescription/edit.html.twig', [
             'form' => $form->createView(),
+            'user' => $user
         ]);
     }
 
 
     #[Route('/delete/{id}', name: 'app_prescription_delete', methods: ['POST'])]
-    public function delete(Prescription $prescription, EntityManagerInterface $entityManager): RedirectResponse
+    public function delete(Prescription $prescription, EntityManagerInterface $entityManager, Security $security): RedirectResponse
     {
+        $user = $security->getUser();
+
         $diagnostique = $prescription->getDiagnostique();
 
         if (!$diagnostique) {
@@ -160,17 +166,51 @@ class PrescriptionController extends AbstractController
 
         $this->addFlash('success', 'Prescription deleted successfully.');
 
-        return $this->redirectToRoute('medecinDossierMedicalByPatient_page', [
-            'id' => $patient->getId()
+        return $this->redirectToRoute('PrescriptionMedecin_page', [
+            'id' => $patient->getId(),
+            'user' => $user
+
+        ]);
+    }
+
+    #[Route('/delete/{id}', name: 'admin_app_prescription_delete', methods: ['POST'])]
+    public function deleteAdmin(Prescription $prescription, EntityManagerInterface $entityManager, Security $security): RedirectResponse
+    {
+        $user = $security->getUser();
+
+        $diagnostique = $prescription->getDiagnostique();
+
+        if (!$diagnostique) {
+            throw $this->createNotFoundException("Aucun diagnostique trouvé pour cette prescription.");
+        }
+
+        $dossierMedical = $diagnostique->getDossierMedical();
+        $patient = $dossierMedical->getUser();
+
+        $entityManager->remove($prescription);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Prescription deleted successfully.');
+
+        return $this->redirectToRoute('prescriptionAdmin', [
+            'id' => $patient->getId(),
+            'user' => $user
+
         ]);
     }
 
 
     #[Route('/{id}', name: "prescription_details", methods: ['GET'])]
-    public function showPrescriptionDetails(Prescription $prescription): Response
-    {
+    public function showPrescriptionDetails(
+        Prescription $prescription,
+        Security $security
+    ): Response {
+        $user = $security->getUser();
+
+
         return $this->render('prescription/details.html.twig', [
             'prescription' => $prescription,
+            'user' => $user
         ]);
     }
 }

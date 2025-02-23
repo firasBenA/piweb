@@ -17,9 +17,7 @@
 							<div class="main-menu f-right d-none d-lg-block">
 								<nav>
 									<ul id="navigation">
-										<li>
-											<a href="{{ path('home_page') }}">Home</a>
-										</li>
+
 										<li>
 											<a href="{{ path('medecinDashboard') }}">Tableau De Board</a>
 										</li>
@@ -31,17 +29,18 @@
 										</li>
 									</li>
 									<li>
-										<a href="#">Mes Informations</a>
+										<a href="{{ path('infomed') }}">Mes Informations</a>
 									</li>
 									<li></li>
 								</nav>
 							</div>
 							<div class="header-right-btn f-right d-none d-lg-block ml-30">
-								{% if medecin %}
+								{% if medecin is defined and medecin %}
 									<a href="{{ path('app_logout') }}" class="btn header-btn" style="background-color: #dc3545; color: white; padding: 10px 20px; border-radius: 5px;">Logout</a>
 								{% else %}
-									<a href="{{ path('app_login') }}" class="btn header-btn" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Sign-In</a>
+									<a href="{{ path('app_login2') }}" class="btn header-btn" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Sign-In</a>
 								{% endif %}
+
 							</div>
 						</div>
 					</div>

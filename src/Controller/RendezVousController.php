@@ -9,97 +9,90 @@ use App\Entity\User;
 use App\Form\RendezVousType;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 
 final class RendezVousController extends AbstractController
 {
-    #[Route('/addrendezvous/{id}', name: 'addrendezvous')]
-    public function addRendezVous(ManagerRegistry $rm, Request $req, int $id): Response
+    #[Route('/addrendezvous', name: 'addrendezvous')]
+    public function addRendezVous(ManagerRegistry $rm, Request $req, Security $security): Response
     {
         $entityManager = $rm->getManager();
-        $patient = $entityManager->getRepository(Patient::class)->find($id);
 
-    if (!$patient) {
-        throw $this->createNotFoundException("Le patient avec l'ID $id n'existe pas.");
-    }
+        // Récupérer l'utilisateur connecté
+        $user = $security->getUser();
 
-    $rdv = new RendezVous();
-    $form = $this->createForm(RendezVousType::class, $rdv);
-    $form->handleRequest($req);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        if ($rdv->getDate() === null) {
-            $this->addFlash('error', 'La date ne peut pas être vide.');
-            return $this->render('rendez_vous/addrdv.html.twig', [
-                'form' => $form->createView(),
-                'patient' => $patient,
-            ]);
+        // Vérifier si l'utilisateur est un patient
+        if (!$user || !in_array('ROLE_PATIENT', $user->getRoles())) {
+            throw $this->createAccessDeniedException("Accès refusé. Seuls les patients peuvent prendre un rendez-vous.");
         }
 
+        // Récupérer tous les utilisateurs ayant le rôle "ROLE_MEDECIN"
+        $medecins = $entityManager->getRepository(User::class)
+            ->createQueryBuilder('u')
+            ->where('u.roles LIKE :role')
+            ->setParameter('role', '%ROLE_MEDECIN%')
+            ->getQuery()
+            ->getResult();
+
         $rdv = new RendezVous();
-        $form = $this->createForm(RendezVousType::class, $rdv);
+        $form = $this->createForm(RendezVousType::class, $rdv, [
+            'medecins' => $medecins // Pass the filtered list of doctors (users with ROLE_MEDECIN)
+        ]);
         $form->handleRequest($req);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            if ($rdv->getDate() < new \DateTime('today')) {
-                // Modify the error message here
-                $this->addFlash('error', 'La date choisie doit être aujourd\'hui ou à une date ultérieure. Veuillez sélectionner une date valide.');
-                return $this->redirectToRoute('addrendezvous', ['id' => $id]);
+            if ($rdv->getDate() === null) {
+                $this->addFlash('error', 'La date ne peut pas être vide.');
+                return $this->render('rendez_vous/addrdv.html.twig', [
+                    'form' => $form->createView(),
+                    'patient' => $user,
+                ]);
             }
+            $rdv->setUser($user);
+            $rdv->setPatient($user);
+            $rdv->setStatut('pending');
 
-        // Création de la consultation
-        $consultation = new Consultation();
-        $consultation->setRendezVous($rdv);
-        $consultation->setPatient($patient);
-        $consultation->setMedecin($rdv->getMedecin());
-        $consultation->setDate($rdv->getDate());
-        $consultation->setTypeConsultation($rdv->getTypeRdv());
-        $consultation->setPrix(0);
-
+            // Enregistrer le rendez-vous
             $entityManager->persist($rdv);
             $entityManager->flush();
 
-        $this->addFlash('success', 'Votre rendez-vous a été enregistré avec succès.');
+            $this->addFlash('success', 'Votre rendez-vous a été enregistré avec succès.');
 
-            $entityManager->persist($consultation);
-            $entityManager->flush();
-
-            $this->addFlash('success', 'Votre rendez-vous a été enregistré avec succès. Une consultation a été créée.');
-
-            return $this->redirectToRoute('listrdv', ['id' => $id]);
+            return $this->redirectToRoute('listrdv');
         }
 
         return $this->render('rendez_vous/addrdv.html.twig', [
             'form' => $form->createView(),
-            'patient' => $patient,
+            'user' => $user,
         ]);
     }
 
-    return $this->render('rendez_vous/addrdv.html.twig', [
-        'form' => $form->createView(),
-        'patient' => $patient,
-    ]);
-}
 
-    #[Route('/listrdv/{id}', name: 'listrdv')]
-    public function listRendezVous(ManagerRegistry $rm, int $id): Response
+    #[Route('/listrdv', name: 'listrdv')]
+    public function listRendezVous(ManagerRegistry $rm, Security $security): Response
     {
         $entityManager = $rm->getManager();
-        $patient = $entityManager->getRepository(Patient::class)->find($id);
 
-        if (!$patient) {
-            throw $this->createNotFoundException("Le patient avec l'ID $id n'existe pas.");
+        // Get the logged-in user
+        $user = $security->getUser();
+
+        // Check if the user is a patient
+        if (!$user || !in_array('ROLE_PATIENT', $user->getRoles())) {
+            throw $this->createAccessDeniedException("Accès refusé. Seuls les patients peuvent voir leurs rendez-vous.");
         }
 
-        $rendezVous = $entityManager->getRepository(RendezVous::class)->findBy(['patient' => $patient]);
+        // Get the appointments for the logged-in patient's ID
+        $rendezVous = $entityManager->getRepository(RendezVous::class)->findBy(['patient' => $user]);
 
         return $this->render('rendez_vous/listrdv.html.twig', [
             'rendezVous' => $rendezVous,
-            'patient' => $patient,
+            'user' => $user,
         ]);
     }
+
 
     #[Route('/deleteRdv/{id}', name: 'delete_rdv')]
     public function deleteRendezVous(ManagerRegistry $rm, int $id): Response
@@ -126,39 +119,39 @@ final class RendezVousController extends AbstractController
     {
         $entityManager = $rm->getManager();
         $rdv = $entityManager->getRepository(RendezVous::class)->find($id);
-    
+
         if (!$rdv) {
             throw $this->createNotFoundException('Le rendez-vous n\'existe pas.');
         }
-    
+
         // ✅ Vérification et affectation des valeurs par défaut pour éviter les erreurs "null"
         if ($rdv->getTypeRdv() === null) {
             $rdv->setTypeRdv('consultation'); // Valeur par défaut
         }
-    
+
         if ($rdv->getCause() === null) {
             $rdv->setCause('Non spécifié'); // Valeur par défaut
         }
-    
+
         if ($rdv->getDate() === null) {
             $rdv->setDate(new \DateTime()); // Date actuelle par défaut
         }
-    
+
         $form = $this->createForm(RendezVousType::class, $rdv);
         $form->handleRequest($req);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
             $this->addFlash('success', 'Votre rendez-vous a été modifié avec succès.');
-    
+
             return $this->redirectToRoute('listrdv', ['id' => $rdv->getPatient()->getId()]);
         }
-    
+
         return $this->render('rendez_vous/editrdv.html.twig', [
             'form' => $form->createView(),
         ]);
     }
-    
+
     #[Route('/details/{id}', name: 'detail_rdv')]
     public function details(ManagerRegistry $rm, int $id): Response
     {
@@ -188,10 +181,13 @@ final class RendezVousController extends AbstractController
 
 
     #[Route('patdash/{id}', name: 'patientDashboard')]
-    public function dashboard(User $user): Response
+    public function dashboard(User $user, Security $security): Response
     {
+
+        $patient = $security->getUser();
+
         return $this->render('consultation/patdash.html.twig', [
-            'user' => $user,
+            'patient' => $patient,
         ]);
     }
 }

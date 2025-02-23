@@ -17,15 +17,14 @@ final class MedecinController extends AbstractController
 {
 
 
-    #[Route('/medash', name: 'medecin_dashboard')]
+    #[Route('/medash', name: 'medecinDashboard')]
     public function dashboard(Security $security): Response
     {
         // Fetch the currently authenticated user (Medecin)
-        $user = $security->getUser();
+        $medecin = $security->getUser();
 
-        // Return the dashboard view for the medecin
         return $this->render('consultation/meddash.html.twig', [
-            'medecin' => $user,
+            'medecin' => $medecin,
         ]);
     }
 
@@ -37,28 +36,35 @@ final class MedecinController extends AbstractController
 
         // Retrieve the 'prescriptions' related to the logged-in Medecin
         $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy(['medecin' => $user]);
+        $prescriptions = $entityManager->getRepository(Prescription::class)->findBy(['medecin' => $user]);
+
 
         // Return the dashboard view for the medecin with the prescriptions
         return $this->render('consultation/prescriptionDashboard.html.twig', [
             'medecin' => $user,
-            'diagnostiques' => $diagnostiques,  // Pass prescriptions to the template
+            'diagnostiques' => $diagnostiques,
+            'prescriptions' => $prescriptions  // Pass prescriptions to the template
         ]);
     }
 
 
-    #[Route('/infomed/{id}', name: 'infomed')]
-    public function show(int $id, EntityManagerInterface $entityManager): Response
+    #[Route('/infomed', name: 'infomed')]
+    public function show(Security $security): Response
     {
-        $medecin = $entityManager->getRepository(User::class)->find($id);
+        // Récupérer l'utilisateur actuellement connecté
+        $medecin = $security->getUser();
 
-        if (!$medecin) {
-            throw $this->createNotFoundException('Médecin non trouvé.');
+        // Vérifier si l'utilisateur est bien connecté et possède le rôle médecin
+        if (!$medecin || !in_array('ROLE_MEDECIN', $medecin->getRoles())) {
+            throw $this->createAccessDeniedException("Accès refusé.");
         }
 
+        // Afficher la vue avec les informations du médecin connecté
         return $this->render('consultation/infomed.html.twig', [
             'medecin' => $medecin,
         ]);
     }
+
 
 
     /*#[Route('/medecin/dashboard/{id}', name: 'medecinDashboard_page')]

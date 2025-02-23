@@ -29,17 +29,17 @@ final class ConsultationController extends AbstractController
     public function listForMedecin(Security $security, EntityManagerInterface $entityManager): Response
     {
         // Get the logged-in medecin (assumed that user is a Medecin)
-        $medecin = $security->getUser();
+        $user = $security->getUser();
 
-        if (!$medecin) {
+        if (!$user) {
             throw $this->createAccessDeniedException('You are not logged in or not a medecin.');
         }
 
         // Fetch the rendezvous for the logged-in medecin
-        $rendezVous = $entityManager->getRepository(RendezVous::class)->findBy(['medecin' => $medecin]);
+        $rendezVous = $entityManager->getRepository(RendezVous::class)->findBy(['medecin' => $user]);
 
         return $this->render('consultation/listcon.html.twig', [
-            'medecin' => $medecin,
+            'user' => $user,
             'rendezVous' => $rendezVous,
         ]);
     }
@@ -75,8 +75,17 @@ final class ConsultationController extends AbstractController
     }
 
     #[Route('/modifier/{id}', name: 'rendezvous_modifier')]
-    public function modifierRendezVous(Request $request, RendezVous $rendezVous, EntityManagerInterface $entityManager): Response
+    public function modifierRendezVous(Request $request, RendezVous $rendezVous, EntityManagerInterface $entityManager, Security $security): Response
     {
+        // Get the logged-in user
+        $user = $security->getUser();
+
+        // Check if the logged-in user is either a doctor or a patient associated with the rendez-vous
+        if (!$user || (!in_array('ROLE_MEDECIN', $user->getRoles()) && $user !== $rendezVous->getPatient()->getUser())) {
+            // If the user is not authorized to modify the rendez-vous, deny access
+            throw $this->createAccessDeniedException("Vous n'avez pas l'autorisation de modifier ce rendez-vous.");
+        }
+
         // Créer le formulaire avec l'entité RendezVous
         $form = $this->createForm(ModifConType::class, $rendezVous);
         $form->handleRequest($request);
@@ -110,8 +119,10 @@ final class ConsultationController extends AbstractController
 
         return $this->render('consultation/modifier.html.twig', [
             'form' => $form->createView(),
+            'user' => $user
         ]);
     }
+
 
 
     #[Route('medash', name: 'medecinDashboard')]
