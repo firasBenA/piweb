@@ -27,11 +27,13 @@ class Article
     #[ORM\Column(length: 255, nullable: false)]
     #[Assert\NotBlank(message: 'L\'image est obligatoire.')]
     #[Assert\Url(message: 'L\'URL de l\'image n\'est pas valide.')]
-    private ?string $image = '';
+    #[Assert\File(
+        maxSize: '5M',
+        mimeTypes: ['image/jpeg', 'image/png'],
+        mimeTypesMessage: 'Veuillez télécharger une image au format JPEG ou PNG.'
+    )]
+    private ?string $image = null;
 
-    #[ORM\Column(nullable: false)]
-    #[Assert\Positive(message: 'ce champ doit être un nombre positif')]
-    private ?int $prix_article = 0;
 
     #[ORM\Column(length: 255, nullable: false)]
     #[Assert\NotBlank(message: 'ce champ est obligatoire.')]
@@ -80,17 +82,6 @@ class Article
     public function setImage(string $image): static
     {
         $this->image = $image;
-        return $this;
-    }
-
-    public function getPrixArticle(): ?int
-    {
-        return $this->prix_article;
-    }
-
-    public function setPrixArticle(int $prix_article): static
-    {
-        $this->prix_article = $prix_article;
         return $this;
     }
 

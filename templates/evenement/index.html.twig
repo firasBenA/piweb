@@ -1,67 +1,116 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Evenements{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .title {
-            text-align: center;
+        .event-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
             margin-top: 20px;
+        }
+        .event-card {
+            width: 60%;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+        }
+        .event-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .event-content {
+            padding: 20px;
+        }
+        .event-title {
+            font-size: 20px;
             font-weight: bold;
             color: #343a40;
         }
-        .table-container {
-            margin: 30px auto;
-            width: 70%;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        .event-description {
+            color: #6c757d;
+            margin-top: 10px;
+        }
+        .event-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            color: #007bff;
+        }
+        .event-actions {
+            margin-top: 15px;
+        }
+        /* Search Bar Styling */
+        .search-container {
+            display: flex;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+        .search-input {
+            width: 250px;
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
         }
     </style>
 {% endblock %}
+
 {% block body %}
     <div class="container">
-        <h1 class="title">Evenements</h1>
-        <div class="table-container">
-            <table class="table table-hover text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Id</th>
-                        <th>Nom</th>
-                        <th>Contenu</th>
-                        <th>Type</th>
-                        <th>Statut</th>
-                        <th>Lieu</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for evenement in evenements %}
-                        <tr>
-                            <td>{{ evenement.id }}</td>
-                            <td>{{ evenement.nom }}</td>
-                            <td>{{ evenement.contenue }}</td>
-                            <td>{{ evenement.type }}</td>
-                            <td>{{ evenement.statut }}</td>
-                            <td>{{ evenement.lieuxEvent }}</td>
-                            <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : 'N/A' }}</td>
-                            <td>
-                                <a class="btn btn-info btn-sm btn-action" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
-                                <a class="btn btn-warning btn-sm btn-action" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="8" class="text-muted">Il n'y a pas d'événements pour le moment</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <h1 class="text-center">Événements</h1>
+
+        <!-- Search Bar -->
+        <div class="search-container">
+            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un événement...">
         </div>
+
+        <div class="event-container" id="eventList">
+            {% for evenement in evenements %}
+                <div class="event-card">
+                    <img src="{{ asset('uploads/event.jpg') }}" class="event-img" alt="Evenement image">
+                    <div class="event-content">
+                        <span class="badge bg-primary">{{ evenement.dateEvent|date('d M') }}</span>
+                        <h2 class="event-title">{{ evenement.nom }}</h2>
+                        <p class="event-description">{{ evenement.contenue }}</p>
+                        <div class="event-meta">
+                            <span>{{ evenement.type }}</span>
+                            <span>{{ evenement.lieuxEvent }}</span>
+                        </div>
+                        <div class="event-actions">
+                            <a class="btn btn-primary btn-sm" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
+                            <a class="btn btn-warning btn-sm" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center text-muted">Il n'y a pas d'événements pour le moment.</p>
+            {% endfor %}
+        </div>
+        
         <div class="text-center">
             <a class="btn btn-success" href="{{ path('app_evenement_ajouter') }}">Créer un événement</a>
         </div>
     </div>
+
+    <script>
+        document.getElementById("searchInput").addEventListener("keyup", function () {
+            let filter = this.value.toLowerCase();
+            let events = document.querySelectorAll(".event-card");
+
+            events.forEach(event => {
+                let title = event.querySelector(".event-title").textContent.toLowerCase();
+                if (title.includes(filter)) {
+                    event.style.display = "block";
+                } else {
+                    event.style.display = "none";
+                }
+            });
+        });
+    </script>
 {% endblock %}

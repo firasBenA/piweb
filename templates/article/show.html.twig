@@ -25,11 +25,7 @@
                     </tr>
                     <tr>
                         <th>Image</th>
-                        <td><img src="{{ article.image }}" alt="Image" class="img-fluid img-thumbnail"></td>
-                    </tr>
-                    <tr>
-                        <th>Prix</th>
-                        <td>{{ article.prixArticle }}TND</td>
+                        <td><img src="{{ asset('uploads/articles/' ~ article.image) }}" alt="Image" class="img-fluid img-thumbnail"></td>
                     </tr>
                     <tr>
                         <th>Commentaire</th>

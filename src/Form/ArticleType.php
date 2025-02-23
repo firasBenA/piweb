@@ -39,11 +39,6 @@ class ArticleType extends AbstractType
                     ])
                 ],
             ])
-            ->add('prix_article', IntegerType::class, [
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ])
             ->add('commantaire', TextType::class, [
                 'required' => true,
                 'empty_data' => '', // Forces an empty string if the field is left empty
