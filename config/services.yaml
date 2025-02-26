@@ -8,6 +8,14 @@ parameters:
     images_directory: '%kernel.project_dir%/public/uploads/images'
 
 services:
+    App\Security\TwoFactorMailer:
+        arguments:
+            $mailer: '@mailer.mailer'
+            $twig: '@twig'
+        tags:
+            - { name: 'scheb_two_factor.email.auth_code_mailer' }
+
+
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.

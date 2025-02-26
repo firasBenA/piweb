@@ -8,11 +8,12 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface as EmailTwoFactorInterface;
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'il existe déjà un compte avec cet email.')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTwoFactorInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -86,6 +87,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Assert\NotBlank(message: 'Veuillez télécharger votre certificat.', groups: ['medecin'])]
     private ?string $certificat = null;
+
+
+    #[ORM\Column(type: 'boolean')]
+    private $emailAuthEnabled = true;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $emailAuthCode = null;
 
     public function getId(): ?int
     {
@@ -268,5 +276,25 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->certificat = $certificat;
 
         return $this;
+    }
+    public function getEmailAuthCode(): ?string
+    {
+        return $this->emailAuthCode;
+    }
+
+    public function setEmailAuthCode(string $authCode): void
+    {
+        $this->emailAuthCode = $authCode;
+    }
+
+    
+    public function isEmailAuthEnabled(): bool
+    {
+        return $this->emailAuthEnabled;
+    }
+
+    public function getEmailAuthRecipient(): string
+    {
+        return $this->getEmail();
     }
 }
