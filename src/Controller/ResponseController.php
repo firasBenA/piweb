@@ -54,8 +54,7 @@ final class ResponseController extends AbstractController
             // Dynamically fetch the email address of the user (patient) linked to the reclamation
             $patient = $reclamation->getUser(); // Assuming you have a User associated with Reclamation
             $emailAddress = $patient->getEmail(); // Get the email address dynamically
-            $config = Configuration::getDefaultConfiguration()->setApiKey('api-key', getenv('SENDINBLUE_API_KEY'));
-
+            
             $apiInstance = new TransactionalEmailsApi(null, $config);
     
             // Create the email content
