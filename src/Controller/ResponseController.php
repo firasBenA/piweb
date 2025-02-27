@@ -8,6 +8,7 @@ use App\Form\ReponseType;
 use App\Repository\ReclamationRepository;
 use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
@@ -23,15 +24,29 @@ use SendinBlue\Client\Model\SendSmtpEmail;
 final class ResponseController extends AbstractController
 {
     #[Route('/liste', name: 'reponse_reclamation_page')]
-    public function index(EntityManagerInterface $entityManager): Response
+    public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, Request $request): Response
     {
+        $page = $request->query->getInt('page', 1); // Get the current page from the URL, default is 1
+        $limit = 2; // Set the number of items per page to 2
+    
+        // Fetch the data
         $reclamations = $entityManager->getRepository(Reclamation::class)
             ->findBy([], ['date_debut' => 'DESC']);
-
+    
+        // Paginate the data
+        $pagination = $paginator->paginate(
+            $reclamations,
+            $page,
+            $limit // 2 items per page
+        );
+    
+        // Pass pagination to the template
         return $this->render('reponse/liste.html.twig', [
-            'reclamations' => $reclamations,
+            'pagination' => $pagination,
         ]);
     }
+    
+    
 
     #[Route('/ajouter/{id}', name: 'ajouter_reponse')]
     public function ajouter(Reclamation $reclamation, Request $request, EntityManagerInterface $entityManager): Response
@@ -54,8 +69,8 @@ final class ResponseController extends AbstractController
             // Dynamically fetch the email address of the user (patient) linked to the reclamation
             $patient = $reclamation->getUser(); // Assuming you have a User associated with Reclamation
             $emailAddress = $patient->getEmail(); // Get the email address dynamically
-            
-            $apiInstance = new TransactionalEmailsApi(null, $config);
+
+                   $apiInstance = new TransactionalEmailsApi(null, $config);
     
             // Create the email content
             $sendSmtpEmail = new SendSmtpEmail([

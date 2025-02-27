@@ -2,27 +2,28 @@
 
 {% block body %}
     <div class="container mt-5">
-<a href="{{ path('reclamation_statistiques') }}" class="btn btn-primary">
-    Voir les statistiques 📊
-</a>
-{% for message in app.flashes('success') %}
-    <div class="alert alert-success" role="alert">
-        {{ message }}
-    </div>
-{% endfor %}
+        <a href="{{ path('reclamation_statistiques') }}" class="btn btn-primary">
+            Voir les statistiques 📊
+        </a>
 
-{% for message in app.flashes('error') %}
-    <div class="alert alert-danger" role="alert">
-        {{ message }}
-    </div>
-{% endfor %}
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
 
         <h2 class="text-center text-primary fw-bold mb-4">📄 Liste des Réclamations</h2>
 
-        {% if reclamations is empty %}
+        {% if pagination is empty %}
             <p class="text-center text-muted">Aucune réclamation trouvée.</p>
         {% else %}
-            {% for reclamation in reclamations %}
+            {% for reclamation in pagination %}
                 <div class="card mb-4 shadow-lg rounded">
                     <div class="card-body">
                         <h5 class="card-title text-dark">{{ reclamation.sujet }}</h5>
@@ -46,10 +47,66 @@
                     </div>
                 </div>
             {% endfor %}
+            <div class="pagination-container">
+                {{ knp_pagination_render(pagination) }}
+            </div>
         {% endif %}
+    
+
+            
     </div>
 
     <style>
+.pagination-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-top: 30px;
+}
+
+.pagination-container .pagination {
+    display: flex;
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.pagination-container .pagination li {
+    margin: 0 10px; /* Increase space between page numbers */
+}
+
+.pagination-container .pagination li a {
+    display: block;
+    padding: 15px 25px; /* Increase padding for larger buttons */
+    background-color: #007bff;
+    color: white;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1.5rem; /* Increase font size of page numbers */
+    transition: background-color 0.3s ease;
+}
+
+.pagination-container .pagination li a:hover {
+    background-color: #0056b3;
+}
+
+.pagination-container .pagination li.disabled a {
+    background-color: #e0e0e0;
+    color: #9e9e9e;
+    pointer-events: none;
+}
+
+.pagination-container .pagination li.active a {
+    background-color: #28a745;
+    color: white;
+}
+
+.pagination-container .pagination li.active a:hover {
+    background-color: #218838;
+}
+
+
         body {
             background-color: #f8f9fa;
         }
