@@ -3,11 +3,11 @@
 namespace App\Form;
 
 use App\Entity\RendezVous;
-use App\Entity\Medecin;
+use App\Entity\User;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+use Doctrine\ORM\EntityRepository;
 use Symfony\Component\Validator\Constraints\NotBlank;
 use Symfony\Component\Validator\Constraints\NotNull;
-
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -20,19 +20,22 @@ class RendezVousType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-    ->add('date', DateType::class, [
-        'widget' => 'single_text',
-        'label' => 'Date du rendez-vous',
-        'required' => false,
-        'by_reference' => true,
-        'constraints' => [new NotBlank(['message'=>'Pick a date!']),
-                    new NotNull(['message'=>'Pick a date!'])],
-        'attr' => [
-            'class' => 'form-control',
-            'placeholder' => 'Sélectionnez une date',
-        ],
-    ])
-
+            // Champ date, obligatoire
+            ->add('date', DateType::class, [
+                'widget' => 'single_text',
+                'label' => 'Date du rendez-vous',
+                'required' => true, // La date est obligatoire
+                'by_reference' => true,
+                'constraints' => [
+                    new NotBlank(['message' => 'Veuillez sélectionner une date.']),
+                    new NotNull(['message' => '']),
+                ],
+                'attr' => [
+                    'class' => 'form-control',
+                    'placeholder' => 'Sélectionnez une date',
+                ],
+            ])
+            // Type de rendez-vous
             ->add('type_rdv', ChoiceType::class, [
                 'choices' => [
                     'Consultation' => 'consultation',
@@ -40,31 +43,42 @@ class RendezVousType extends AbstractType
                     'Urgence' => 'urgence',
                 ],
                 'label' => 'Type de rendez-vous',
-                'required' => true, // Requis pour validation
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control',
                 ],
                 'placeholder' => 'Sélectionnez un type de rendez-vous',
             ])
+            // Cause du rendez-vous
             ->add('cause', TextType::class, [
                 'label' => 'Cause du rendez-vous',
-                'required' => true, // Requis pour validation
+                'required' => true,
                 'attr' => [
                     'class' => 'form-control',
                     'placeholder' => 'Décrivez la raison du rendez-vous',
-                    
                 ],
-                
             ])
+            // Médecin
             ->add('medecin', EntityType::class, [
-                'class' => Medecin::class,
-                'choice_label' => 'nom',
+                'class' => User::class,
+                'query_builder' => function (EntityRepository $er) {
+                    // Utilisation d'une requête plus précise pour vérifier les rôles des médecins
+                    return $er->createQueryBuilder('u')
+    ->where("u.roles LIKE :role")
+    ->setParameter('role', '%"MEDECIN"%');
+
+    
+                },
+                'choice_label' => function (User $user) {
+                    // Affichage du nom et prénom du médecin
+                    return $user->getNom() . ' ' . $user->getPrenom();
+                },
                 'label' => 'Médecin',
-                'required' => true, // Requis pour validation
+                'placeholder' => 'Sélectionnez un médecin',
+                'required' => true, // Assurez-vous que la sélection est obligatoire
                 'attr' => [
                     'class' => 'form-control',
                 ],
-                'placeholder' => 'Sélectionnez un médecin',
             ]);
     }
 

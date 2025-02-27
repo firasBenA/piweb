@@ -32,6 +32,8 @@ class ConsultationHis
     #[ORM\Column]
     private ?int $duree = null;
 
+
+
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     private ?Consultation $consultation = null;
 
@@ -48,7 +50,6 @@ class ConsultationHis
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -60,7 +61,6 @@ class ConsultationHis
     public function setType(string $type): static
     {
         $this->type = $type;
-
         return $this;
     }
 
@@ -72,7 +72,6 @@ class ConsultationHis
     public function setPrix(int $prix): static
     {
         $this->prix = $prix;
-
         return $this;
     }
 
@@ -84,7 +83,6 @@ class ConsultationHis
     public function setNotesMed(string $notesMed): static
     {
         $this->notesMed = $notesMed;
-
         return $this;
     }
 
@@ -96,7 +94,6 @@ class ConsultationHis
     public function setTraitement(string $traitement): static
     {
         $this->traitement = $traitement;
-
         return $this;
     }
 
@@ -108,9 +105,12 @@ class ConsultationHis
     public function setDuree(int $duree): static
     {
         $this->duree = $duree;
-
         return $this;
     }
+
+ 
+
+    
 
     public function getConsultation(): ?Consultation
     {
@@ -120,7 +120,6 @@ class ConsultationHis
     public function setConsultation(?Consultation $consultation): static
     {
         $this->consultation = $consultation;
-
         return $this;
     }
 }

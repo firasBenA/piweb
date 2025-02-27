@@ -1,3 +1,4 @@
+
 <header>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 
@@ -19,28 +20,30 @@
                                         <li><a href="{{ path('medecin_dashboard', {'id': medecin.id}) }}">Tableau De Board</a></li>
                                         <li><a href="{{ path('consultation_medecin_list', {'id': medecin.id}) }}">Consultations</a></li>
                                         <li><a href="{{ path('infomed', {'id': medecin.id}) }}">Mes Informations</a></li>
+                                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+									{% if app.user %}
+										<div class="profile-dropdown">
+											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
+											<div class="profile-dropdown-content">
+												<a href="{{ path('app_logout') }}">
+													<i class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
+												</a>
+											</div>
+										</div>
+									{% else %}
+										<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
+									{% endif %}
                                     </ul>
+                                    
+							 </div>
                                 </nav>
                             </div>
                             
-                            <!-- Dropdown menu corrigé -->
-                            <div class="header-right-btn f-right d-none d-lg-block ml-30">
-                                <div class="dropdown">
-                                    <a href="#" class="btn dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                        <li><a class="dropdown-item" href="{{ path('medecin_update_profile') }}">
-                                            <i class="fas fa-user-edit"></i> Modifier profil
-                                        </a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
-                                            <i class="fas fa-sign-out-alt"></i> Déconnexion
-                                        </a></li>
-                                    </ul>
-                                </div>
+                            
+                                    
+                                
                             </div>
-                            <!-- Fin dropdown -->
+                            <!-- Fin  -->
                             
                         </div>
                     </div>
@@ -109,7 +112,7 @@
                             <tbody>
                                 {% for consultation in consultations %}
                                     <tr>
-                                        <td>{{ consultation.date|date('d/m/Y H:i') }}</td>
+                                        <td>{{ consultation.date|date('d/m/Y ') }}</td>
                                         <td>{{ consultation.patient.nom }} {{ consultation.patient.prenom }}</td>
                                         <td>{{ consultation.rendezVous.statut }}</td>
                                     </tr>
@@ -259,5 +262,47 @@
             flex: 0 0 75%;
             padding: 15px;
         }
+
+        .profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-dropdown img {
+    width: 40px; /* Taille réduite */
+    height: 40px; /* Taille réduite */
+    border-radius: 50%; /* Cercle parfait */
+    object-fit: cover; /* Assure que l'image remplit bien le cercle */
+    border: 2px solid #fff; /* Bordure blanche pour un meilleur design */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Ombre légère */
+    cursor: pointer;
+}
+
+.profile-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.profile-dropdown:hover .profile-dropdown-content {
+    display: block;
+}
+
+.profile-dropdown-content a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.profile-dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
     </style>
 {% endblock %}

@@ -22,28 +22,25 @@
                                         <li><a href="{{ path('medecin_dashboard1', {'id': medecin.id}) }}">Tableau De Board</a></li>
                                         <li><a href="{{ path('consultation_medecin_list', {'id': medecin.id}) }}">Consultations</a></li>
                                         <li><a href="{{ path('infomed', {'id': medecin.id}) }}">Mes Informations</a></li>
+                                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+									{% if app.user %}
+										<div class="profile-dropdown">
+											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
+											<div class="profile-dropdown-content">
+												<a href="{{ path('app_logout') }}">
+													<i class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
+												</a>
+											</div>
+										</div>
+									{% else %}
+										<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
+									{% endif %}
                                     </ul>
                                 </nav>
                             </div>
                             
                             <!-- Dropdown menu corrigé -->
-                            <div class="header-right-btn f-right d-none d-lg-block ml-30">
-                                <div class="dropdown">
-                                    <a href="#" class="btn dropdown-toggle" id="profileDropdown" data-bs-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                        <img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image" class="rounded-circle" style="width: 40px; height: 40px; object-fit: cover;">
-                                    </a>
-                                    <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="profileDropdown">
-                                        <li><a class="dropdown-item" href="{{ path('medecin_update_profile') }}">
-                                            <i class="fas fa-user-edit"></i> Modifier profil
-                                        </a></li>
-                                        <li><hr class="dropdown-divider"></li>
-                                        <li><a class="dropdown-item text-danger" href="{{ path('app_logout') }}">
-                                            <i class="fas fa-sign-out-alt"></i> Déconnexion
-                                        </a></li>
-                                    </ul>
-                                </div>
-                            </div>
-                            <!-- Fin dropdown -->
+                            
                             
                         </div>
                     </div>
@@ -96,9 +93,9 @@
                                 </td>
                                 <td>
                                     <div class="d-flex justify-content-center">
-                                        <a href="{{ path('rendezvous_approuver', {'id': rdv.id}) }}" class="btn btn-success btn-sm me-2 shadow-lg">✅ Approuver</a>
-                                        <a href="{{ path('rendezvous_refuser', {'id': rdv.id}) }}" class="btn btn-danger btn-sm me-2 shadow-lg">❌ Refuser</a>
+<button class="btn btn-success btn-sm me-2 shadow-lg" onclick="openPopup({{ rdv.id }})">✅ Approuver</button>                                        <a href="{{ path('rendezvous_refuser', {'id': rdv.id}) }}" class="btn btn-danger btn-sm me-2 shadow-lg">❌ Refuser</a>
                                         <a href="{{ path('rendezvous_modifier', {'id': rdv.id}) }}" class="btn btn-warning btn-sm shadow-lg">✏ Modifier</a>
+                                        <a href="{{ path('consultationhis_create', {'id': rdv.id}) }}" class="btn btn-info btn-sm shadow-lg">📝 Notes</a>
                                     </div>
                                 </td>
                             </tr>
@@ -107,12 +104,42 @@
                 </table>
             </div>
         {% endif %}
+
+         <!-- Modal Popup -->
+        <div id="popupModal" class="modal">
+            <div class="modal-content">
+                <span class="close" onclick="closePopup()">&times;</span>
+                <h2>Approuver le Rendez-vous</h2>
+                <form id="approveForm" method="post">
+    <label for="heure">Choisir une heure:</label>
+    <input type="time" id="heure" name="heure" required>
+    
+    <label for="prix">Prix de la consultation:</label>
+    <input type="number" id="prix" name="prix" required>
+
+    <button type="submit" class="btn btn-success">Confirmer</button>
+</form>
+
+            </div>
+        </div>
         
         <!-- Retour au Dashboard Button -->
         <div class="text-center mt-4">
             <a href="{{ path('medecin_dashboard1') }}" class="btn btn-secondary">Retour au Dashboard</a>
         </div>
     </div>
+
+    <script>
+       function openPopup(rdvId) {
+    document.getElementById("popupModal").style.display = "block";
+    document.getElementById("approveForm").action = "{{ path('rendezvous_approuver', {'id': '__ID__'}) }}".replace("__ID__", rdvId);
+}
+
+function closePopup() {
+    document.getElementById("popupModal").style.display = "none";
+}
+
+    </script>
     <!-- Main Content End -->
 
     <!-- Footer Start -->
@@ -337,4 +364,46 @@
     .table td {
         font-size: 14px;
     }
+
+    .profile-dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.profile-dropdown img {
+    width: 40px; /* Taille réduite */
+    height: 40px; /* Taille réduite */
+    border-radius: 50%; /* Cercle parfait */
+    object-fit: cover; /* Assure que l'image remplit bien le cercle */
+    border: 2px solid #fff; /* Bordure blanche pour un meilleur design */
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Ombre légère */
+    cursor: pointer;
+}
+
+.profile-dropdown-content {
+    display: none;
+    position: absolute;
+    right: 0;
+    background-color: white;
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 5px;
+    min-width: 150px;
+    z-index: 1000;
+}
+
+.profile-dropdown:hover .profile-dropdown-content {
+    display: block;
+}
+
+.profile-dropdown-content a {
+    display: block;
+    padding: 10px;
+    text-decoration: none;
+    color: black;
+}
+
+.profile-dropdown-content a:hover {
+    background-color: #f1f1f1;
+}
+
 </style>

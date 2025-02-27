@@ -3,7 +3,7 @@
 namespace App\Repository;
 
 use App\Entity\Consultation;
-use App\Entity\Medecin;
+use App\Entity\User;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Persistence\ManagerRegistry;
@@ -18,7 +18,7 @@ class ConsultationRepository extends ServiceEntityRepository
         parent::__construct($registry, Consultation::class);
     }
 
-    public function findByMedecinRendezVous(Medecin $medecin): array
+    public function findByMedecinRendezVous(User $medecin): array
 {
     return $this->createQueryBuilder('c')
         ->innerJoin('c.rendezVous', 'r')

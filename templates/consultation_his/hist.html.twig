@@ -1,0 +1,30 @@
+{# templates/consultationhis/create.html.twig #}
+
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une Consultation Historique{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center text-primary fw-bold">Créer une Consultation Historique</h1>
+
+        {{ form_start(form) }}
+            
+            <div class="mb-3">
+                {{ form_row(form.notesMed) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.traitement) }}
+            </div>
+            <div class="mb-3">
+                {{ form_row(form.duree) }}
+            </div>
+            
+            
+
+            <div class="d-flex justify-content-center mt-4">
+                <button type="submit" class="btn btn-primary">Créer Consultation Historique</button>
+            </div>
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

@@ -33,6 +33,45 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->getEntityManager()->flush();
     }
 
+
+
+    public function findByRole(string $role)
+    {
+        return $this->createQueryBuilder('u')
+            ->andWhere('u.roles LIKE :role')
+            ->setParameter('role', '%"' . $role . '"%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    public function getDistinctSpecialites()
+    {
+        return $this->createQueryBuilder('u')
+            ->select('DISTINCT u.specialite')
+            ->where('u.specialite IS NOT NULL')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouver des médecins par spécialité
+     */
+    public function findMedecinsBySpecialite(string $specialite)
+    {
+        return $this->createQueryBuilder('u')
+            ->where('u.specialite LIKE :specialite')
+            ->setParameter('specialite', '%' . $specialite . '%')
+            ->getQuery()
+            ->getResult();
+    }
+
+    /**
+     * Trouver un médecin par son id
+     */
+    public function findMedecinById(int $id)
+    {
+        return $this->find($id);
+    }
     //    /**
     //     * @return User[] Returns an array of User objects
     //     */

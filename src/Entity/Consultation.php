@@ -15,20 +15,23 @@ class Consultation
     #[ORM\Column]
     private ?int $id = null;
 
+    // Relation avec le rendez-vous
     #[ORM\OneToOne(cascade: ['persist', 'remove'])]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Le rendez-vous est obligatoire.")]
     private ?RendezVous $rendezVous = null;
 
+    // Relation avec User (patient)
     #[ORM\ManyToOne(inversedBy: 'consultations')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Le patient est obligatoire.")]
-    private ?Patient $patient = null;
+    private ?User $patient = null;
 
+    // Relation avec User (médecin)
     #[ORM\ManyToOne(inversedBy: 'consultations')]
     #[ORM\JoinColumn(nullable: false)]
     #[Assert\NotNull(message: "Le médecin est obligatoire.")]
-    private ?Medecin $medecin = null;
+    private ?User $medecin = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     #[Assert\NotNull(message: "La date est obligatoire.")]
@@ -63,31 +66,28 @@ class Consultation
     public function setRendezVous(RendezVous $rendezVous): static
     {
         $this->rendezVous = $rendezVous;
-
         return $this;
     }
 
-    public function getPatient(): ?Patient
+    public function getPatient(): ?User
     {
         return $this->patient;
     }
 
-    public function setPatient(?Patient $patient): static
+    public function setPatient(?User $patient): static
     {
         $this->patient = $patient;
-
         return $this;
     }
 
-    public function getMedecin(): ?Medecin
+    public function getMedecin(): ?User
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?Medecin $medecin): static
+    public function setMedecin(?User $medecin): static
     {
         $this->medecin = $medecin;
-
         return $this;
     }
 
@@ -99,7 +99,6 @@ class Consultation
     public function setDate(\DateTimeInterface $date): static
     {
         $this->date = $date;
-
         return $this;
     }
 
@@ -111,7 +110,6 @@ class Consultation
     public function setPrix(int $prix): static
     {
         $this->prix = $prix;
-
         return $this;
     }
 
@@ -123,7 +121,6 @@ class Consultation
     public function setTypeConsultation(string $type_consultation): static
     {
         $this->type_consultation = $type_consultation;
-
         return $this;
     }
 }
