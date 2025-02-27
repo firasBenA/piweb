@@ -19,6 +19,7 @@ security:
             lazy: true
             provider: app_user_provider
             entry_point: form_login
+            
 
             form_login:
                 login_path: app_login2
@@ -47,6 +48,9 @@ security:
     access_control:
         - { path: ^/dashboard_patient, roles: ROLE_USER, requires_channel: https }
         - { path: ^/send-2fa-code, roles: ROLE_USER }
+        - { path: ^/app_login2, roles: PUBLIC_ACCESS }
+        - { path: ^/app_forgot_password_request, roles: PUBLIC_ACCESS }
+        - { path: ^/app_check_email, roles: PUBLIC_ACCESS }
 
 when@test:
     security:

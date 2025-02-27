@@ -3,70 +3,77 @@
 	<head>
 		<meta charset="UTF-8">
 		<title>
-			{% block title %}templates
-			{% endblock %}
+			{% block title %}Welcome!{% endblock %}
 		</title>
 		<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 128 128%22><text y=%221.2em%22 font-size=%2296%22>⚫️</text><text y=%221.3em%22 x=%220.2em%22 font-size=%2276%22 fill=%22%23fff%22>sf</text></svg>">
 		{% block stylesheets %}
-			<link rel="manifest" href="site.webmanifest">
+			 <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+			<link rel="manifest" href="{{ asset('site.webmanifest') }}">
 			<link
-			rel="shortcut icon" type="image/x-icon" href="{{asset('assets/img/favicon.ico')}}">
+			rel="shortcut icon" type="image/x-icon" href="{{ asset('assets/img/favicon.ico') }}">
 			<!-- CSS here -->
-			<link rel="stylesheet" href="{{asset('assets/css/bootstrap.min.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/owl.carousel.min.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/slicknav.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/flaticon.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/gijgo.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/animate.min.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/animated-headline.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/magnific-popup.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/fontawesome-all.min.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/themify-icons.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/slick.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/nice-select.css')}}">
-			<link rel="stylesheet" href="{{asset('assets/css/style.css')}}">
-			
+			<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/slicknav.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/flaticon.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/gijgo.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/animate.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/animated-headline.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/magnific-popup.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/fontawesome-all.min.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/themify-icons.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/slick.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/nice-select.css') }}">
+			<link rel="stylesheet" href="{{ asset('assets/css/style.css') }}">
+			<style><style>
+				.profile-image {ge {
+					width: 40px;					width: 40px;
+					height: 40px;
+					border-radius: 50%; 50%;
+					object-fit: cover;					object-fit: cover;
+				}
+			</style>
 		{% endblock %}
 
 		{% block javascripts %}
 			<!-- JS here -->
 
-			<script src="{{asset('./assets/js/vendor/modernizr-3.5.0.min.js')}}"></script>
+			<script src="{{ asset('assets/js/vendor/modernizr-3.5.0.min.js') }}"></script>			<script src="{{ asset('assets/js/vendor/modernizr-3.5.0.min.js') }}"></script>
 			<!-- Jquery, Popper, Bootstrap -->
-			<script src="{{asset('./assets/js/vendor/jquery-1.12.4.min.js')}}"></script>
-			<script src="{{asset('./assets/js/popper.min.js')}}"></script>
-			<script src="{{asset('./assets/js/bootstrap.min.js')}}"></script>
+			<script src="{{ asset('assets/js/vendor/jquery-1.12.4.min.js') }}"></script>/script>
+			<script src="{{ asset('assets/js/popper.min.js') }}"></script>>
+			<script src="{{ asset('assets/js/bootstrap.min.js') }}"></script>otstrap.min.js') }}"></script>
 			<!-- Jquery Mobile Menu -->
-			<script src="{{asset('./assets/js/jquery.slicknav.min.js')}}"></script>
+			<script src="{{ asset('assets/js/jquery.slicknav.min.js') }}"></script>t>
 
-			<!-- Jquery Slick , Owl-Carousel Plugins -->
-			<script src="{{asset('./assets/js/owl.carousel.min.js')}}"></script>
-			<script src="{{asset('./assets/js/slick.min.js')}}"></script>
-			<!-- One Page, Animated-HeadLin -->
-			<script src="{{asset('./assets/js/wow.min.js')}}"></script>
-			<script src="{{asset('./assets/js/animated.headline.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.magnific-popup.js')}}"></script>
+			<!-- Jquery Slick , Owl-Carousel Plugins -->			<!-- Jquery Slick , Owl-Carousel Plugins -->
+			<script src="{{ asset('assets/js/owl.carousel.min.js') }}"></script>t('assets/js/owl.carousel.min.js') }}"></script>
+			<script src="{{ asset('assets/js/slick.min.js') }}"></script>
+			<!-- One Page, Animated-HeadLin -->Lin -->
+			<script src="{{ asset('assets/js/wow.min.js') }}"></script>
+			<script src="{{ asset('assets/js/animated.headline.js') }}"></script>ipt>
+			<script src="{{ asset('assets/js/jquery.magnific-popup.js') }}"></script>			<script src="{{ asset('assets/js/jquery.magnific-popup.js') }}"></script>
 
 			<!-- Date Picker -->
-			<script src="{{asset('./assets/js/gijgo.min.js')}}"></script>
+			<script src="{{ asset('assets/js/gijgo.min.js') }}"></script>
 			<!-- Nice-select, sticky -->
-			<script src="{{asset('./assets/js/jquery.nice-select.min.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.sticky.js')}}"></script>
+			<script src="{{ asset('assets/js/jquery.nice-select.min.js') }}"></script>et('assets/js/jquery.nice-select.min.js') }}"></script>
+			<script src="{{ asset('assets/js/jquery.sticky.js') }}"></script>cript>
 
 			<!-- counter , waypoint -->
-			<script src="{{asset('./assets/js/jquery.counterup.min.js')}}"></script>
-			<script src="{{asset('./assets/js/waypoints.min.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.countdown.min.js')}}"></script>
+			<script src="{{ asset('assets/js/jquery.counterup.min.js') }}"></script></script>
+			<script src="{{ asset('assets/js/waypoints.min.js') }}"></script>
+			<script src="{{ asset('assets/js/jquery.countdown.min.js') }}"></script>			<script src="{{ asset('assets/js/jquery.countdown.min.js') }}"></script>
 			<!-- contact js -->
-			<script src="{{asset('./assets/js/contact.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.form.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.validate.min.js')}}"></script>
-			<script src="{{asset('./assets/js/mail-script.js')}}"></script>
-			<script src="{{asset('./assets/js/jquery.ajaxchimp.min.js')}}"></script>
+			<script src="{{ asset('assets/js/contact.js') }}"></script>
+			<script src="{{ asset('assets/js/jquery.form.js') }}"></script>script>
+			<script src="{{ asset('assets/js/jquery.validate.min.js') }}"></script>			<script src="{{ asset('assets/js/jquery.validate.min.js') }}"></script>
+			<script src="{{ asset('assets/js/mail-script.js') }}"></script>('assets/js/mail-script.js') }}"></script>
+			<script src="{{ asset('assets/js/jquery.ajaxchimp.min.js') }}"></script>assets/js/jquery.ajaxchimp.min.js') }}"></script>
 
-			<!-- Jquery Plugins, main Jquery -->
-			<script src="{{asset('./assets/js/plugins.js')}}"></script>
-			<script src="{{asset('./assets/js/main.js')}}"></script>
+			<!-- Jquery Plugins, main Jquery -->lugins, main Jquery -->
+			<script src="{{ asset('assets/js/plugins.js') }}"></script>pt src="{{ asset('assets/js/plugins.js') }}"></script>
+			<script src="{{ asset('assets/js/main.js') }}"></script>		<script src="{{ asset('assets/js/main.js') }}"></script>
 
 			{% block importmap %}
 				{{ importmap('app') }}
@@ -76,79 +83,79 @@
 	
 	<header>
 		<!--? Header Start -->
-		<div class="header-area">
+		<div class="header-area">">
 			<div class="main-header header-sticky">
-				<div class="container-fluid">
+				<div class="container-fluid">s="container-fluid">
 					<div
 						class="row align-items-center">
-						<!-- Logo -->
+						<!-- Logo -->Logo -->
 						<div class="col-xl-2 col-lg-2 col-md-1">
 							<div class="logo">
-								<a href="{{ path('home_page') }}"><img src="assets/img/logo/logo.png" alt=""></a>
+								<a href="{{ path('home_page') }}"><img src="{{ asset('assets/img/logo/logo.png') }}" alt=""></a>set('assets/img/logo/logo.png') }}" alt=""></a>
 							</div>
 						</div>
-						<div class="col-xl-10 col-lg-10 col-md-10">
+						<div class="col-xl-10 col-lg-10 col-md-10">s="col-xl-10 col-lg-10 col-md-10">
 							<div
-								class="menu-main d-flex align-items-center justify-content-end">
-								<!-- Main-menu -->
+								class="menu-main d-flex align-items-center justify-content-end">enu-main d-flex align-items-center justify-content-end">
+								<!-- Main-menu -->in-menu -->
 								<div class="main-menu f-right d-none d-lg-block">
 									<nav>
-										<ul id="navigation">
+										<ul id="navigation">d="navigation">
 											<li>
-												<a href="{{ path('home_page') }}">Home</a>
+												<a href="{{ path('home_page') }}">Home</a>ref="{{ path('home_page') }}">Home</a>
+											</li>>
+											<li>
+												<a href="{{ path('diagnostique_page') }}">Diagnostique</a>ref="{{ path('diagnostique_page') }}">Diagnostique</a>
+											</li>>
+											<li>
+												<a href="{{ path('doctors_page') }}">Doctors</a>ctors_page') }}">Doctors</a>
 											</li>
 											<li>
-												<a href="{{ path('diagnostique_page') }}">Diagnostique</a>
+												<a href="{{ path('appointment_page') }}">Appointment</a>f="{{ path('appointment_page') }}">Appointment</a>
 											</li>
 											<li>
-												<a href="{{ path('doctors_page') }}">Doctors</a>
-											</li>
-											<li>
-												<a href="{{ path('appointment_page') }}">Appointment</a>
-											</li>
-											<li>
-												<a href="{{ path('blog_page') }}">Blog</a>
-												<ul class="submenu">
-													<li>
-														<a href="{{ path('blog_page') }}">Blog</a>
+												<a href="{{ path('blog_page') }}">Blog</a>f="{{ path('blog_page') }}">Blog</a>
+												<ul class="submenu">lass="submenu">
+													<li>>
+														<a href="{{ path('blog_page') }}">Blog</a>a href="{{ path('blog_page') }}">Blog</a>
 													</li>
-													<li>
-														<a href="{{ path('blog_details_page') }}">Blog Details</a>
-													</li>
-												</ul>
+													<li>>
+														<a href="{{ path('blog_details_page') }}">Blog Details</a>a href="{{ path('blog_details_page') }}">Blog Details</a>
+													</li>li>
+												</ul>ul>
 											</li>
 											<li>
-												<a href="{{ path('reclamation_page') }}">Reclamation</a>
+												<a href="{{ path('reclamation_page') }}">Reclamation</a>n_page') }}">Reclamation</a>
 											</li>
 										</ul>
 									</nav>
 								</div>
-								<div class="header-right-btn f-right d-none d-lg-block ml-30">
-									{% if app.user %}
-										<div class="profile-dropdown">
-											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
+								<div class="header-right-btn f-right d-none d-lg-block ml-30">ss="header-right-btn f-right d-none d-lg-block ml-30">
+									{% if app.user %}p.user %}
+										<div class="profile-dropdown">lass="profile-dropdown">
+											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image" class="profile-image">="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image" class="profile-image">
 											<div class="profile-dropdown-content">
-												<a href="{{ path('app_logout') }}">
-													<i class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
-												</a>
-											</div>
-										</div>
+												<a href="{{ path('app_logout') }}">"{{ path('app_logout') }}">
+													<i class="fas fa-sign-out-alt logout-icon"></i> Déconnexioni class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
+												</a>				</a>
+											</div>div>
+										</div>div>
 									{% else %}
-										<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
+										<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>('app_login2') }}" class="btn header-btn">Se connecter</a>
 									{% endif %}
-								</div>
-								
-							</div>
-						</div>
-						<!-- Mobile Menu -->
-						<div class="col-12">
-							<div class="mobile_menu d-block d-lg-none"></div>
+								</div>v>
+																
+							</div>	</div>
+						</div>>
+						<!-- Mobile Menu --> Mobile Menu -->
+						<div class="col-12">v class="col-12">
+							<div class="mobile_menu d-block d-lg-none"></div>div class="mobile_menu d-block d-lg-none"></div>
 						</div>
 
-						
-					</div>
+												
+					</div>					</div>
 				</div>
-			</div>
+			</div>			</div>
 		</div>
 		<!-- Header End -->
 	</header>
@@ -158,96 +165,103 @@
 
 	<footer>
 		<!--? Footer Start-->
-		<div class="footer-area section-bg" data-background="assets/img/gallery/footer_bg.jpg">
+		<div class="footer-area section-bg" data-background="{{ asset('assets/img/gallery/footer_bg.jpg') }}">area section-bg" data-background="{{ asset('assets/img/gallery/footer_bg.jpg') }}">
 			<div class="container">
 				<div class="footer-top footer-padding">
-					<div class="row d-flex justify-content-between">
-						<div class="col-xl-3 col-lg-3 col-md-4 col-sm-8">
+					<div class="row d-flex justify-content-between">s="row d-flex justify-content-between">
+						<div class="col-xl-3 col-lg-3 col-md-4 col-sm-8">ass="col-xl-3 col-lg-3 col-md-4 col-sm-8">
 							<div
 								class="single-footer-caption mb-50">
 								<!-- logo -->
 								<div class="footer-logo">
-									<a href="{{ path('home_page') }}"><img src="assets/img/logo/logo2_footer.png" alt=""></a>
+									<a href="{{ path('home_page') }}"><img src="{{ asset('assets/img/logo/logo2_footer.png') }}" alt=""></a>'home_page') }}"><img src="{{ asset('assets/img/logo/logo2_footer.png') }}" alt=""></a>
 								</div>
 							</div>
 						</div>
 						<div class="col-xl-3 col-lg-4 col-md-6 col-sm-5">
-							<div class="single-footer-caption mb-50">
-								<div class="footer-tittle">
-									<h4>About Us</h4>
-									<div class="footer-pera">
-										<p class="info1">Lorem igpsum doldfor sit amet, adipiscing elit, sed do eiusmod tempor cergelit rgh.
+							<div class="single-footer-caption mb-50">ss="single-footer-caption mb-50">
+								<div class="footer-tittle">lass="footer-tittle">
+									<h4>About Us</h4>About Us</h4>
+									<div class="footer-pera">v class="footer-pera">
+										<p class="info1">Lorem igpsum doldfor sit amet, adipiscing elit, sed do eiusmod tempor cergelit rgh.t, adipiscing elit, sed do eiusmod tempor cergelit rgh.
 										</p>
-										<p class="info1">Lorem ipsum dolor sit amet, adipiscing elit.</p>
-									</div>
+										<p class="info1">Lorem ipsum dolor sit amet, adipiscing elit.</p>lor sit amet, adipiscing elit.</p>
+									</div>v>
 								</div>
 							</div>
 						</div>
-						<div class="col-xl-4 col-lg-4 col-md-6 col-sm-8">
-							<div class="single-footer-caption mb-50">
-								<div class="footer-number mb-50">
+						<div class="col-xl-4 col-lg-4 col-md-6 col-sm-8">ss="col-xl-4 col-lg-4 col-md-6 col-sm-8">
+							<div class="single-footer-caption mb-50">ngle-footer-caption mb-50">
+								<div class="footer-number mb-50"> mb-50">
 									<h4>
 										<span>+564
 										</span>7885 3222</h4>
-									<p>youremail@gmail.com</p>
+									<p>youremail@gmail.com</p>>
 								</div>
-								<!-- Form -->
-								<div class="footer-form">
-									<div id="mc_embed_signup">
-										<form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
-											<input type="email" name="EMAIL" id="newsletter-form-email" placeholder=" Email Address " class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your email address'">
-											<div class="form-icon">
-												<button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">
-													Send
-												</button>
-											</div>
-											<div class="mt-10 info"></div>
+								<!-- Form --> -->
+								<div class="footer-form">ooter-form">
+									<div id="mc_embed_signup">"mc_embed_signup">
+										<form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">ttps://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
+											<input type="email" name="EMAIL" id="newsletter-form-email" placeholder=" Email Address " class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your email address'"> type="email" name="EMAIL" id="newsletter-form-email" placeholder=" Email Address " class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your email address'">
+											<div class="form-icon"> class="form-icon">
+												<button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">utton type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">
+													SendSend
+												</button></button>
+											</div></div>
+											<div class="mt-10 info"></div>	<div class="mt-10 info"></div>
 										</form>
 									</div>
 								</div>
 							</div>
-						</div>
+						</div>>
 					</div>
 				</div>
 				<div class="footer-bottom">
-					<div class="row d-flex justify-content-between align-items-center">
-						<div class="col-xl-9 col-lg-8">
+					<div class="row d-flex justify-content-between align-items-center">gn-items-center">
+						<div class="col-xl-9 col-lg-8">class="col-xl-9 col-lg-8">
 							<div class="footer-copy-right">
 								<p>
-									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
-									Copyright &copy;
-									All rights reserved | This template is made with
-									<i class="fa fa-heart" aria-hidden="true"></i>
+									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+									Copyright &copy;right &copy;
+									All rights reserved | This template is made with rights reserved | This template is made with
+									<i class="fa fa-heart" aria-hidden="true"></i>i class="fa fa-heart" aria-hidden="true"></i>
 									by
-									<a href="https://colorlib.com" target="_blank">Colorlib</a>
-									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
+									<a href="https://colorlib.com" target="_blank">Colorlib</a>orlib.com" target="_blank">Colorlib</a>
+									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->be removed. Template is licensed under CC BY 3.0. -->
 								</p>
 							</div>
 						</div>
 						<div
 							class="col-xl-3 col-lg-4">
-							<!-- Footer Social -->
-							<div class="footer-social f-right">
+							<!-- Footer Social -->Footer Social -->
+							<div class="footer-social f-right">ooter-social f-right">
 								<a href="#">
-									<i class="fab fa-twitter"></i>
+									<i class="fab fa-twitter"></i>class="fab fa-twitter"></i>
 								</a>
-								<a href="https://www.facebook.com/sai4ull">
-									<i class="fab fa-facebook-f"></i>
+								<a href="https://www.facebook.com/sai4ull">/sai4ull">
+									<i class="fab fa-facebook-f"></i>class="fab fa-facebook-f"></i>
 								</a>
-								<a href="#">
-									<i class="fas fa-globe"></i>
-								</a>
-								<a href="#">
-									<i class="fab fa-instagram"></i>
+								<a href="#">ref="#">
+									<i class="fas fa-globe"></i> class="fas fa-globe"></i>
+								</a>a>
+								<a href="#">a href="#">
+									<i class="fab fa-instagram"></i>	<i class="fab fa-instagram"></i>
 								</a>
 							</div>
 						</div>
 					</div>
-				</div>
-			</div>
-		</div>
-		<!-- Footer End-->
-	</footer><!-- Scroll Up --><div id="back-top">
+				</div>div>
+			</div>v>
+		</div>		</div>
+		<!-- Footer End-->Footer End-->
+
+
+
+
+
+
+
+</html>	</div>		</a>			<i class="fas fa-level-up-alt"></i>		<a title="Go to Top" href="#">	</footer><!-- Scroll Up --><div id="back-top">	</footer><!-- Scroll Up --><div id="back-top">
 		<a title="Go to Top" href="#">
 			<i class="fas fa-level-up-alt"></i>
 		</a>

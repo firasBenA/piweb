@@ -10,12 +10,12 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 class ChangePasswordFormType extends AbstractType
 {
-    public function buildForm(FormBuilderInterface $builder, array $options)
+    public function buildForm(FormBuilderInterface $builder, array $options): void
     {
         $builder
-            ->add('oldPassword', PasswordType::class, [
-                'label' => 'Ancien mot de passe',
-                'mapped' => false,
+            ->add('plainPassword', PasswordType::class, [
+                'label' => 'New password',
+                'attr' => ['autocomplete' => 'new-password'],
                 'constraints' => [
                     new Assert\NotBlank([
                         'message' => 'Veuillez entrer votre ancien mot de passe.',
@@ -44,10 +44,14 @@ class ChangePasswordFormType extends AbstractType
                         'message' => 'Veuillez confirmer votre nouveau mot de passe.',
                     ]),
                 ],
+            ])
+            ->add('plainPassword', PasswordType::class, [
+                'label' => 'New password',
+                'attr' => ['autocomplete' => 'new-password'],
             ]);
     }
 
-    public function configureOptions(OptionsResolver $resolver)
+    public function configureOptions(OptionsResolver $resolver): void
     {
         $resolver->setDefaults([]);
     }

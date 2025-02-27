@@ -1,0 +1,18 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Reset your password</title>
+</head>
+<body>
+    <p>To reset your password, please visit the following link:</p>
+
+    <a href="{{ url('app_reset_password', {token: resetToken.token}) }}">
+        Reset your password
+    </a>
+
+    <p>This link will expire in {{ resetToken.expiresAt|date('g') }} hour(s).</p>
+
+    <p>Cheers!</p>
+</body>
+</html>

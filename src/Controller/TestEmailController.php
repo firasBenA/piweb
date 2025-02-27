@@ -21,7 +21,13 @@ class TestEmailController extends AbstractController
             ->subject('Test Email')
             ->text('This is a test email.');
 
+        // Debug statement before sending email
+        dump("Test Email Object:", $email);
+
         $mailer->send($email);
+
+        // Debug statement after sending email
+        dump("Test email sent successfully");
 
         return $this->json(['status' => 'Email sent successfully']);
     }
