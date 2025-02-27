@@ -1,0 +1,107 @@
+{# templates/patient/dashboard.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block stylesheets %}
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="text-center mb-4">
+            <h1>Bienvenue {{ user.nom }} {{ user.prenom }}</h1>
+            <p>Voici votre espace personnel</p>
+        </div>
+
+        <div class="row">
+            {# Carte des informations du patient #}
+            <div class="col-md-4">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Mes Informations</h5>
+                        <p><strong>Email :</strong> {{ user.email }}</p>
+                        <p><strong>Âge :</strong> {{ user.age }} ans</p>
+                        <p><strong>Telephone :</strong> {{ user.telephone }}</p>
+                    </div>
+                </div>
+            </div>
+
+            {# Carte des rendez-vous et consultations #}
+            <div class="col-md-8">
+                <div class="card shadow-sm mb-4">
+                    <div class="card-body">
+                        <h5 class="card-title">Mes Rendez-vous</h5>
+
+                        {# Bouton Ajouter Rendez-vous #}
+                        <a href="{{ path('addrendezvous', {'id': user.id}) }}" class="btn btn-success mb-3">
+                            <i class="fas fa-calendar-plus"></i> Ajouter un Rendez-vous
+                        </a>
+
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>Date</th>
+                                    <th>Médecin</th>
+                                    <th>Statut</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for rendezVous in user.rendezVouses %}
+                                    <tr>
+                                        <td>{{ rendezVous.date|date('d/m/Y H:i') }}</td>
+                                        <td>Dr. {{ rendezVous.medecin.nom }} {{ rendezVous.medecin.prenom }}</td>
+                                        <td>
+                                            {% if rendezVous.statut == 'confirmé' %}
+                                                <span class="badge badge-success">Confirmé</span>
+                                            {% elseif rendezVous.statut == 'annulé' %}
+                                                <span class="badge badge-danger">Annulé</span>
+                                            {% else %}
+                                                <span class="badge badge-warning">En attente</span>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="3" class="text-center">Aucun rendez-vous à venir</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <div class="card shadow-sm">
+                    <div class="card-body">
+                        <h5 class="card-title">Mes Consultations Passées</h5>
+                        <a href="{{ path('listrdv', {'id': user.id}) }}" class="btn btn-primary mb-3">
+                            Voir mes consultations
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background-color: #f8f9fa;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .card {
+            border-radius: 10px;
+        }
+
+        .table th, .table td {
+            vertical-align: middle;
+        }
+
+        .btn {
+            border-radius: 20px;
+        }
+
+        .badge {
+            font-size: 0.9em;
+        }
+    </style>
+{% endblock %}

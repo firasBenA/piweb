@@ -1,0 +1,35 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New DossierMedical
+{% endblock %}
+
+{% block body %}
+	<h1>Create new DossierMedical</h1>
+
+	{# Start the form with Symfony's validation handling #}
+	{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+	<div>
+		{{ form_label(form.datePrescription) }}
+		{{ form_widget(form.datePrescription) }}
+		{{ form_errors(form.datePrescription) }}
+		{# Display validation errors for the datePrescription field #}
+	</div>
+
+	<div>
+		{{ form_label(form.patient) }}
+		{{ form_widget(form.patient) }}
+		{{ form_errors(form.patient) }}
+		{# Display validation errors for the patient field #}
+	</div>
+
+	{# Submit button #}
+	<div>
+		<button type="submit">Save</button>
+	</div>
+
+	{# Close the form #}
+	{{ form_end(form) }}
+
+	<a href="{{ path('app_dossier_medical_index') }}">Back to list</a>
+{% endblock %}

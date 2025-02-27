@@ -1,0 +1,21 @@
+controllers:
+  resource:
+    path: ../src/Controller/
+    namespace: App\Controller
+  type: attribute
+
+admin_dashboard:
+  path: /admin
+  controller: App\Controller\AdminController::index
+
+medecin_dashboard:
+  path: /medecin
+  controller: App\Controller\MedecinController::dashboard
+
+patient_dashboard:
+  path: /patient
+  controller: App\Controller\MainController::index
+
+diagnostique_pdf:
+  path: /diagnostique/pdf/{id}
+  controller: App\Controller\DiagnostiqueController::generatePdf

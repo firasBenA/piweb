@@ -1,0 +1,49 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Create New Patient{% endblock %}
+
+{% block body %}
+    <h1>Create New Patient</h1>
+
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+    
+    <div class="form-group">
+        {{ form_label(form.nom) }}
+        {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.nom) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.prenom) }}
+        {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.prenom) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.email) }}
+        {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.email) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.mot_de_passe) }}
+        {{ form_widget(form.mot_de_passe, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.mot_de_passe) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.age) }}
+        {{ form_widget(form.age, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.age) }}
+    </div>
+
+    <div class="form-group">
+        {{ form_label(form.telephone) }}
+        {{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
+        {{ form_errors(form.telephone) }}
+    </div>
+
+    <button class="btn btn-primary">Save</button>
+
+    {{ form_end(form) }}
+{% endblock %}

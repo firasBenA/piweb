@@ -1,0 +1,33 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Créer une Prescription{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1>Créer une Prescription</h1>
+
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+        <div class="mb-3">
+            {{ form_label(form.titre) }}
+            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.titre) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.contenue) }}
+            {{ form_widget(form.contenue, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.contenue) }}
+        </div>
+
+        <div class="mb-3">
+            {{ form_label(form.datePrescription) }}
+            {{ form_widget(form.datePrescription, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.datePrescription) }}
+        </div>
+
+        <button type="submit" class="btn btn-primary">Créer</button>
+
+        {{ form_end(form) }}
+    </div>
+{% endblock %}

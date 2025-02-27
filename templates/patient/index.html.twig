@@ -1,0 +1,12 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Patient List{% endblock %}
+
+{% block body %}
+<h1>Patient List</h1>
+<ul>
+    {% for patient in patients %}
+        <li>{{ patient.nom }} {{ patient.prenom }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

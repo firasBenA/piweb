@@ -1,0 +1,154 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+
+	{% for message in app.session.flashbag.get('success') %}
+		<div class="alert alert-success" role="alert">
+			{{ message }}
+		</div>
+	{% endfor %}
+
+	<div class="contact-form-main" style="background-color: #f7fdff; padding: 20px;">
+		<div class="container" style="margin-left: 0; max-width: 100%;">
+			<div class="row">
+				<div class="col-xl-7 col-lg-7">
+					<div
+						class="form-wrapper">
+						<!-- Section Title -->
+						<div class="form-tittle">
+							<div class="row ">
+								<div class="col-xl-12">
+									<div class="section-tittle section-tittle2">
+										<span>Symptomes Apply Form</span>
+										<h2>Symptomes Form</h2>
+									</div>
+								</div>
+							</div>
+						</div>
+						<!-- End Section Title -->
+						<form id="contact-form" action="{{ path('diagnose_form', {'id': app.request.query.get('id')})}}" id="diagnose-form" method="POST" novalidate>
+							{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+							<input type="hidden" name="dossierMedical" value="{{ dossierMedical.id }}">
+							<div class="row">
+								<div class="col-lg-6 col-md-6 mb-30">
+									<div class="select-itms">
+										<select id="symptoms" name="symptoms" required>
+											<option value="">--Select a Symptom--</option>
+											{% for symptom, id in symptoms_dict %}
+												<option value="{{ symptom }}">{{ symptom | replace({'_': ' '}) }}</option>
+											{% endfor %}
+										</select>
+										<button type="button" id="selectSymptom">Select Symptom</button>
+									</div>
+								</div>
+
+								<div class="col-lg-12 col-md-12">
+									<div class="form-box subject-icon mb-30">
+										{{ form_row(form.selectedSymptoms) }}
+										<p id="dossierError" class="error-message" style="color: red; display: none;"></p>
+									</div>
+								</div>
+
+								<div class="col-lg-12 col-md-12">
+									<div class="form-box subject-icon mb-30">
+										{{ form_row(form.zoneCorps) }}
+									</div>
+								</div>
+
+								<div class="col-lg-12">
+									<div class="form-group">
+										{{ form_row(form.dateSymptomes, { 'attr': {'class': 'form-control', 'type': 'date'} }) }}
+									</div>
+								</div>
+
+								<div class="col-lg-12" style="margin-top:8px;">
+									<div class="submit-info">
+										{{ form_row(form.submit) }}
+									</div>
+								</div>
+							</br>
+							<div class="col-lg-12" style="margin-top:12px;">
+								<h2>Diagnosis:</h2>
+								<p id="diagnosisResult" style="color: red; display: none;"></p>
+							</div>
+						</div>
+						{{ form_end(form) }}
+
+					</form>
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	let selectedSymptoms = [];
+
+document.getElementById("selectSymptom").addEventListener("click", function () {
+let selectedSymptom = document.getElementById("symptoms").value;
+if (! selectedSymptom) {
+alert("Please select a symptom!");
+return;
+}
+
+// Check if symptom is already selected
+if (! selectedSymptoms.includes(selectedSymptom)) {
+selectedSymptoms.push(selectedSymptom);
+
+// Update the selected symptoms in the text area with id 'diagnostique_selectedSymptoms'
+document.getElementById("diagnostique_selectedSymptoms").value = selectedSymptoms.join(", ");
+
+} else {
+alert("This symptom is already selected!");
+}
+
+// Reset the dropdown selection
+document.getElementById("symptoms").value = '';
+});
+
+document.getElementById("submitSymptoms").addEventListener("click", function () { // Extract the 'id' from the URL
+const urlParams = new URLSearchParams(window.location.search);
+const dossierMedicalId = urlParams.get('id');
+
+// Check if the dossierMedicalId exists
+if (! dossierMedicalId) {
+document.getElementById("dossierError").textContent = "Dossier Medical ID is missing!";
+document.getElementById("dossierError").style.display = "block";
+return;
+}
+
+const selectedDate = document.getElementById("diagnostique_dateSymptomes").value;
+
+// Sending the symptoms and dossierMedicalId in the POST request
+fetch (`/diagnose-api?id=${dossierMedicalId}`, { // Send the ID in the URL query parameter
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify(
+{symptoms: selectedSymptoms, dossierMedicalId: dossierMedicalId, dateSymptomes: selectedDate}
+)
+}).then(response => response.json()).then(data => {
+if (data.disease) {
+document.getElementById("diagnosisResult").innerText = "Diagnosis: " + data.disease;
+}
+}).catch(error => {
+console.error("Error:", error);
+document.getElementById("diagnosisResult").innerText = "An error occurred while processing the diagnosis.";
+});
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    fetch('/diagnostique/pdf/{{ diagnostique.id }}')
+        .then(response => response.blob())
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'diagnosis_{{ diagnostique.id }}.pdf';
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+});
+</script>{% endblock %}

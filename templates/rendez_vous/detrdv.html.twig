@@ -1,0 +1,65 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <div class="container mt-5">
+        <div class="card shadow-lg p-5 rounded-4 border-0" style="background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px);">
+            <h1 class="text-center text-gradient fw-bold mb-4">📋 Détails du Rendez-vous</h1>
+
+            <div class="row">
+                <!-- Image du médecin -->
+                <div class="col-md-4 text-center">
+                    <img src="{{ asset('medecin/assets/img/lamula.jpg') }}" alt="Photo du Dr. {{ nom_medecin }}" class="rounded-circle shadow-lg" width="200" height="200">
+                    <h3 class="mt-3 fw-bold">Dr. {{ nom_medecin }} {{ prenom_medecin }}</h3>
+                    <span class="badge bg-primary">{{ specialite_medecin }}</span>
+                </div>
+
+                <!-- Détails du rendez-vous -->
+                <div class="col-md-8">
+                    <ul class="list-group list-group-flush fs-5">
+                        <li class="list-group-item"><strong>📅 Date :</strong> {{ date_rdv|date('d/m/Y H:i') }}</li>
+                        <li class="list-group-item"><strong>📝 Type :</strong> {{ type_rdv }}</li>
+                        <li class="list-group-item"><strong>❓ Motif :</strong> {{ cause }}</li>
+                        <li class="list-group-item"><strong>🏥 Adresse du Cabinet :</strong> {{ adresse }}</li>
+                        <li class="list-group-item">
+                            <strong>📌 Statut :</strong>
+                            <span class="badge {{ statut == 'Approuvé' ? 'bg-success' : (statut == 'En attente' ? 'bg-warning text-dark' : 'bg-danger') }}">
+                                {{ statut }}
+                            </span>
+                        </li>
+                        
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Styles pour la page */
+        body {
+            background: linear-gradient(to right, #74ebd5, #acb6e5);
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .card {
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(10px);
+        }
+
+        .badge {
+            font-size: 16px;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        img {
+            border: 5px solid #2a5298;
+        }
+
+        .text-gradient {
+            background: linear-gradient(to right, #1e3c72, #2a5298);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+{% endblock %}
