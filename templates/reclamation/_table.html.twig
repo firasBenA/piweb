@@ -1,0 +1,142 @@
+<table id="reclamationTable" class="table table-hover table-striped align-middle shadow-lg rounded">
+	<thead class="table-dark text-center">
+		<tr>
+			<th>ID</th>
+			<th>Sujet</th>
+			<th>Description</th>
+			<th>Date</th>
+			<th>État</th>
+			<th>Actions</th>
+		</tr>
+	</thead>
+	<tbody class="text-center">
+		{% for reclamation in reclamations %}
+			<tr class="bg-white">
+				<td>
+					<strong>#{{ reclamation.id }}</strong>
+				</td>
+				<td>{{ reclamation.sujet }}</td>
+				<td>{{ reclamation.description }}</td>
+				<td>{{ reclamation.dateDebut|date('d/m/Y') }}</td>
+				<td>
+					{% if reclamation.etat == 'en_attente' %}
+						<span class="badge bg-warning text-dark">🕒 En attente</span>
+					{% elseif reclamation.etat == 'traité' %}
+						<span class="badge bg-success">✅ Traité</span>
+					{% else %}
+						<span class="badge bg-secondary">❓ Non spécifiée</span>
+					{% endif %}
+				</td>
+				<td>
+					<div class="d-flex justify-content-center">
+										<a href="{{ path('modifier_reclamation', {'id': reclamation.id}) }}" style="margin-right: 10px;">
+											<i class="bi bi-pencil" style="color: green;font-size: 20px;"></i>
+										</a>
+										<a href="{{ path('supprimer_reclamation', {'id': reclamation.id}) }}" onclick="return confirm('Voulez-vous vraiment supprimer cette réclamation ?');" style="margin-right: 10px;">
+											<i class="bi bi-trash" style="color: red;font-size: 20px;"></i>
+										</a>
+										<a href="#" data-bs-toggle="modal" data-bs-target="#modalReponse{{ reclamation.id }}" class="text-info">
+											<i class="bi bi-eye" style="font-size: 20px;"></i>
+										</a>
+									</div>
+                    <div class="modal fade" id="modalReponse{{ reclamation.id }}" tabindex="-1" aria-labelledby="modalLabel{{ reclamation.id }}" aria-hidden="true">
+										<div class="modal-dialog">
+											<div class="modal-content">
+												<div class="modal-header">
+													<h5 class="modal-title" id="modalLabel{{ reclamation.id }}">Réponse</h5>
+													<a href="#" class="btn-close" data-bs-dismiss="modal" aria-label="Close">
+														<i class="bi bi-x-circle" style="color: red;font-size: 20px;"></i>
+													</a>
+												</div>
+												<div class="modal-body">
+													{% if reclamation.reponse %}
+														<p>{{ reclamation.reponse.contenu }}</p>
+														<p class="text-muted">Date:
+															{{ reclamation.reponse.dateDeReponse|date('d/m/Y H:i') }}</p>
+													{% else %}
+														<p class="text-muted">Aucune réponse pour cette réclamation.</p>
+													{% endif %}
+												</div>
+												<div class="modal-footer">
+													<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+												</div>
+											</div>
+										</div>
+									</div>
+
+				</td>
+			</tr>
+		{% endfor %}
+	</tbody>
+</table>
+<style>
+  .table {
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .table thead {
+            background-color: #343a40;
+            color: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: #e3f2fd;
+            transition: 0.3s ease-in-out;
+        }
+
+        .btn {
+            transition: all 0.3s ease-in-out;
+        }
+
+        .btn:hover {
+            transform: scale(1.05);
+        }
+
+        .badge {
+            font-size: 14px;
+            padding: 8px 12px;
+            border-radius: 8px;
+        }
+
+        /* Style for modal footer */
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            padding: 1rem;
+            border-top: 1px solid #dee2e6;
+        }
+
+        /* Style for the "Fermer" button */
+        .modal-footer .btn-secondary {
+            background-color: #6c757d;
+            border-color: #6c757d;
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            color: white;
+            font-weight: bold;
+            transition: background-color 0.3s ease;
+        }
+
+        .modal-footer .btn-secondary:hover {
+            background-color: #5a6268;
+            border-color: #545b62;
+        }
+
+        /* Optional: Style for focus effect */
+        .modal-footer .btn-secondary:focus {
+            box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.5);
+        }
+
+        .modal-header {
+            border-bottom: none;
+        }
+
+        .modal-footer {
+            border-top: none;
+        }
+
+        .modal-body p {
+            font-size: 16px;
+        }
+</style>    

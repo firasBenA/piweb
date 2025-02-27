@@ -16,29 +16,34 @@ use Symfony\Component\Validator\Validator\ValidatorInterface;
 final class ReclamationController extends AbstractController
 {
     #[Route('/liste', name: 'reclamation_page')]
-public function index(EntityManagerInterface $entityManager, Request $request): Response
-{
-    // Get the currently logged-in user
-    $user = $this->getUser();
-
-    // Get the 'etat' parameter from the request (query string)
-    $etat = $request->query->get('etat');
-
-    // Check if the 'etat' is provided and apply the filter accordingly
-    if ($etat) {
-        // Filter by the selected state and the current user
+    public function index(EntityManagerInterface $entityManager, Request $request): Response
+    {
+        $user = $this->getUser();
+        $etat = $request->query->get('etat');
+    
+        $criteria = ['user' => $user];
+        if ($etat) {
+            $criteria['etat'] = $etat;
+        }
+    
         $reclamations = $entityManager->getRepository(Reclamation::class)
-            ->findBy(['etat' => $etat, 'user' => $user], ['date_debut' => 'DESC']);
-    } else {
-        // If no filter, fetch all reclamations for the current user
-        $reclamations = $entityManager->getRepository(Reclamation::class)
-            ->findBy(['user' => $user], ['date_debut' => 'DESC']);
+            ->findBy($criteria, ['date_debut' => 'DESC']);
+    
+        // Handle AJAX requests: return only the table partial
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('reclamation/_table.html.twig', [
+                'reclamations' => $reclamations,
+            ]);
+        }
+    
+        // Regular response: return full page with layout
+        return $this->render('reclamation/liste.html.twig', [
+            'reclamations' => $reclamations,
+        ]);
     }
-
-    return $this->render('reclamation/liste.html.twig', [
-        'reclamations' => $reclamations,
-    ]);
-}
+    
+    
+    
 
 
 
