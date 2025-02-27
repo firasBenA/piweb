@@ -97,14 +97,17 @@ final class ResponseController extends AbstractController
             // Try to send the email
             try {
                 $response = $apiInstance->sendTransacEmail($sendSmtpEmail);
-                return new Response('Email sent successfully!'); // Return success message
+                $this->addFlash('success', 'Email sent successfully!'); // Set success message
             } catch (\Exception $e) {
-                return new Response('Error sending email: ' . $e->getMessage()); // Return error message
+                $this->addFlash('error', 'Error sending email: ' . $e->getMessage()); // Set error message
             }
+            
+            // Redirect to the response reclamation page
+            
       
             // Flash message to notify success
             $this->addFlash('success', 'Réponse ajoutée avec succès et réclamation marquée comme traitée !');
-            return $this->redirectToRoute('reclamation_page');
+            return $this->redirectToRoute('reponse_reclamation_page');
         }
     
         return $this->render('reponse/ajouter.html.twig', [

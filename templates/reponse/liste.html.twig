@@ -5,6 +5,18 @@
 <a href="{{ path('reclamation_statistiques') }}" class="btn btn-primary">
     Voir les statistiques 📊
 </a>
+{% for message in app.flashes('success') %}
+    <div class="alert alert-success" role="alert">
+        {{ message }}
+    </div>
+{% endfor %}
+
+{% for message in app.flashes('error') %}
+    <div class="alert alert-danger" role="alert">
+        {{ message }}
+    </div>
+{% endfor %}
+
         <h2 class="text-center text-primary fw-bold mb-4">📄 Liste des Réclamations</h2>
 
         {% if reclamations is empty %}
