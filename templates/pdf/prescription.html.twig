@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Prescription Médicale</title>
+    <style>
+        body {
+            font-family: 'Garamond', serif;
+            background-color: #f8f8f8;
+            padding: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .prescription {
+            width: 70%;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+            border: 2px solid #ddd;
+        }
+        .header {
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #000;
+            margin-bottom: 20px;
+        }
+        .header img {
+            max-width: 70px;
+            margin-bottom: 10px;
+        }
+        .header h1 {
+            margin: 5px 0;
+            font-size: 26px;
+            color: #003366;
+            font-weight: bold;
+            text-transform: uppercase;
+        }
+        .doctor-info, .patient-info {
+            margin-bottom: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            background: #f0f0f0;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        .prescription-content {
+            padding: 15px;
+            border: 2px dashed #555;
+            margin-bottom: 20px;
+            background: #fdfdfd;
+            font-size: 18px;
+        }
+        .prescription-content strong {
+            color: #333;
+        }
+        .signature {
+            margin-top: 30px;
+            text-align: right;
+        }
+        .signature p {
+            font-size: 18px;
+            font-weight: bold;
+        }
+        .signature .line {
+            display: block;
+            width: 200px;
+            border-top: 2px solid black;
+            margin-top: 10px;
+        }
+        .footer {
+            text-align: center;
+            font-size: 14px;
+            margin-top: 20px;
+            color: #555;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="prescription">
+        <div class="header">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/68/Caduceus.svg/200px-Caduceus.svg.png" alt="Medical Logo">
+            <h1>Ordonnance Médicale</h1>
+        </div>
+
+        <div class="doctor-info">
+            <p><strong>Dr. {{ prescription.medecin.nom }}</strong></p>
+            <p> Contact: {{ prescription.medecin.telephone }}</p>
+        </div>
+
+        <div class="prescription-content">
+            <p><strong> Titre:</strong> {{ prescription.titre }}</p>
+            <p><strong> Contenu:</strong> {{ prescription.contenue }}</p>
+            <p><strong> Date:</strong> {{ prescription.datePrescription|date("d/m/Y") }}</p>
+        </div>
+
+        <div class="signature">
+            <p>Signature du médecin:</p>
+            <span class="line"></span>
+        </div>
+
+        <div class="footer">
+            <p> Cette ordonnance est valable uniquement pour une durée limitée.</p>
+        </div>
+    </div>
+</body>
+</html>

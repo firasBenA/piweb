@@ -88,7 +88,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         mimeTypesMessage: 'Veuillez télécharger une image au format JPEG ou PNG.',
         groups: ['medecin']
     )]
-
     #[Assert\NotBlank(message: 'Veuillez télécharger votre certificat.', groups: ['medecin'])]
     private ?string $certificat = null;
 

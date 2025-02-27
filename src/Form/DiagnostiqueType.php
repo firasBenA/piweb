@@ -5,6 +5,7 @@
 namespace App\Form;
 
 use App\Entity\Diagnostique;
+use App\Entity\User;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\Extension\Core\Type\TextType;
@@ -21,6 +22,7 @@ class DiagnostiqueType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $symptomsDict = $options['symptoms_dict']; // Access the symptoms_dict from the options
+        $medecins = $options['medecins'];
 
         $builder
             ->add('selectedSymptoms', TextareaType::class, [
@@ -37,10 +39,12 @@ class DiagnostiqueType extends AbstractType
                 'label' => 'Zone du Corps',
                 'attr' => [
                     'class' => 'form-control',
-                    'placeholder' => 'Enter la zone du corps'
+                    'placeholder' => 'Enter la zone du corps',
+                    'id' => 'zoneCorps'  // Make sure the ID is unique and matches the one in the JavaScript
                 ],
-                'required' => true,  // Ensure the field is required
+                'required' => true,
             ])
+            
             ->add('dateSymptomes', DateType::class, [
                 'label' => 'Date of Symptoms',
                 'widget' => 'single_text',
@@ -64,6 +68,7 @@ class DiagnostiqueType extends AbstractType
         $resolver->setDefaults([
             'data_class' => Diagnostique::class,
             'symptoms_dict' => [],
+            'medecins' => [],
         ]);
     }
 }

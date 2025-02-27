@@ -81,7 +81,7 @@ final class ConsultationController extends AbstractController
         $user = $security->getUser();
 
         // Check if the logged-in user is either a doctor or a patient associated with the rendez-vous
-        if (!$user || (!in_array('ROLE_MEDECIN', $user->getRoles()) && $user !== $rendezVous->getPatient()->getUser())) {
+        if (!$user || (!in_array('ROLE_MEDECIN', $user->getRoles()) && $user !== $rendezVous->getUser())) {
             // If the user is not authorized to modify the rendez-vous, deny access
             throw $this->createAccessDeniedException("Vous n'avez pas l'autorisation de modifier ce rendez-vous.");
         }

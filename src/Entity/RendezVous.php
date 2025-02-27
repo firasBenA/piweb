@@ -57,7 +57,7 @@ class RendezVous
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'rendezVouses')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
-
+    
     public function getId(): ?int
     {
         return $this->id;

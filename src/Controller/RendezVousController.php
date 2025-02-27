@@ -5,8 +5,11 @@ namespace App\Controller;
 use App\Entity\RendezVous;
 use App\Entity\Consultation;
 use App\Entity\Patient;
+use App\Entity\Prescription;
 use App\Entity\User;
 use App\Form\RendezVousType;
+use App\Repository\PrescriptionRepository;
+use App\Service\pdfService;
 use Doctrine\Persistence\ManagerRegistry;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
@@ -181,13 +184,40 @@ final class RendezVousController extends AbstractController
 
 
     #[Route('patdash/{id}', name: 'patientDashboard')]
-    public function dashboard(User $user, Security $security): Response
+    public function dashboard(Security $security, PrescriptionRepository $prescriptionRepository): Response
     {
-
+        // Get the currently logged-in patient
         $patient = $security->getUser();
+
+        // Retrieve the prescriptions associated with the patient
+        $prescriptions = $prescriptionRepository->findBy(['patient' => $patient]);
 
         return $this->render('consultation/patdash.html.twig', [
             'patient' => $patient,
+            'prescriptions' => $prescriptions,
         ]);
+    }
+
+    #[Route('/prescription/download/{id}', name: 'prescription_download')]
+    public function downloadPrescriptionPdf(Prescription $prescription, pdfService $pdfService): Response
+    {
+        // Get the patient from the prescription's dossierMedical
+        $patient = $prescription->getDossierMedical()->getUser();
+
+        $html = $this->renderView('pdf/prescription.html.twig', [
+            'prescription' => $prescription,
+            'patient' => $patient,
+        ]);
+
+        $pdfContent = $pdfService->generateBinaryPdf($html);
+
+        return new Response(
+            $pdfContent,
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="prescription_' . $prescription->getId() . '.pdf"',
+            ]
+        );
     }
 }

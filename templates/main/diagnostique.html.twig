@@ -11,23 +11,24 @@
 	<div class="contact-form-main" style="background-color: #f7fdff; padding: 20px;">
 		<div class="container" style="margin-left: 0; max-width: 100%;">
 			<div class="row">
-				<div class="col-xl-7 col-lg-7">
-					<div
-						class="form-wrapper">
-						<!-- Section Title -->
-						<div class="form-tittle">
-							<div class="row ">
-								<div class="col-xl-12">
-									<div class="section-tittle section-tittle2">
-										<span>Symptomes Apply Form</span>
-										<h2>Symptomes Form</h2>
+				<form id="contact-form" action="{{ path('diagnose_form', {'id': app.request.query.get('id')}) }}" method="POST" novalidate>
+					{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+					<div class="col-xl-7 col-lg-7">
+						<div
+							class="form-wrapper">
+							<!-- Section Title -->
+							<div class="form-tittle">
+								<div class="row">
+									<div class="col-xl-12">
+										<div class="section-tittle section-tittle2">
+											<span>Symptoms Apply Form</span>
+											<h2>Symptoms Form</h2>
+										</div>
 									</div>
 								</div>
 							</div>
-						</div>
-						<!-- End Section Title -->
-						<form id="contact-form" action="{{ path('diagnose_form', {'id': app.request.query.get('id')})}}" id="diagnose-form" method="POST" novalidate>
-							{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+							<!-- End Section Title -->
+
 							<input type="hidden" name="dossierMedical" value="{{ dossierMedical.id }}">
 							<div class="row">
 								<div class="col-lg-6 col-md-6 mb-30">
@@ -62,27 +63,51 @@
 								</div>
 
 								<div class="col-lg-12" style="margin-top:8px;">
-									<div class="submit-info">
+									<div class="submit-info ">
 										{{ form_row(form.submit) }}
 									</div>
 								</div>
-							</br>
-							<div class="col-lg-12" style="margin-top:12px;">
-								<h2>Diagnosis:</h2>
-								<p id="diagnosisResult" style="color: red; display: none;"></p>
+
+								<!-- New Button to Preview Diagnosis -->
+								<div class="col-lg-12" style="margin-top:12px;width: 100%; margin-bottom:8px;">
+									<button type="button" id="previewDiagnosis" class="btn btn-primary">Preview Diagnosis</button>
+								</div>
+
+								<!-- Diagnosis Result -->
+								<div class="col-lg-12" style="margin-top:12px;">
+									<h2>Diagnosis:</h2>
+									<p id="diagnosisResult" style="color: red; display: none;"></p>
+								</div>
+							</div>
+
+						</div>
+					</div>
+
+					<div class="col-xl-5 col-lg-5">
+						<div class="form-wrapper">
+							<h2>Suggested Doctors:</h2>
+							<div
+								id="doctorList" class="doctor-list" style="display: block;"><!-- Doctors will be populated here dynamically -->
 							</div>
 						</div>
-						{{ form_end(form) }}
+					</div>
 
-					</form>
-				</div>
+					<!-- Hidden input field for storing the selected doctor's ID -->
+					<input
+					type="text" name="medecin" id="medecin">
+					<!-- The div where selected doctor's information will be displayed -->
+					<div id="selectedDoctor"></div>
+
+
+					{{ form_end(form) }}
+				</form>
 			</div>
 		</div>
 	</div>
-</div>
 
-<script>
-	let selectedSymptoms = [];
+
+	<script>
+		let selectedSymptoms = [];
 
 document.getElementById("selectSymptom").addEventListener("click", function () {
 let selectedSymptom = document.getElementById("symptoms").value;
@@ -97,7 +122,6 @@ selectedSymptoms.push(selectedSymptom);
 
 // Update the selected symptoms in the text area with id 'diagnostique_selectedSymptoms'
 document.getElementById("diagnostique_selectedSymptoms").value = selectedSymptoms.join(", ");
-
 } else {
 alert("This symptom is already selected!");
 }
@@ -106,7 +130,8 @@ alert("This symptom is already selected!");
 document.getElementById("symptoms").value = '';
 });
 
-document.getElementById("submitSymptoms").addEventListener("click", function () { // Extract the 'id' from the URL
+// Function to fetch and display diagnosis
+function fetchDiagnosis() {
 const urlParams = new URLSearchParams(window.location.search);
 const dossierMedicalId = urlParams.get('id');
 
@@ -118,37 +143,238 @@ return;
 }
 
 const selectedDate = document.getElementById("diagnostique_dateSymptomes").value;
+if (! selectedDate) {
+alert("Please select a date for symptoms!");
+return;
+}
 
-// Sending the symptoms and dossierMedicalId in the POST request
-fetch (`/diagnose-api?id=${dossierMedicalId}`, { // Send the ID in the URL query parameter
+const medecin = document.getElementById("medecin").value;
+
+const zoneCorps = document.getElementById("diagnostique_zoneCorps").value;
+console.log(zoneCorps);  // Prints the value of the zoneCorps input field
+
+
+fetch (`/diagnose-api?id=${dossierMedicalId}`, {
 method: "POST",
 headers: {
 "Content-Type": "application/json"
 },
 body: JSON.stringify(
-{symptoms: selectedSymptoms, dossierMedicalId: dossierMedicalId, dateSymptomes: selectedDate}
+{
+symptoms: selectedSymptoms,
+dossierMedicalId: dossierMedicalId,
+dateSymptomes: selectedDate,
+medecin: medecin,
+zoneCorps: zoneCorps
+}
 )
 }).then(response => response.json()).then(data => {
+console.log("Server Response:", data);
 if (data.disease) {
 document.getElementById("diagnosisResult").innerText = "Diagnosis: " + data.disease;
+} else {
+diagnosisResult.innerText = "No diagnosis found.";
+diagnosisResult.style.display = "block";
 }
 }).catch(error => {
 console.error("Error:", error);
 document.getElementById("diagnosisResult").innerText = "An error occurred while processing the diagnosis.";
+document.getElementById("diagnosisResult").style.display = "block";
 });
+}
+
+
+// The function for fetching diagnosis and doctors
+// Function to fetch diagnosis based on selected symptoms
+function getDiagnosis() { // Check if symptoms are selected
+if (selectedSymptoms.length === 0) {
+alert("Please select at least one symptom before requesting a diagnosis.");
+return;
+}
+
+// Fetch diagnosis based on selected symptoms
+fetch("http://127.0.0.1:5000/predict", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify(
+{symptoms: selectedSymptoms}
+)
+}).then(response => response.json()).then(data => {
+console.log("Server Response:", data);
+let diagnosisResult = document.getElementById("diagnosisResult");
+
+// If a diagnosis is returned
+if (data.disease) {
+diagnosisResult.innerText = "Diagnosis: " + data.disease;
+// Fetch doctors based on the diagnosis
+fetchDoctors(data.disease); // Pass the diagnosis to the fetchDoctors function
+} else {
+diagnosisResult.innerText = "No diagnosis found.";
+} diagnosisResult.style.display = "block";
+}).catch(error => {
+console.error("Error:", error);
+let diagnosisResult = document.getElementById("diagnosisResult");
+diagnosisResult.innerText = "An error occurred while processing the diagnosis.";
+diagnosisResult.style.display = "block";
 });
 
-document.addEventListener("DOMContentLoaded", function () {
-    fetch('/diagnostique/pdf/{{ diagnostique.id }}')
-        .then(response => response.blob())
-        .then(blob => {
-            const url = window.URL.createObjectURL(blob);
-            const a = document.createElement('a');
-            a.href = url;
-            a.download = 'diagnosis_{{ diagnostique.id }}.pdf';
-            document.body.appendChild(a);
-            a.click();
-            window.URL.revokeObjectURL(url);
-        });
+// Function to fetch doctors based on the disease
+// Fetch the list of doctors based on the disease
+function fetchDoctors(disease) {
+console.log("Fetching doctors for disease:", disease);
+
+fetch("/get-doctors", {
+method: "POST",
+headers: {
+"Content-Type": "application/json"
+},
+body: JSON.stringify(
+{disease: disease}
+)
+}).then(response => response.json()).then(doctors => {
+console.log("Received doctors:", doctors);
+
+const doctorList = document.getElementById("doctorList");
+doctorList.innerHTML = ""; // Clear previous results
+
+if (!Array.isArray(doctors) || doctors.length === 0) {
+doctorList.innerHTML = "<p>No doctors found for this condition.</p>";
+return;
+}
+
+// Display doctors as buttons
+doctors.forEach(doctor => {
+console.log(`Doctor: ${
+doctor.nom
+}, Specialization: ${
+doctor.specialite
+}, Phone: ${
+doctor.telephone
+}, id: ${
+doctor.id
+}`);
+
+let doctorButton = document.createElement("button");
+doctorButton.classList.add("btn", "btn-outline-primary", "doctor-button");
+doctorButton.innerText = `${
+doctor.nom
+} - ${
+doctor.specialite
+}`;
+doctorButton.type = "button";
+
+// Add click event listener to select doctor
+doctorButton.addEventListener("click", (event) => {
+event.preventDefault(); // Prevent page refresh
+selectDoctor(doctor);
 });
-</script>{% endblock %}
+
+doctorList.appendChild(doctorButton);
+});
+
+// Ensure the doctor selection field is available
+let doctorInput = document.querySelector('[name="medecin"]');
+if (doctorInput) {
+doctorInput.style.display = "block"; // Show the form field
+} else {
+console.warn("Doctor selection field not found.");
+}
+}).catch(error => {
+console.error("Error fetching doctors:", error);
+document.getElementById("doctorList").innerHTML = "<p>Error fetching doctors.</p>";
+});
+}
+
+// Function to select a doctor and update the hidden form field
+function selectDoctor(doctor) {
+console.log("Selected Doctor:", doctor);
+
+// Get the hidden input field for 'medecin'
+let doctorInput = document.getElementById("medecin");
+if (doctorInput) {
+doctorInput.value = doctor.id; // Store doctor's ID for form submission
+} else {
+console.error("Hidden input field 'medecin' not found.");
+return;
+}
+
+// Display the selected doctor's information in the #selectedDoctor div
+let selectedDoctorDiv = document.getElementById("selectedDoctor");
+if (! selectedDoctorDiv) {
+selectedDoctorDiv = document.createElement("div");
+selectedDoctorDiv.id = "selectedDoctor";
+selectedDoctorDiv.classList.add("selected-doctor");
+document.getElementById("doctorList").appendChild(selectedDoctorDiv);
+}
+
+selectedDoctorDiv.innerHTML = `Selected Doctor: ${
+doctor.nom
+} - ${
+doctor.specialite
+}`;
+}
+
+
+}
+
+
+// Attach function to Preview Button
+document.getElementById("previewDiagnosis").addEventListener("click", getDiagnosis);
+
+// Attach function to Submit Button
+document.getElementById("diagnostique_submit").addEventListener("click", function (event) {
+event.preventDefault();
+fetchDiagnosis();
+
+});
+	</script>
+
+
+	<style>
+		/* Custom styles to make the doctor list align on the right */
+		#doctorList {
+			padding: 20px;
+			background-color: #f7fdff; /* Optional: add some background to make it stand out */
+			border-radius: 8px;
+			list-style: none;
+		}
+
+		#doctorList li {
+			padding: 10px;
+			font-size: 16px;
+			color: #333;
+			border-bottom: 1px solid #ddd;
+		}
+
+		/* Ensure the container occupies the available space */
+		.row {
+			display: flex;
+			justify-content: space-between;
+		}
+
+		.doctor-button {
+			margin: 5px;
+			padding: 10px;
+			width: 100%;
+			text-align: left;
+			border-radius: 8px;
+			font-size: 16px;
+		}
+
+		.doctor-button:hover {
+			background-color: #f0f0f0;
+			cursor: pointer;
+		}
+
+		.doctor-list {
+			display: flex;
+			flex-direction: column;
+		}
+
+		.doctor-list button {
+			margin-bottom: 10px; /* Adds space between the buttons */
+		}
+	</style>
+{% endblock %}

@@ -95,9 +95,9 @@
 											{{ rendezVous.medecin.nom }}
 											{{ rendezVous.medecin.prenom }}</td>
 										<td>
-											{% if rendezVous.statut == 'confirmé' %}
+											{% if rendezVous.statut == 'Approuvé' %}
 												<span class="badge badge-success">Confirmé</span>
-											{% elseif rendezVous.statut == 'annulé' %}
+											{% elseif rendezVous.statut == 'Refusé' %}
 												<span class="badge badge-danger">Annulé</span>
 											{% else %}
 												<span class="badge badge-warning">En attente</span>
@@ -135,27 +135,46 @@
 								<th>Contenue</th>
 								<th>Date</th>
 								<th>Doctor</th>
+								<th>Telecharger</th>
 							</tr>
 						</thead>
 						<tbody>
 							{% for prescription in prescriptions %}
 								<tr>
+									<td>{{ prescription.id }}</td>
 									<td>{{ prescription.titre }}</td>
 									<td>{{ prescription.contenue }}</td>
+									<td>date</td>
 									<td>{{ prescription.medecin.nom }}</td>
+									<td>
+										<button onclick="downloadPdf({{ prescription.id }})" class="btn btn-primary btn-sm">
+											Télécharger PDF
+										</button>
+									</td>
 								</tr>
-							</td>
+							</tbody>
 						</tbody>
 					</tr>
 				{% else %}
 					<tr>
-						<td colspan="3" class="text-center">Aucun rendez-vous à venir</td>
+						<td colspan="3" class="text-center">Aucun Prescription.</td>
 					</tr>
 				{% endfor %}
-			</tbody>
-		</table>
+			</div>
+		</div>
 	</div>
-</div></div></div></div><style>.header-area {
+</div></div><script>
+function downloadPdf(prescriptionId) {
+fetch (`/prescription/download/${prescriptionId}`).then(response => response.blob()).then(blob => {
+const link = document.createElement('a');
+link.href = window.URL.createObjectURL(blob);
+link.download = `prescription_${prescriptionId}.pdf`;
+document.body.appendChild(link);
+link.click();
+document.body.removeChild(link);
+}).catch(error => console.error('Erreur lors du téléchargement du PDF:', error));
+}</script><style>
+.header-area {
 	background: #fff;
 	padding: 10px 0;
 	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);

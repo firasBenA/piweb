@@ -32,13 +32,19 @@ class Diagnostique
     #[Assert\NotBlank(message: 'Please select a body zone.')]
     private ?string $zoneCorps = null;
 
-    #[Assert\Type(type: \DateTimeInterface::class, message: "The date must be a valid date.")]
     #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Assert\Type(type: \DateTimeInterface::class, message: "La date doit être valide.")]
+    #[Assert\NotBlank(message: "La date de prescription est obligatoire.")]
+    #[Assert\GreaterThanOrEqual(
+        value: "today",
+        message: "La date de prescription ne peut pas être dans le passé."
+    )]
     private ?\DateTimeInterface $dateSymptomes = null;
     
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'diagnostiques')]
     private ?User $patient = null;
-    
+
+    #[Assert\NotBlank(message: "Il faut choisre un medecin.")]
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'diagnostiques')]
     private ?User $medecin = null;
 
@@ -155,12 +161,12 @@ class Diagnostique
         return $this;
     }
 
-    public function getMedecin(): ?Medecin
+    public function getMedecin(): ?User
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?Medecin $medecin): static
+    public function setMedecin(?User $medecin): static
     {
         $this->medecin = $medecin;
 

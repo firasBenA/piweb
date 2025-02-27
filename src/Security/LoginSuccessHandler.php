@@ -30,7 +30,7 @@ class LoginSuccessHandler implements AuthenticationSuccessHandlerInterface
         if (in_array('ROLE_PATIENT', $user->getRoles(), true)) {
             return new RedirectResponse($this->router->generate('patient_dashboard'));
         }
-
+        
         if (in_array('ROLE_ADMIN', $user->getRoles(), true)) {
             return new RedirectResponse($this->router->generate('admin_dashboard'));
         }
