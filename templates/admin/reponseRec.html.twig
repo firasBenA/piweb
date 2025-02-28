@@ -1,0 +1,84 @@
+{% extends './admin/baseadmin.html.twig' %}
+
+{% block title %}Dashboard
+{% endblock %}
+{% block stylesheets %}
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+
+{% block body %}
+
+    <h1 class="text-center text-primary fw-bold">📋 Liste des Réclamations</h1>
+	   <a href="{{ path('reclamation_statistiques') }}" class="btn btn-primary">
+            Voir les statistiques 📊
+        </a>
+<div class="mb-4">
+ <div class="mb-4">
+        <div class="d-flex justify-content-between">
+            <input type="text" id="search" class="form-control w-25" placeholder="🔍 Rechercher...">
+            
+            <select id="filterEtat" class="form-select w-auto">
+                <option value="" selected>Tous les États</option>
+                <option value="en_attente" {% if app.request.get('etat') == 'en_attente' %} selected {% endif %}>En attente</option>
+                <option value="traité" {% if app.request.get('etat') == 'traité' %} selected {% endif %}>Traité</option>
+            </select>
+        </div>
+
+        <div id="reclamationTableContainer">
+            {% include 'admin/_tabledash.html.twig' %}
+        </div>
+
+    </div>
+</div>
+
+   
+
+    <script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const filterEtat = document.getElementById("filterEtat");
+        const searchInput = document.getElementById("search");
+
+        // Trigger table update on filter change
+        filterEtat.addEventListener("change", function () {
+            updateReclamationTable(this.value);
+        });
+
+        // Trigger table filtering on search
+        searchInput.addEventListener("keyup", function () {
+            let filter = this.value.toLowerCase();
+            searchInTable(filter);
+        });
+
+        function updateReclamationTable(etat) {
+            fetch('/admin/reponseRec?etat=' + etat, {
+                method: 'GET',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' } // Mark as AJAX request
+            })
+            .then(response => response.text())
+            .then(html => {
+                document.getElementById('reclamationTableContainer').innerHTML = html;
+            })
+            .catch(error => console.error("Erreur mise à jour:", error));
+        }
+
+        function searchInTable(filter) {
+            document.querySelectorAll("#reclamationTable tbody tr").forEach(row => {
+                let sujet = row.cells[1].textContent.toLowerCase();
+                let description = row.cells[2].textContent.toLowerCase();
+                row.style.display = (sujet.includes(filter) || description.includes(filter)) ? "" : "none";
+            });
+        }
+    });
+    </script>
+
+    <style>
+        body { background-color: #f0f8ff; font-family: 'Poppins', sans-serif; }
+        .table { border-radius: 12px; overflow: hidden; }
+        .table thead { background-color: #343a40; color: white; }
+        .table tbody tr:hover { background-color: #e3f2fd; transition: 0.3s ease-in-out; }
+        .btn { transition: all 0.3s ease-in-out; }
+        .btn:hover { transform: scale(1.05); }
+        .badge { font-size: 14px; padding: 8px 12px; border-radius: 8px; }
+    </style>
+{% endblock %}

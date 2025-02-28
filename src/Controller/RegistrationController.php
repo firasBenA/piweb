@@ -2,8 +2,10 @@
 
 namespace App\Controller;
 
+use App\Entity\DossierMedical;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
+use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -26,14 +28,14 @@ class RegistrationController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
-            // encode the plain password
+            // Encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
-            // set the roles for the user
+            // Set the roles for the user
             $selectedRole = $form->get('roles')->getData();
             $user->setRoles([$selectedRole]);
 
-            // handle file uploads
+            // Handle file uploads
             $certificatFile = $form->get('certificat')->getData();
             $imageProfilFile = $form->get('imageProfil')->getData();
 
@@ -46,13 +48,18 @@ class RegistrationController extends AbstractController
                 $imageProfilFileName = $this->uploadFile($imageProfilFile, $slugger, 'images_directory');
                 $user->setImageProfil($imageProfilFileName);
             }
-            dump($request->request->all());
 
+            // Create a new DossierMedical for the user
+            $dossierMedical = new DossierMedical();
+            $dossierMedical->setUser($user);
+            $dossierMedical->setDatePrescription(new \DateTime());
+
+            // Persist the user and the dossier
             $entityManager->persist($user);
+            $entityManager->persist($dossierMedical);
             $entityManager->flush();
 
-            // do anything else you need here, like send an email
-
+            // Redirect to login page after registration
             return $this->redirectToRoute('app_login2');
         }
 
@@ -61,11 +68,12 @@ class RegistrationController extends AbstractController
         ]);
     }
 
+
     private function uploadFile($file, SluggerInterface $slugger, $directoryParameter): string
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $slugger->slug($originalFilename);
-        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
 
         try {
             $file->move(

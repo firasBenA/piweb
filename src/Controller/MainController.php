@@ -69,13 +69,13 @@ class MainController extends AbstractController
     #[Route('/evenement', name: 'evenement_page')]
     public function evenement(): Response
     {
-        return $this->render('main/evenement.html.twig'); 
+        return $this->render('main/evenement.html.twig');
     }
-    
+
     #[Route('/article', name: 'article_page')]
     public function article(): Response
     {
-        return $this->render('main/article.html.twig'); 
+        return $this->render('main/article.html.twig');
     }
 
     #[Route('/reclamation', name: 'reclamation_page')]
@@ -110,12 +110,6 @@ class MainController extends AbstractController
         return $this->render('main/forgotPassword.html.twig', [
             'controller_name' => 'MedecinController',
         ]);
-    }
-
-    #[Route('/admin/dashboard', name: 'adminDashboard_page')]
-    public function admin(): Response
-    {
-        return $this->render('admin/index.html.twig');
     }
 
 

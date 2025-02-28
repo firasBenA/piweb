@@ -7,7 +7,7 @@ controllers:
 admin_dashboard:
   path: /admin
   controller: App\Controller\AdminController::index
-
+  
 medecin_dashboard:
   path: /medecin
   controller: App\Controller\MedecinController::dashboard
