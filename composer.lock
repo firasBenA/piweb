@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "1b66033e7a4cb0c9840d904af694af80",
+    "content-hash": "8f3224342f7b43cedcedc3cafd8412f8",
     "packages": [
         {
             "name": "composer/semver",
@@ -1369,6 +1369,167 @@
             "time": "2024-12-27T00:36:43+00:00"
         },
         {
+            "name": "knplabs/knp-components",
+            "version": "v5.1.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/KnpLabs/knp-components.git",
+                "reference": "a1ccc001fd243670ca1e970356027a53d6fca2af"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/KnpLabs/knp-components/zipball/a1ccc001fd243670ca1e970356027a53d6fca2af",
+                "reference": "a1ccc001fd243670ca1e970356027a53d6fca2af",
+                "shasum": ""
+            },
+            "require": {
+                "php": "^8.1",
+                "symfony/event-dispatcher-contracts": "^3.0"
+            },
+            "conflict": {
+                "doctrine/dbal": "<3.8"
+            },
+            "require-dev": {
+                "doctrine/dbal": "^3.8 || ^4.0",
+                "doctrine/mongodb-odm": "^2.5.5",
+                "doctrine/orm": "^2.13 || ^3.0",
+                "doctrine/phpcr-odm": "^1.8 || ^2.0",
+                "ext-pdo_sqlite": "*",
+                "jackalope/jackalope-doctrine-dbal": "^1.12 || ^2.0",
+                "phpunit/phpunit": "^10.5 || ^11.3",
+                "propel/propel1": "^1.7",
+                "ruflin/elastica": "^7.0",
+                "solarium/solarium": "^6.0",
+                "symfony/http-foundation": "^5.4.38 || ^6.4.4 || ^7.0",
+                "symfony/http-kernel": "^5.4.38 || ^6.4.4 || ^7.0",
+                "symfony/property-access": "^5.4.38 || ^6.4.4 || ^7.0"
+            },
+            "suggest": {
+                "doctrine/common": "to allow usage pagination with Doctrine ArrayCollection",
+                "doctrine/mongodb-odm": "to allow usage pagination with Doctrine ODM MongoDB",
+                "doctrine/orm": "to allow usage pagination with Doctrine ORM",
+                "doctrine/phpcr-odm": "to allow usage pagination with Doctrine ODM PHPCR",
+                "propel/propel1": "to allow usage pagination with Propel ORM",
+                "ruflin/elastica": "to allow usage pagination with ElasticSearch Client",
+                "solarium/solarium": "to allow usage pagination with Solarium Client",
+                "symfony/http-foundation": "to retrieve arguments from Request",
+                "symfony/property-access": "to allow sorting arrays"
+            },
+            "type": "library",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "5.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Knp\\Component\\": "src/Knp/Component"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KnpLabs Team",
+                    "homepage": "https://knplabs.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://github.com/KnpLabs/knp-components/contributors"
+                }
+            ],
+            "description": "Knplabs component library",
+            "homepage": "https://github.com/KnpLabs/knp-components",
+            "keywords": [
+                "components",
+                "knp",
+                "knplabs",
+                "pager",
+                "paginator"
+            ],
+            "support": {
+                "issues": "https://github.com/KnpLabs/knp-components/issues",
+                "source": "https://github.com/KnpLabs/knp-components/tree/v5.1.0"
+            },
+            "time": "2024-09-20T12:03:01+00:00"
+        },
+        {
+            "name": "knplabs/knp-paginator-bundle",
+            "version": "v6.6.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/KnpLabs/KnpPaginatorBundle.git",
+                "reference": "1a00f88149d25418bd99d8954eba951f04cc3acf"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/KnpLabs/KnpPaginatorBundle/zipball/1a00f88149d25418bd99d8954eba951f04cc3acf",
+                "reference": "1a00f88149d25418bd99d8954eba951f04cc3acf",
+                "shasum": ""
+            },
+            "require": {
+                "knplabs/knp-components": "^4.4 || ^5.0",
+                "php": "^8.1",
+                "symfony/config": "^6.4 || ^7.0",
+                "symfony/dependency-injection": "^6.4 || ^7.0",
+                "symfony/event-dispatcher": "^6.4 || ^7.0",
+                "symfony/http-foundation": "^6.4 || ^7.0",
+                "symfony/http-kernel": "^6.4 || ^7.0",
+                "symfony/routing": "^6.4 || ^7.0",
+                "symfony/translation": "^6.4 || ^7.0",
+                "twig/twig": "^3.0"
+            },
+            "require-dev": {
+                "phpstan/phpstan": "^1.11",
+                "phpunit/phpunit": "^10.5 || ^11.3",
+                "symfony/expression-language": "^6.4 || ^7.0",
+                "symfony/templating": "^6.4 || ^7.0"
+            },
+            "type": "symfony-bundle",
+            "extra": {
+                "branch-alias": {
+                    "dev-master": "6.x-dev"
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Knp\\Bundle\\PaginatorBundle\\": "src"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "KnpLabs Team",
+                    "homepage": "https://knplabs.com"
+                },
+                {
+                    "name": "Symfony Community",
+                    "homepage": "https://github.com/KnpLabs/KnpPaginatorBundle/contributors"
+                }
+            ],
+            "description": "Paginator bundle for Symfony to automate pagination and simplify sorting and other features",
+            "homepage": "https://github.com/KnpLabs/KnpPaginatorBundle",
+            "keywords": [
+                "bundle",
+                "knp",
+                "knplabs",
+                "pager",
+                "pagination",
+                "paginator",
+                "symfony"
+            ],
+            "support": {
+                "issues": "https://github.com/KnpLabs/KnpPaginatorBundle/issues",
+                "source": "https://github.com/KnpLabs/KnpPaginatorBundle/tree/v6.6.1"
+            },
+            "time": "2024-10-07T16:11:50+00:00"
+        },
+        {
             "name": "monolog/monolog",
             "version": "3.8.1",
             "source": {
@@ -1648,7 +1809,6 @@
         },
         {
             "name": "phpstan/phpdoc-parser",
-<<<<<<< HEAD
             "version": "2.0.0",
             "source": {
                 "type": "git",
@@ -1659,18 +1819,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/c00d78fb6b29658347f9d37ebe104bffadf36299",
                 "reference": "c00d78fb6b29658347f9d37ebe104bffadf36299",
-=======
-            "version": "2.0.1",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/phpstan/phpdoc-parser.git",
-                "reference": "72e51f7c32c5aef7c8b462195b8c599b11199893"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/phpstan/phpdoc-parser/zipball/72e51f7c32c5aef7c8b462195b8c599b11199893",
-                "reference": "72e51f7c32c5aef7c8b462195b8c599b11199893",
->>>>>>> origin/userV1
                 "shasum": ""
             },
             "require": {
@@ -1702,15 +1850,9 @@
             "description": "PHPDoc parser with support for nullable, intersection and generic types",
             "support": {
                 "issues": "https://github.com/phpstan/phpdoc-parser/issues",
-<<<<<<< HEAD
                 "source": "https://github.com/phpstan/phpdoc-parser/tree/2.0.0"
             },
             "time": "2024-10-13T11:29:49+00:00"
-=======
-                "source": "https://github.com/phpstan/phpdoc-parser/tree/2.0.1"
-            },
-            "time": "2025-02-13T12:25:43+00:00"
->>>>>>> origin/userV1
         },
         {
             "name": "psr/cache",
@@ -6201,7 +6343,6 @@
         },
         {
             "name": "symfony/stimulus-bundle",
-<<<<<<< HEAD
             "version": "v2.22.1",
             "source": {
                 "type": "git",
@@ -6212,18 +6353,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/stimulus-bundle/zipball/e13034d428354023c82a1db108d40fdf6cec2d36",
                 "reference": "e13034d428354023c82a1db108d40fdf6cec2d36",
-=======
-            "version": "v2.23.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/stimulus-bundle.git",
-                "reference": "254f4e05cbaa349d4ae68b9b2e6a22995e0887f9"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/stimulus-bundle/zipball/254f4e05cbaa349d4ae68b9b2e6a22995e0887f9",
-                "reference": "254f4e05cbaa349d4ae68b9b2e6a22995e0887f9",
->>>>>>> origin/userV1
                 "shasum": ""
             },
             "require": {
@@ -6263,11 +6392,7 @@
                 "symfony-ux"
             ],
             "support": {
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/stimulus-bundle/tree/v2.22.1"
-=======
-                "source": "https://github.com/symfony/stimulus-bundle/tree/v2.23.0"
->>>>>>> origin/userV1
             },
             "funding": [
                 {
@@ -6283,11 +6408,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
             "time": "2024-12-06T14:30:33+00:00"
-=======
-            "time": "2025-01-16T21:55:09+00:00"
->>>>>>> origin/userV1
         },
         {
             "name": "symfony/stopwatch",
@@ -6805,7 +6926,6 @@
         },
         {
             "name": "symfony/ux-turbo",
-<<<<<<< HEAD
             "version": "v2.22.1",
             "source": {
                 "type": "git",
@@ -6816,18 +6936,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/symfony/ux-turbo/zipball/97718ea4bca26f0db843c3c0de338d6900c5a002",
                 "reference": "97718ea4bca26f0db843c3c0de338d6900c5a002",
-=======
-            "version": "v2.23.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/symfony/ux-turbo.git",
-                "reference": "db96cf04d70a8c820671ce55530e8bf641ada33f"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/symfony/ux-turbo/zipball/db96cf04d70a8c820671ce55530e8bf641ada33f",
-                "reference": "db96cf04d70a8c820671ce55530e8bf641ada33f",
->>>>>>> origin/userV1
                 "shasum": ""
             },
             "require": {
@@ -6896,11 +7004,7 @@
                 "turbo-stream"
             ],
             "support": {
-<<<<<<< HEAD
                 "source": "https://github.com/symfony/ux-turbo/tree/v2.22.1"
-=======
-                "source": "https://github.com/symfony/ux-turbo/tree/v2.23.0"
->>>>>>> origin/userV1
             },
             "funding": [
                 {
@@ -6916,11 +7020,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
             "time": "2024-12-05T14:25:02+00:00"
-=======
-            "time": "2025-02-06T08:47:30+00:00"
->>>>>>> origin/userV1
         },
         {
             "name": "symfony/validator",
@@ -7338,22 +7438,6 @@
         },
         {
             "name": "twig/extra-bundle",
-<<<<<<< HEAD
-            "version": "v3.19.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/twigphp/twig-extra-bundle.git",
-                "reference": "9746573ca4bc1cd03a767a183faadaf84e0c31fa"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/twig-extra-bundle/zipball/9746573ca4bc1cd03a767a183faadaf84e0c31fa",
-                "reference": "9746573ca4bc1cd03a767a183faadaf84e0c31fa",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.0.2",
-=======
             "version": "v3.20.0",
             "source": {
                 "type": "git",
@@ -7368,7 +7452,6 @@
             },
             "require": {
                 "php": ">=8.1.0",
->>>>>>> origin/userV1
                 "symfony/framework-bundle": "^5.4|^6.4|^7.0",
                 "symfony/twig-bundle": "^5.4|^6.4|^7.0",
                 "twig/twig": "^3.2|^4.0"
@@ -7413,11 +7496,7 @@
                 "twig"
             ],
             "support": {
-<<<<<<< HEAD
-                "source": "https://github.com/twigphp/twig-extra-bundle/tree/v3.19.0"
-=======
                 "source": "https://github.com/twigphp/twig-extra-bundle/tree/v3.20.0"
->>>>>>> origin/userV1
             },
             "funding": [
                 {
@@ -7429,8 +7508,74 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
-            "time": "2024-09-26T19:22:23+00:00"
+            "time": "2025-02-08T09:47:15+00:00"
+        },
+        {
+            "name": "twig/string-extra",
+            "version": "v3.20.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/twigphp/string-extra.git",
+                "reference": "4b3337544ac8f76c280def94e32b53acfaec0589"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/twigphp/string-extra/zipball/4b3337544ac8f76c280def94e32b53acfaec0589",
+                "reference": "4b3337544ac8f76c280def94e32b53acfaec0589",
+                "shasum": ""
+            },
+            "require": {
+                "php": ">=8.1.0",
+                "symfony/string": "^5.4|^6.4|^7.0",
+                "symfony/translation-contracts": "^1.1|^2|^3",
+                "twig/twig": "^3.13|^4.0"
+            },
+            "require-dev": {
+                "symfony/phpunit-bridge": "^6.4|^7.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Twig\\Extra\\String\\": ""
+                },
+                "exclude-from-classmap": [
+                    "/Tests/"
+                ]
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Fabien Potencier",
+                    "email": "fabien@symfony.com",
+                    "homepage": "http://fabien.potencier.org",
+                    "role": "Lead Developer"
+                }
+            ],
+            "description": "A Twig extension for Symfony String",
+            "homepage": "https://twig.symfony.com",
+            "keywords": [
+                "html",
+                "string",
+                "twig",
+                "unicode"
+            ],
+            "support": {
+                "source": "https://github.com/twigphp/string-extra/tree/v3.20.0"
+            },
+            "funding": [
+                {
+                    "url": "https://github.com/fabpot",
+                    "type": "github"
+                },
+                {
+                    "url": "https://tidelift.com/funding/github/packagist/twig/twig",
+                    "type": "tidelift"
+                }
+            ],
+            "time": "2025-01-31T20:45:36+00:00"
         },
         {
             "name": "twig/twig",
@@ -7452,29 +7597,6 @@
                 "symfony/polyfill-ctype": "^1.8",
                 "symfony/polyfill-mbstring": "^1.3",
                 "symfony/polyfill-php81": "^1.29"
-=======
-            "time": "2025-02-08T09:47:15+00:00"
-        },
-        {
-            "name": "twig/twig",
-            "version": "v3.20.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/twigphp/Twig.git",
-                "reference": "3468920399451a384bef53cf7996965f7cd40183"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/twigphp/Twig/zipball/3468920399451a384bef53cf7996965f7cd40183",
-                "reference": "3468920399451a384bef53cf7996965f7cd40183",
-                "shasum": ""
-            },
-            "require": {
-                "php": ">=8.1.0",
-                "symfony/deprecation-contracts": "^2.5|^3",
-                "symfony/polyfill-ctype": "^1.8",
-                "symfony/polyfill-mbstring": "^1.3"
->>>>>>> origin/userV1
             },
             "require-dev": {
                 "phpstan/phpstan": "^2.0",
@@ -7521,11 +7643,7 @@
             ],
             "support": {
                 "issues": "https://github.com/twigphp/Twig/issues",
-<<<<<<< HEAD
                 "source": "https://github.com/twigphp/Twig/tree/v3.19.0"
-=======
-                "source": "https://github.com/twigphp/Twig/tree/v3.20.0"
->>>>>>> origin/userV1
             },
             "funding": [
                 {
@@ -7537,11 +7655,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
             "time": "2025-01-29T07:06:14+00:00"
-=======
-            "time": "2025-02-13T08:34:43+00:00"
->>>>>>> origin/userV1
         },
         {
             "name": "webmozart/assert",
@@ -7672,7 +7786,6 @@
         },
         {
             "name": "myclabs/deep-copy",
-<<<<<<< HEAD
             "version": "1.12.1",
             "source": {
                 "type": "git",
@@ -7683,18 +7796,6 @@
                 "type": "zip",
                 "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/123267b2c49fbf30d78a7b2d333f6be754b94845",
                 "reference": "123267b2c49fbf30d78a7b2d333f6be754b94845",
-=======
-            "version": "1.13.0",
-            "source": {
-                "type": "git",
-                "url": "https://github.com/myclabs/DeepCopy.git",
-                "reference": "024473a478be9df5fdaca2c793f2232fe788e414"
-            },
-            "dist": {
-                "type": "zip",
-                "url": "https://api.github.com/repos/myclabs/DeepCopy/zipball/024473a478be9df5fdaca2c793f2232fe788e414",
-                "reference": "024473a478be9df5fdaca2c793f2232fe788e414",
->>>>>>> origin/userV1
                 "shasum": ""
             },
             "require": {
@@ -7733,11 +7834,7 @@
             ],
             "support": {
                 "issues": "https://github.com/myclabs/DeepCopy/issues",
-<<<<<<< HEAD
                 "source": "https://github.com/myclabs/DeepCopy/tree/1.12.1"
-=======
-                "source": "https://github.com/myclabs/DeepCopy/tree/1.13.0"
->>>>>>> origin/userV1
             },
             "funding": [
                 {
@@ -7745,11 +7842,7 @@
                     "type": "tidelift"
                 }
             ],
-<<<<<<< HEAD
             "time": "2024-11-08T17:47:46+00:00"
-=======
-            "time": "2025-02-12T12:17:51+00:00"
->>>>>>> origin/userV1
         },
         {
             "name": "nikic/php-parser",
@@ -9895,11 +9988,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-<<<<<<< HEAD
     "stability-flags": [],
-=======
-    "stability-flags": {},
->>>>>>> origin/userV1
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
@@ -9907,10 +9996,6 @@
         "ext-ctype": "*",
         "ext-iconv": "*"
     },
-<<<<<<< HEAD
     "platform-dev": [],
-=======
-    "platform-dev": {},
->>>>>>> origin/userV1
     "plugin-api-version": "2.6.0"
 }

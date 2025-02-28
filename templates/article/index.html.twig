@@ -5,59 +5,161 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .articles-container {
+        #notification-container {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
             display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .notification {
+            background-color: #d4edda;
+            color: #155724;
+            padding: 10px 15px;
+            border-radius: 5px;
+            font-size: 14px;
+            box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+            animation: fade-in 0.5s ease-out, fade-out 0.5s ease-out 2.5s;
+        }
+
+        .notification.error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        @keyframes fade-in {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @keyframes fade-out {
+            from { opacity: 1; }
+            to { opacity: 0; }
+        }
+
+        .articles-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
             gap: 20px;
+            padding: 20px 0;
         }
+
         .article-card {
-            width: 300px;
-            border: 1px solid #ddd;
+            background: white;
             border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            transition: transform 0.2s ease;
+            display: flex;
+            flex-direction: column;
             padding: 15px;
-            box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
-            background-color: white;
-            text-align: center;
         }
-        .article-card img {
+
+        .article-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .article-img {
             width: 100%;
-            border-radius: 10px;
             height: 180px;
             object-fit: cover;
+            border-radius: 10px;
         }
+
         .article-card h3 {
             margin: 10px 0;
             font-size: 18px;
             font-weight: bold;
+            color: #343a40;
         }
+
         .article-info {
             margin-top: 10px;
             font-size: 14px;
-            color: #555;
+            color: #6c757d;
+            line-height: 1.5;
+            flex-grow: 1;
         }
-        .likes-comments {
+
+        .article-actions {
+            margin-top: 15px;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-top: 10px;
+            gap: 10px;
+            justify-content: center;
+            flex-wrap: wrap;
         }
-        .likes-comments button, .likes-comments a {
-            font-size: 14px;
-            padding: 5px 10px;
+
+        .like-button {
+            font-size: 0.9rem;
+            padding: 6px 12px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
             cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        .like-button.liked {
+            background-color: #dc3545;
+        }
+
+        .like-button:disabled {
+            background-color: #6c757d;
+            cursor: not-allowed;
+        }
+
+        .search-container {
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: flex-end;
+            gap: 10px;
+        }
+
+        .search-container input {
+            padding: 8px;
+            border-radius: 5px;
+            border: 1px solid #ced4da;
+            font-size: 0.9rem;
+            width: 200px;
+        }
+
+        .search-container button {
+            padding: 8px 15px;
+        }
+
+        @media (max-width: 768px) {
+            .articles-container {
+                grid-template-columns: 1fr;
+            }
+            .search-container {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .search-container input {
+                width: 100%;
+            }
         }
     </style>
 {% endblock %}
 
 {% block body %}
+<div id="notification-container"></div>
+
 <div class="container mt-4">
     <h1 class="mb-4 text-center">Articles</h1>
+    
+    {% if evenement is defined %}
+        <h2 class="text-center mb-4">Articles liés à l'événement: {{ evenement.nom }}</h2>
+    {% endif %}
 
     <!-- Search Bar -->
-    <div class="search-container text-right mb-3">
+    <div class="search-container">
         <form method="get" action="{{ path('app_article_index') }}">
-            <input type="text" name="search" placeholder="Rechercher un article..." value="{{ app.request.get('search') }}">
+            <input type="text" name="search" placeholder="Rechercher un article..." value="{{ app.request.get('search') }}" onkeyup="if(event.key === 'Enter') this.form.submit()">
             <button type="submit" class="btn btn-primary">Rechercher</button>
         </form>
     </div>
@@ -68,32 +170,28 @@
             <div class="article-card">
                 <img src="{{ asset('uploads/images/logo2.jpg') }}" class="article-img" alt="Article image">
                 <h3>{{ article.titre }}</h3>
-                <p class="article-info">{{ article.contenue }}</p>
-                
-                <!-- Likes and Comments Section -->
-                <div class="likes-comments">
-                    {% if is_granted('ROLE_PATIENT') %}
-                        <button class="btn btn-outline-primary btn-sm like-btn" data-id="{{ article.id }}">
-                            👍 J'aime <span class="like-count">{{ article.nbJaime }}</span>
+                <p class="article-info">{{ article.contenue|u.truncate(100, '...') }}</p>
+                <p>Jaimes: <span id="likes-count-{{ article.id }}">{{ article.likedByUsers|length }}</span></p>
+                {% if is_granted('ROLE_PATIENT') %}
+                    <div class="article-actions">
+                        <button class="like-button {% if app.user and article.isLikedByUser(app.user) %}liked{% endif %}"
+                                data-id="{{ article.id }}"
+                                {% if not app.user %}disabled{% endif %}>
+                            {% if app.user and article.isLikedByUser(app.user) %}
+                                ❤️ J'aime pas
+                            {% else %}
+                                🤍 J'aime
+                            {% endif %}
                         </button>
-                    {% else %}
-                        <span>👍 {{ article.nbJaime }} J'aime</span>
-                    {% endif %}
-                    
-                    <a href="{{ path('app_article_show', {'id': article.id}) }}" class="btn btn-outline-secondary btn-sm">
-                        💬 Commenter ({{ article.commantaire|length }})
-                    </a>
-                </div>
-
-                <div class="mt-3">
-                    <a href="{{ path('app_article_show', {'id': article.id}) }}" class="btn btn-info btn-sm">Voir</a>
-                    {% if is_granted('ROLE_MEDECIN') %}
-                        <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
-                    {% endif %}
-                </div>
+                        <a href="{{ path('app_article_show', {'id': article.id}) }}" class="btn btn-info btn-sm">Voir</a>
+                        {% if is_granted('ROLE_MEDECIN') %}
+                            <a href="{{ path('app_article_edit', {'id': article.id}) }}" class="btn btn-warning btn-sm">Modifier</a>
+                        {% endif %}
+                    </div>
+                {% endif %}
             </div>
         {% else %}
-            <p class="text-center">Aucun article trouvé.</p>
+            <p class="text-center text-muted">Aucun article trouvé.</p>
         {% endfor %}
     </div>
 
@@ -104,27 +202,72 @@
     {% endif %}
 </div>
 
-<!-- JavaScript for Like Button -->
 <script>
     document.addEventListener("DOMContentLoaded", function () {
-        document.querySelectorAll(".like-btn").forEach(button => {
-            button.addEventListener("click", function () {
-                let articleId = this.getAttribute("data-id");
-                let likeCountSpan = this.querySelector(".like-count");
+        // Notification function
+        function showNotification(message, isError = false) {
+            const container = document.getElementById("notification-container");
+            const notification = document.createElement("div");
+            notification.classList.add("notification");
+            if (isError) notification.classList.add("error");
+            notification.textContent = message;
+            container.appendChild(notification);
+            setTimeout(() => notification.remove(), 3000);
+        }
 
-                fetch(`/article/${articleId}/like`, {
-                    method: "POST",
-                    headers: {
-                        "X-Requested-With": "XMLHttpRequest"
-                    }
-                }).then(response => response.json())
-                .then(data => {
-                    if (data.success) {
-                        likeCountSpan.textContent = data.likes;
+        // Function to attach event listeners to like buttons
+        function attachLikeListeners() {
+            document.querySelectorAll(".like-button").forEach(button => {
+                // Remove existing listeners to prevent duplicates
+                const newButton = button.cloneNode(true);
+                button.parentNode.replaceChild(newButton, button);
+
+                newButton.addEventListener("click", async function () {
+                    const articleId = this.getAttribute("data-id");
+                    const likeCountSpan = document.getElementById(`likes-count-${articleId}`);
+
+                    try {
+                        const response = await fetch(`/article/${articleId}/like`, {
+                            method: "POST",
+                            headers: {
+                                "X-Requested-With": "XMLHttpRequest",
+                                "Content-Type": "application/json"
+                                // Uncomment and configure if CSRF is required
+                                // "X-CSRF-Token": "{{ csrf_token('like') }}"
+                            }
+                        });
+
+                        if (!response.ok) throw new Error("Network response was not ok");
+
+                        const data = await response.json();
+
+                        if (data.success) {
+                            if (data.liked) {
+                                this.classList.add("liked");
+                                this.innerText = "❤️ Unlike";
+                                showNotification("Article aimé !");
+                            } else {
+                                this.classList.remove("liked");
+                                this.innerText = "🤍 Like";
+                                showNotification("Like retiré.");
+                            }
+                            likeCountSpan.textContent = data.likes;
+                        } else {
+                            showNotification(data.message || "Une erreur est survenue.", true);
+                        }
+                    } catch (error) {
+                        console.error("Error:", error);
+                        showNotification("Une erreur est survenue.", true);
                     }
                 });
             });
-        });
+        }
+
+        // Initial attachment of listeners
+        attachLikeListeners();
+
+        // If using AJAX to reload articles dynamically, call this after new content is loaded
+        // Example: document.addEventListener("ajaxContentLoaded", attachLikeListeners);
     });
 </script>
 {% endblock %}

@@ -38,11 +38,7 @@ class ArticleType extends AbstractType
                     ])
                 ],
             ])
-            ->add('commantaire', TextType::class, [
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ])
+
             ->add('nbJaime', IntegerType::class, [
                 'required' => true,
                 'empty_data' => '', // Forces an empty string if the field is left empty

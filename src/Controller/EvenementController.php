@@ -10,6 +10,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
 #[Route('/evenement')]
 final class EvenementController extends AbstractController
@@ -71,11 +73,49 @@ final class EvenementController extends AbstractController
     #[Route('/{id}', name: 'app_evenement_delete', methods: ['POST'])]
     public function delete(Request $request, Evenement $evenement, EntityManagerInterface $entityManager): Response
     {
-        if ($this->isCsrfTokenValid('delete'.$evenement->getId(), $request->getPayload()->getString('_token'))) {
+        if ($this->isCsrfTokenValid('delete' . $evenement->getId(), $request->getPayload()->getString('_token'))) {
             $entityManager->remove($evenement);
             $entityManager->flush();
         }
 
         return $this->redirectToRoute('app_evenement_index', [], Response::HTTP_SEE_OTHER);
     }
+
+    
+    #[Route('/participate/{id}', name: 'app_evenement_participate', methods: ['POST'])]
+    #[IsGranted('ROLE_PATIENT')]
+    public function participate(Evenement $evenement, EntityManagerInterface $entityManager, Request $request): JsonResponse
+    {
+        $user = $this->getUser();
+        
+
+        if (!$user) {
+            return new JsonResponse(['error' => 'Utilisateur non connecté'], 403);
+        }
+
+        if ($evenement->getUsers()->contains($user)) {
+            $evenement->removeUser($user);
+            $participating = false;
+        } else {
+            $evenement->addUser($user);
+            $participating = true;
+        }
+
+        $entityManager->persist($evenement);
+        $entityManager->flush();
+
+        return new JsonResponse(['participating' => $participating]);
+        
+    }
+    
+    #[Route('participer/{id}', name:"app_evenement_participer")]
+
+    public function participer(Evenement $evenement): Response
+{
+    return $this->render('evenement/participer.html.twig', [
+        'evenement' => $evenement
+    ]);
+}
+
+
 }

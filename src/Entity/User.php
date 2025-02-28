@@ -3,6 +3,7 @@
 namespace App\Entity;
 
 use App\Repository\UserRepository;
+use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
@@ -272,31 +273,35 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     }
 
 
-    #[ORM\OneToMany(targetEntity: Evenement::class, mappedBy: 'medecin')]
+    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: 'users')]
     private Collection $evenements;
+
+    public function __construct()
+{
+    $this->evenements = new ArrayCollection();
+}
+
     public function getEvenements(): Collection
     {
         return $this->evenements;
     }
 
-    public function addEvenement(Evenement $evenement): static
-    {
-        if (!$this->evenements->contains($evenement)) {
-            $this->evenements->add($evenement);
-            $evenement->setUser($this);
-        }
-
-        return $this;
+public function addEvenement(Evenement $evenement): static
+{
+    if (!$this->evenements->contains($evenement)) {
+        $this->evenements->add($evenement);
+        $evenement->addUser($this);
     }
 
-    public function removeEvenement(Evenement $evenement): static
-    {
-        if ($this->evenements->removeElement($evenement)) {
-            // set the owning side to null (unless already changed)
-            if ($evenement->getUser() === $this) {
-                $evenement->setUser(null);
-            }
-        }
-        return $this;
+    return $this;
+}
+
+public function removeEvenement(Evenement $evenement): static
+{
+    if ($this->evenements->removeElement($evenement)) {
+        $evenement->removeUser($this);
     }
+
+    return $this;
+}
 }

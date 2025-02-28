@@ -3,7 +3,6 @@
 namespace App\Form;
 
 use App\Entity\Evenement;
-use App\Entity\Medecin;
 use App\Entity\Article;
 use App\Entity\User;
 use App\Repository\UserRepository;
@@ -35,12 +34,16 @@ class EvenementType extends AbstractType
                 'choices' => [
                     'Conférence' => 'conference',
                     'Séminaire' => 'seminaire',
-                    'Workshop' => 'workshop'
+                    'Workshop' => 'workshop',
+                    'Webinar' => 'webinar',
+                    'Table Ronde' => 'table_ronde',
+                    'Formation' => 'formation'
                 ],
                 'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
+                'empty_data' => '',
                 'attr' => ['class' => 'form-control'],
             ])
+            
             ->add('statut', ChoiceType::class, [
                 'choices' => [
                     'Planifié' => 'planifie',
@@ -65,20 +68,15 @@ class EvenementType extends AbstractType
                 'attr' => ['class' => 'form-control'],
                 
             ])
-            ->add('user', EntityType::class, [
-                'class' => User::class,
-                'choice_label' => 'id',
-                'query_builder' => function (UserRepository $userRepository) {
-                    return $userRepository->createQueryBuilder('u')
-                        ->where('u.roles LIKE :role')
-                        ->setParameter('role', '%"ROLE_MEDECIN"%'); // Filters only medecin users
-                },
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ])
+              
+            ->add('article', EntityType::class, [
+                'class' => Article::class,
+                'choice_label' => 'titre',
+                'multiple' => true,
+                'expanded' => true, // Display as checkboxes
+            ]);
             
-        ;
+        ;   
     }
 
     public function configureOptions(OptionsResolver $resolver): void

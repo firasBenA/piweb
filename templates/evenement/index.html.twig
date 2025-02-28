@@ -5,19 +5,46 @@
 {% block stylesheets %}
     {{ parent() }}
     <style>
+    #notification-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification {
+    background-color: #d4edda; /* Light green */
+    color: #155724; /* Dark green text */
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    animation: fade-in 0.5s ease-out;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
         .event-container {
             display: flex;
-            flex-direction: column;
-            align-items: center;
+            flex-wrap: wrap;
+            justify-content: space-between;
             margin-top: 20px;
         }
         .event-card {
-            width: 60%;
+            width: 48%; /* Two cards per row */
             background: white;
             border-radius: 10px;
             box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
             margin-bottom: 20px;
             overflow: hidden;
+            display: flex;
+            flex-direction: column;
         }
         .event-img {
             width: 100%;
@@ -25,10 +52,14 @@
             object-fit: cover;
         }
         .event-content {
-            padding: 20px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
         }
         .event-title {
-            font-size: 20px;
+            font-size: 18px;
             font-weight: bold;
             color: #343a40;
         }
@@ -36,44 +67,55 @@
             color: #6c757d;
             margin-top: 10px;
         }
-        .event-meta {
+        .event-date {
             display: flex;
             justify-content: space-between;
-            margin-top: 10px;
+            margin-top: 15px;
             color: #007bff;
         }
         .event-actions {
             margin-top: 15px;
-        }
-        /* Search Bar Styling */
-        .search-container {
             display: flex;
-            justify-content: flex-end;
-            margin-bottom: 20px;
+            gap: 15px;
         }
-        .search-input {
-            width: 250px;
-            padding: 8px;
+        .btn-sm {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+        }
+        /* Pagination */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            list-style: none;
+            padding: 0;
+        }
+        .pagination li {
+            margin: 0 5px;
+        }
+        .pagination a, .pagination span {
+            padding: 8px 12px;
+            border: 1px solid #007bff;
+            color: #007bff;
+            text-decoration: none;
             border-radius: 5px;
-            border: 1px solid #ccc;
-            outline: none;
+        }
+        .pagination .active span {
+            background-color: #007bff;
+            color: white;
+            border: none;
         }
     </style>
 {% endblock %}
 
 {% block body %}
+    <div id="notification-container"></div>
+
     <div class="container">
         <h1 class="text-center">Événements</h1>
-
-        <!-- Search Bar -->
-        <div class="search-container">
-            <input type="text" id="searchInput" class="search-input" placeholder="Rechercher un événement...">
-        </div>
-
         <div class="event-container" id="eventList">
             {% for evenement in evenements %}
                 <div class="event-card">
-                    <img src="{{ asset('uploads/images/event1.jpg') }}" class="event-img" alt="Evenement image">
+                    <img src="{{ asset('uploads/images/type/' ~ evenement.type ~ '.jpg') }}" class="event-img" alt="{{ evenement.type }}">
                     <div class="event-content">
                         <span class="badge bg-primary">{{ evenement.dateEvent|date('d M') }}</span>
                         <h2 class="event-title">{{ evenement.nom }}</h2>
@@ -83,7 +125,12 @@
                             <span>{{ evenement.lieuxEvent }}</span>
                         </div>
                         <div class="event-actions">
+                            {% if is_granted('ROLE_PATIENT') %}
+                                {% set isParticipating = evenement.users.contains(app.user) %}
+                                <a class="btn btn-sm btn-primary" href="{{ path('app_evenement_participer', {'id': evenement.id}) }}">Participer</a>
+                            {% endif %}
                             <a class="btn btn-primary btn-sm" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
+                            <a class="btn btn-info btn-sm" href="{{ path('app_article_index', {'evenement_id': evenement.id}) }}">Voir Articles</a>
                             {% if is_granted('ROLE_MEDECIN') %}
                                 <a class="btn btn-warning btn-sm" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
                             {% endif %}
@@ -94,28 +141,64 @@
                 <p class="text-center text-muted">Il n'y a pas d'événements pour le moment.</p>
             {% endfor %}
         </div>
-        
         {% if is_granted('ROLE_MEDECIN') %}
         <div class="text-center">
-        <a class="btn btn-success" href="{{ path('app_evenement_ajouter') }}">Créer un événement</a>
+            <a class="btn btn-success" href="{{ path('app_evenement_ajouter') }}">Créer un événement</a>
         </div>
         {% endif %}
->
     </div>
-
     <script>
-        document.getElementById("searchInput").addEventListener("keyup", function () {
-            let filter = this.value.toLowerCase();
-            let events = document.querySelectorAll(".event-card");
+document.addEventListener("DOMContentLoaded", function () {
+    function showNotification(message) {
+        let container = document.getElementById("notification-container");
+        let notification = document.createElement("div");
+        notification.classList.add("notification");
+        notification.textContent = message;
+        container.appendChild(notification);
+        setTimeout(() => {
+            notification.style.opacity = "0";
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
 
-            events.forEach(event => {
-                let title = event.querySelector(".event-title").textContent.toLowerCase();
-                if (title.includes(filter)) {
-                    event.style.display = "block";
-                } else {
-                    event.style.display = "none";
+    const eventList = document.getElementById("eventList");
+    if (!eventList) {
+        console.error("Evenement Liste container not found!");
+        return;
+    }
+
+    eventList.addEventListener("click", function (event) {
+        const button = event.target.closest(".participate-btn");
+        if (button) {
+            let eventId = button.getAttribute("data-event-id");
+            fetch(`/evenement/participate/${eventId}`, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
                 }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Fetch failed");
+                return response.json();
+            })
+            .then(data => {
+                const textSpan = button.querySelector(".participation-text");
+                if (data.participating) {
+                    button.style.backgroundColor = "grey";
+                    textSpan.textContent = "✔ Participé";
+                    showNotification("Vous avez participé à cet événement !");
+                } else {
+                    button.style.backgroundColor = "#007bff";
+                    textSpan.textContent = "Participer";
+                    showNotification("Vous avez annulé votre participation.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showNotification("Erreur lors de la mise à jour de la participation.");
             });
-        });
-    </script>
+        }
+    });
+});
+</script>
 {% endblock %}

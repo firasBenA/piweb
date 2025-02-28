@@ -3,6 +3,8 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -28,16 +30,7 @@ class Article
     
     private ?string $contenue = '';
 
-    #[Route('/article/{id}/like', name: 'article_like', methods: ['POST'])]
-    #[IsGranted('ROLE_PATIENT')]
-    public function like(Article $article, EntityManagerInterface $entityManager): JsonResponse
-    {
-        $article->setNbJaime($article->getNbJaime() + 1);
-        $entityManager->persist($article);
-        $entityManager->flush();
-
-        return new JsonResponse(['success' => true, 'likes' => $article->getNbJaime()]);
-    }
+    
     #[ORM\Column(length: 255, nullable: false)]
     #[Assert\File(
         maxSize: '5M',
@@ -46,12 +39,40 @@ class Article
     )]
     
     private ?string $image = null;
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\JoinTable(name: "article_likes")]
+    private Collection $likedByUsers;
+
+    public function __construct()
+    {
+        $this->likedByUsers = new ArrayCollection();
+    }
+
+    public function getLikedByUsers(): Collection
+    {
+        return $this->likedByUsers;
+    }
+
+    public function like(User $user): void
+    {
+        if (!$this->likedByUsers->contains($user)) {
+            $this->likedByUsers->add($user);
+        }
+    }
+
+    public function unlike(User $user): void
+    {
+        $this->likedByUsers->removeElement($user);
+    }
+
+    public function isLikedByUser(User $user): bool
+    {
+        return $this->likedByUsers->contains($user);
+    }
 
 
-    #[ORM\Column(length: 255, nullable: false)]
-    #[Assert\NotBlank(message: 'ce champ est obligatoire.')]
-    
-    private ?string $commantaire = '';
+
+
 
     #[ORM\Column(nullable: false)]
     #[Assert\Positive(message: 'Le nombre de j\'aime doit être un nombre positif ou zéro.')]
@@ -98,16 +119,7 @@ class Article
     return $this;
 }
 
-    public function getCommantaire(): ?string
-    {
-        return $this->commantaire;
-    }
-
-    public function setCommantaire(string $commantaire): static
-    {
-        $this->commantaire = $commantaire;
-        return $this;
-    }
+    
 
     public function getNbJaime(): ?int
     {
@@ -131,3 +143,4 @@ class Article
         return $this;
     }
 }
+
