@@ -39,11 +39,7 @@ class ArticleType extends AbstractType
                 ],
             ])
 
-            ->add('nbJaime', IntegerType::class, [
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ]);
+            ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

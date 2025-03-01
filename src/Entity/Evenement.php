@@ -72,7 +72,8 @@ class Evenement
     /**
      * @var Collection<int, Article>
      */
-    #[ORM\ManyToMany(targetEntity: Article::class)]
+    #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'evenement')]
+  
     private Collection $article;
 
     public function __construct()
@@ -192,16 +193,22 @@ public function removeUser(User $user): static
     {
         return $this->article;
     }
-
     public function addArticle(Article $article): static
     {
         if (!$this->article->contains($article)) {
+            // Remove the Article from any existing Evenement before adding it here
+            foreach ($article->getEvenement() as $existingEvenement) {
+                $existingEvenement->removeArticle($article);
+            }
+    
             $this->article->add($article);
-            $article->setEvenement($this);
+            $article->setEvenement(new ArrayCollection([$this])); // ✅ Set only this Evenement
         }
-
+    
         return $this;
     }
+    
+
 
     public function removeArticle(Article $article): static
     {

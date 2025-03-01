@@ -157,17 +157,12 @@
     {% endif %}
 
     <!-- Search Bar -->
-    <div class="search-container">
-        <form method="get" action="{{ path('app_article_index') }}">
-            <input type="text" name="search" placeholder="Rechercher un article..." value="{{ app.request.get('search') }}" onkeyup="if(event.key === 'Enter') this.form.submit()">
-            <button type="submit" class="btn btn-primary">Rechercher</button>
-        </form>
-    </div>
+    
 
     <!-- Article Cards -->
     <div class="articles-container">
         {% for article in article %}
-            <div class="article-card">
+            <div class="article-card" data-title="{{ article.titre | lower }}">
                 <img src="{{ asset('uploads/images/logo2.jpg') }}" class="article-img" alt="Article image">
                 <h3>{{ article.titre }}</h3>
                 <p class="article-info">{{ article.contenue|u.truncate(100, '...') }}</p>
@@ -263,11 +258,23 @@
             });
         }
 
-        // Initial attachment of listeners
         attachLikeListeners();
 
-        // If using AJAX to reload articles dynamically, call this after new content is loaded
-        // Example: document.addEventListener("ajaxContentLoaded", attachLikeListeners);
+        // Filtering function
+        function filterArticles() {
+            const input = document.getElementById("search-input");
+            const filter = input.value.toLowerCase();
+            const cards = document.querySelectorAll(".article-card");
+
+            cards.forEach(card => {
+                const title = card.getAttribute("data-title");
+                if (title.includes(filter)) {
+                    card.style.display = "";
+                } else {
+                    card.style.display = "none";
+                }
+            });
+        }
     });
 </script>
 {% endblock %}

@@ -74,12 +74,14 @@ class Article
 
 
 
-    #[ORM\Column(nullable: false)]
-    #[Assert\Positive(message: 'Le nombre de j\'aime doit être un nombre positif ou zéro.')]
-    private ?int $nbJaime = 0;
+    
 
-    #[ORM\ManyToOne(inversedBy: 'article')]
-    private ?Evenement $evenement = null;
+    #[ORM\ManyToMany(targetEntity: Evenement::class, inversedBy: 'articles')]
+    #[ORM\JoinTable(name: 'evenement_article')]
+    private Collection $evenement;
+
+
+    //private ?Evenement $evenement = null;
 
     public function getId(): ?int
     {
@@ -121,26 +123,18 @@ class Article
 
     
 
-    public function getNbJaime(): ?int
-    {
-        return $this->nbJaime;
-    }
+    
 
-    public function setNbJaime(int $nbJaime): static
-    {
-        $this->nbJaime = $nbJaime;
-        return $this;
-    }
-
-    public function getEvenement(): ?Evenement
+    public function getEvenement(): ?Collection
     {
         return $this->evenement;
     }
 
-    public function setEvenement(?Evenement $evenement): static
+    public function setEvenement(?Collection $evenements): static
     {
-        $this->evenement = $evenement;
+        $this->evenement = $evenements ?? new ArrayCollection();
         return $this;
     }
+    
 }
 

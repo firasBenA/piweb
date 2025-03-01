@@ -82,28 +82,7 @@
             font-size: 0.8rem;
             padding: 5px 10px;
         }
-        /* Pagination */
-        .pagination {
-            display: flex;
-            justify-content: center;
-            list-style: none;
-            padding: 0;
-        }
-        .pagination li {
-            margin: 0 5px;
-        }
-        .pagination a, .pagination span {
-            padding: 8px 12px;
-            border: 1px solid #007bff;
-            color: #007bff;
-            text-decoration: none;
-            border-radius: 5px;
-        }
-        .pagination .active span {
-            background-color: #007bff;
-            color: white;
-            border: none;
-        }
+        
     </style>
 {% endblock %}
 
@@ -137,9 +116,13 @@
                         </div>
                     </div>
                 </div>
+                
             {% else %}
                 <p class="text-center text-muted">Il n'y a pas d'événements pour le moment.</p>
             {% endfor %}
+        </div>
+             <div class="pagination-container text-center">
+            {{ knp_pagination_render(evenements) }}
         </div>
         {% if is_granted('ROLE_MEDECIN') %}
         <div class="text-center">
@@ -147,6 +130,7 @@
         </div>
         {% endif %}
     </div>
+     
     <script>
 document.addEventListener("DOMContentLoaded", function () {
     function showNotification(message) {

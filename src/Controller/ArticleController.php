@@ -25,6 +25,9 @@ final class ArticleController extends AbstractController
         ]);
     }
 
+    
+    
+    
     #[Route('/ajouter', name: 'app_article_new', methods: ['GET', 'POST'])]
     public function new(Request $request, EntityManagerInterface $entityManager): Response
     {
@@ -81,6 +84,15 @@ final class ArticleController extends AbstractController
 
         return $this->redirectToRoute('app_article_index', [], Response::HTTP_SEE_OTHER);
     }
-    
+    #[Route('/evenement/{id}', name: 'app_article_by_event', methods: ['GET'])]
+public function getByEvent(Evenement $evenement, ArticleRepository $articleRepository): Response
+{
+    $articles = $articleRepository->findByEvent($evenement);
+
+    return $this->render('article/index.html.twig', [
+        'article' => $articles,
+    ]);
+}
+
   
 }

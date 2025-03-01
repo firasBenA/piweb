@@ -35,8 +35,6 @@ class EvenementType extends AbstractType
                     'Conférence' => 'conference',
                     'Séminaire' => 'seminaire',
                     'Workshop' => 'workshop',
-                    'Webinar' => 'webinar',
-                    'Table Ronde' => 'table_ronde',
                     'Formation' => 'formation'
                 ],
                 'required' => true,

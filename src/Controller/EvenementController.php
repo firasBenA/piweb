@@ -12,15 +12,30 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Knp\Component\Pager\PaginatorInterface;
+
 
 #[Route('/evenement')]
 final class EvenementController extends AbstractController
 {
     #[Route(name: 'app_evenement_index', methods: ['GET'])]
-    public function index(EvenementRepository $evenementRepository): Response
-    {
+    public function index(
+        Request $request,
+        EvenementRepository $evenementRepository,
+        PaginatorInterface $paginator
+    ): Response {
+        // Fetch query without executing it
+        $query = $evenementRepository->createQueryBuilder('e')->getQuery();
+    
+        // Paginate the results, limiting to 3 events per page
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), // Get page number from request, default to 1
+            4 // Limit to 3 events per page
+        );
+    
         return $this->render('evenement/index.html.twig', [
-            'evenements' => $evenementRepository->findAll(),
+            'evenements' => $pagination,
         ]);
     }
 

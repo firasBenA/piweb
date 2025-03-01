@@ -4,6 +4,9 @@ namespace App\Service;
 
 use Symfony\Component\Mailer\MailerInterface;
 use Symfony\Component\Mime\Email;
+use Symfony\Component\Mime\Part\DataPart;
+use Symfony\Component\Mime\Part\Multipart\RelatedPart;
+use Symfony\Component\Mime\Part\File;
 use Symfony\Component\Mailer\Transport;
 use Symfony\Component\Mailer\Mailer;
 
@@ -13,18 +16,22 @@ class EmailService
 
     public function __construct()
     {
-        
         $transport = Transport::fromDsn($_ENV['MAILER_DSN']);
         $this->mailer = new Mailer($transport);
     }
 
-    public function sendEmail(string $to, string $subject, string $content)
+    public function sendEmail(string $to, string $subject, string $content, string $imagePath = null)
     {
         $email = (new Email())
             ->from('esprit.recover.plus@gmail.com')
             ->to($to)
             ->subject($subject)
-            ->text($content);
+            ->html($content); // Send HTML formatted email
+
+        // Attach an inline image if provided
+        if ($imagePath) {
+            $email->embed(fopen($imagePath, 'r'), 'event_banner', 'image/png');
+        }
 
         $this->mailer->send($email);
     }
