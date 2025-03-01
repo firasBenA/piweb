@@ -34,7 +34,7 @@
 								</nav>
 							</div>
 							<div class="header-right-btn f-right d-none d-lg-block ml-30">
-								{% if medecin %}
+								{% if user %}
 									<a href="{{ path('app_logout') }}" class="btn header-btn" style="background-color: #dc3545; color: white; padding: 10px 20px; border-radius: 5px;">Logout</a>
 								{% else %}
 									<a href="{{ path('app_login') }}" class="btn header-btn" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Sign-In</a>
@@ -59,9 +59,9 @@
 	<div class="container mt-5">
 		<div class="text-center mb-4">
 			<h1>Bienvenue Dr.
-				{{ medecin.nom }}
-				{{ medecin.prenom }}</h1>
-			<p>Voici vos prescription et diagnostique</p>
+				{{ user.nom }}
+				{{ user.prenom }}</h1>
+			<p>Voici vos articles et evenements</p>
 		</div>
 
 		<div class="container-fluid">
@@ -69,7 +69,7 @@
 				<div class="col-12">
 					<div class="card shadow-sm mb-4">
 						<div class="card-body">
-							<h5 class="card-title">Mes Diagnostiques</h5>
+							<h5 class="card-title">Mes evenements</h5>
 							<div class="table-responsive">
 								<table class="table table-striped w-100">
 									<thead>
@@ -82,25 +82,14 @@
 										</tr>
 									</thead>
 									<tbody>
-										{% for diagnostique in diagnostiques %}
+										{% for evenment in evenements %}
 											<tr>
-												<td>{{ diagnostique.id  }}</td>
-												<td>{{ diagnostique.nom }}</td>
-												<td>{{ diagnostique.description }}</td>
-												<td>{{ diagnostique.dateDiagnostique|date('Y-m-d') }}</td>
+												<td>{{ evenment.id  }}</td>
+												<td>{{ evenment.nom }}</td>
+												<td>{{ evenment.contenue }}</td>
+												<td>{{ evenment.datevent|date('Y-m-d') }}</td>
 												<td
-													class="px-4 py-3 text-xs">
-													<!-- Status conditional rendering -->
-													{% if diagnostique.status == 0 %}
-														<a href="{{ path('app_prescription_new', {'diagnostique_id': diagnostique.id}) }}" class="px-2 py-1 font-semibold leading-tight text-black-700 bg-white-100 rounded-full dark:bg-blue-500 dark:text-white">
-															<p>+</p>
-														</a>
-													{% elseif diagnostique.status == 1 %}
-														<div class="px-2 py-1 font-semibold leading-tight text-black-700 bg-white-100 rounded-full dark:bg-blue-500 dark:text-white">
-															<i class="fas fa-check"></i>
-														</div>
-														<!-- Check mark for status 1 -->
-													{% endif %}
+													{{ evenment.lieux_event }}
 												</td>
 											</tr>
 										{% else %}
@@ -123,7 +112,7 @@
 				<div class="col-12">
 					<div class="card shadow-sm mb-4">
 						<div class="card-body">
-							<h5 class="card-title">Mes Prescriptions</h5>
+							<h5 class="card-title">Mes articles</h5>
 							<div class="table-responsive">
 								<table class="table table-striped w-100">
 									<thead>
@@ -137,19 +126,19 @@
 										</tr>
 									</thead>
 									<tbody>
-										{% for prescription in prescriptions %}
+										{% for article in articles %}
 											<tr>
 												<td class="px-4 py-3">
 													<div class="flex items-center text-sm">
 														<div>
-															<a href="{{ path('prescription_details', { 'id': prescription.id }) }}">{{ prescription.id }}</a>
+															<a href="#">{{ article.id }}</a>
 														</div>
 													</div>
 												</td>
-												<td>{{ prescription.titre }}</td>
-												<td>{{ prescription.contenue }}</td>
-												<td>{{ prescription.datePrescription|date('Y-m-d') }}</td>
-												<td>{{ prescription.medecin.nom }}</td>
+												<td>{{ article.titre }}</td>
+												<td>{{ article.contenue }}</td>
+												<td>{{ article.datePrescription|date('Y-m-d') }}</td>
+												<td>{{ article.medecin.nom }}</td>
 												<td>
 													<form action="{{ path('app_prescription_delete', {'id': prescription.id}) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this prescription?');" style="display: inline;">
 														<button class="flex items-center justify-between px-2 py-2 text-sm font-medium leading-5 text-purple-600 rounded-lg dark:text-gray-400 focus:outline-none focus:shadow-outline-gray" aria-label="Delete">

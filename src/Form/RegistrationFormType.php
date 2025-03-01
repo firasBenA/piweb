@@ -70,7 +70,7 @@ class RegistrationFormType extends AbstractType
             'mapped' => false,
             'choices' => [
             'Patient' => 'ROLE_PATIENT',
-            'Médecin' => 'ROEL_MEDECIN',
+            'Médecin' => 'ROLE_MEDECIN',
             ],
             'multiple' => false, 
             'placeholder' => 'Sélectionnez votre rôle',

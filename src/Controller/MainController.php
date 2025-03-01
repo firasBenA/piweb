@@ -8,6 +8,7 @@ use App\Entity\User;
 use App\Repository\MedecinRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Routing\RouterInterface;
@@ -67,15 +68,22 @@ class MainController extends AbstractController
     }
 
     #[Route('/evenement', name: 'evenement_page')]
-    public function evenement(): Response
+    public function evenement(Security $security): Response
     {
-        return $this->render('main/evenement.html.twig'); 
+        // Get the currently logged-in user
+        $user = $security->getUser();
+
+        // Pass the user to the template
+        return $this->render('main/evenement.html.twig', [
+            'user' => $user
+        ]);
     }
-    
+
+
     #[Route('/article', name: 'article_page')]
     public function article(): Response
     {
-        return $this->render('main/article.html.twig'); 
+        return $this->render('main/article.html.twig');
     }
 
     #[Route('/reclamation', name: 'reclamation_page')]
@@ -121,7 +129,11 @@ class MainController extends AbstractController
 
 
 
-
+    #[Route('/map', name: 'app_map')]
+    public function map(): Response
+    {
+        return $this->render('map.html.twig');
+    }
 
 
     //////////////////////////

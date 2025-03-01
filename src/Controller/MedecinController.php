@@ -2,16 +2,20 @@
 
 namespace App\Controller;
 
+
 use App\Entity\Diagnostique;
 use App\Entity\DossierMedical;
 use App\Entity\Patient;
 use App\Entity\Prescription;
-use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
+
 
 final class MedecinController extends AbstractController
 {
@@ -29,23 +33,45 @@ final class MedecinController extends AbstractController
     }
 
     #[Route('/prescription', name: 'PrescriptionMedecin_page')]
-    public function prescriptionDashboard(Security $security, EntityManagerInterface $entityManager): Response
-    {
+    public function prescriptionDashboard(
+        Security $security,
+        EntityManagerInterface $entityManager,
+        Request $request,
+        PaginatorInterface $paginator
+    ): Response {
         // Fetch the currently authenticated user (Medecin)
         $user = $security->getUser();
+        $queryBuilder = $entityManager->getRepository(Diagnostique::class)->createQueryBuilder('d');
 
-        // Retrieve the 'prescriptions' related to the logged-in Medecin
-        $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy(['medecin' => $user]);
-        $prescriptions = $entityManager->getRepository(Prescription::class)->findBy(['medecin' => $user]);
+        // Get the current page number (default: 1)
+        $page = $request->query->getInt('page', 1);
+        $diagnostiques = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $page,
+            5
+        );
 
+        // Handle AJAX requests for pagination
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse([
+                'results' => $this->renderView('medecin/_diagnostics_table.html.twig', [
+                    'diagnostiques' => $diagnostiques
+                ]),
+                'pagination' => $this->renderView('pagination.html.twig', [
+                    'pagination' => $diagnostiques
+                ])
+            ]);
+        }
 
-        // Return the dashboard view for the medecin with the prescriptions
-        return $this->render('consultation/prescriptionDashboard.html.twig', [
+        $prescriptions = $entityManager->getRepository(Prescription::class)->findAll();
+
+        return $this->render('medecin/prescriptionDashboard.html.twig', [
             'medecin' => $user,
             'diagnostiques' => $diagnostiques,
-            'prescriptions' => $prescriptions  // Pass prescriptions to the template
+            'prescriptions' => $prescriptions
         ]);
     }
+
 
 
     #[Route('/infomed', name: 'infomed')]

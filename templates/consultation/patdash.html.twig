@@ -14,7 +14,7 @@
 					<div class="row align-items-center">
 						<div class="col-xl-2 col-lg-2 col-md-1">
 							<div class="logo">
-								<a href="#"><img src="assets/img/logo/logo.png" alt="Medical Logo"></a>
+								<a href="{{path('home_page')}}"><img src="assets/img/logo/logo.png" alt="Medical Logo"></a>
 							</div>
 						</div>
 						<div class="col-xl-10 col-lg-10 col-md-10">
@@ -126,25 +126,29 @@
 			<div class="card shadow-sm mb-4">
 				<div class="card-body">
 					<h5 class="card-title">Mes Prescriptions</h5>
-
+					<div class="mb-3">
+						<input type="text" id="searchInput" class="form-control" placeholder="Rechercher par titre...">
+					</div>
 					<table class="table table-striped">
 						<thead>
 							<tr>
 								<th>ID</th>
 								<th>Titre</th>
-								<th>Contenue</th>
+								<th>Contenu</th>
 								<th>Date</th>
 								<th>Doctor</th>
-								<th>Telecharger</th>
+								<th>Télécharger</th>
 							</tr>
 						</thead>
-						<tbody>
+						<tbody
+							id="prescriptionsTable">
+							<!-- Make sure the ID is here -->
 							{% for prescription in prescriptions %}
 								<tr>
 									<td>{{ prescription.id }}</td>
 									<td>{{ prescription.titre }}</td>
 									<td>{{ prescription.contenue }}</td>
-									<td>date</td>
+									<td>{{ prescription.datePrescription|date('Y-m-d') }}</td>
 									<td>{{ prescription.medecin.nom }}</td>
 									<td>
 										<button onclick="downloadPdf({{ prescription.id }})" class="btn btn-primary btn-sm">
@@ -152,19 +156,21 @@
 										</button>
 									</td>
 								</tr>
-							</tbody>
+							{% else %}
+								<tr>
+									<td colspan="6" class="text-center">Aucune Prescription.</td>
+								</tr>
+							{% endfor %}
 						</tbody>
-					</tr>
-				{% else %}
-					<tr>
-						<td colspan="3" class="text-center">Aucun Prescription.</td>
-					</tr>
-				{% endfor %}
+					</table>
+				</div>
 			</div>
+
 		</div>
 	</div>
-</div></div><script>
-function downloadPdf(prescriptionId) {
+</div>
+<script>
+	function downloadPdf(prescriptionId) {
 fetch (`/prescription/download/${prescriptionId}`).then(response => response.blob()).then(blob => {
 const link = document.createElement('a');
 link.href = window.URL.createObjectURL(blob);
@@ -173,92 +179,138 @@ document.body.appendChild(link);
 link.click();
 document.body.removeChild(link);
 }).catch(error => console.error('Erreur lors du téléchargement du PDF:', error));
-}</script><style>
-.header-area {
-	background: #fff;
-	padding: 10px 0;
-	box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-.main-header {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
+document.getElementById('searchInput').addEventListener('input', function () {
+let searchValue = this.value.trim();
+
+fetch('/prescriptions/search?search=' + encodeURIComponent(searchValue)).then(response => response.json()).then(data => {
+let tableBody = document.getElementById('prescriptionsTable');
+tableBody.innerHTML = ''; // Clear existing table
+
+if (data.length === 0) {
+tableBody.innerHTML = '<tr><td colspan="6" class="text-center">Aucune Prescription trouvée.</td></tr>';
+return;
 }
 
-.menu-main {
-	display: flex;
-	align-items: center;
-}
+data.forEach(prescription => {
+let row = `
+                    <tr>
+                        <td>${
+prescription.id
+}</td>
+                        <td>${
+prescription.titre
+}</td>
+                        <td>${
+prescription.contenue
+}</td>
+                        <td>${
+prescription.date
+}</td> <!-- FIXED -->
+                        <td>${
+prescription.medecin.nom
+}</td>
+                        <td>
+                            <button onclick="downloadPdf(${
+prescription.id
+})" class="btn btn-primary btn-sm">
+                                Télécharger PDF
+                            </button>
+                        </td>
+                    </tr>`;
+tableBody.innerHTML += row;
+});
+}).catch(error => console.error('Error fetching prescriptions:', error));
+});
+</script>
+<style>
+	.header-area {
+		background: #fff;
+		padding: 10px 0;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
 
-.main-menu nav ul {
-	list-style: none;
-	padding: 0;
-	margin: 0;
-	display: flex;
-	justify-content: flex-end; /* Aligner les éléments à droite */
-}
+	.main-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
 
-.main-menu nav ul li {
-	position: relative;
-	margin: 0 15px;
-}
+	.menu-main {
+		display: flex;
+		align-items: center;
+	}
 
-.main-menu nav ul li a {
-	text-decoration: none;
-	color: #000;
-	font-weight: normal; /* Retirer le gras */
-	font-size: 16px;
-	padding: 10px 15px;
-	display: block;
-}
+	.main-menu nav ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+		justify-content: flex-end; /* Aligner les éléments à droite */
+	}
 
-.main-menu nav ul li a:hover {
-	color: #007bff;
-}
+	.main-menu nav ul li {
+		position: relative;
+		margin: 0 15px;
+	}
 
-.header-right-btn {
-	margin-left: 30px;
-}
+	.main-menu nav ul li a {
+		text-decoration: none;
+		color: #000;
+		font-weight: normal; /* Retirer le gras */
+		font-size: 16px;
+		padding: 10px 15px;
+		display: block;
+	}
 
-.header-btn {
-	background-color: #007bff;
-	color: white;
-	padding: 10px 20px;
-	border-radius: 5px;
-	text-decoration: none;
-	font-weight: bold;
-}
+	.main-menu nav ul li a:hover {
+		color: #007bff;
+	}
 
-.header-btn:hover {
-	background-color: #0056b3;
-}
+	.header-right-btn {
+		margin-left: 30px;
+	}
 
-.footer-area {
-	background-color: #343a40;
-	padding: 60px 0;
-}
+	.header-btn {
+		background-color: #007bff;
+		color: white;
+		padding: 10px 20px;
+		border-radius: 5px;
+		text-decoration: none;
+		font-weight: bold;
+	}
 
-.footer-logo img {
-	max-width: 180px;
-}
+	.header-btn:hover {
+		background-color: #0056b3;
+	}
 
-.footer-tittle h4 {
-	color: #fff;
-}
+	.footer-area {
+		background-color: #343a40;
+		padding: 60px 0;
+	}
 
-.footer-pera p,
-.footer-number p,
-.footer-copy-right p {
-	color: #fff;
-}
+	.footer-logo img {
+		max-width: 180px;
+	}
 
-.footer-social a {
-	color: #fff;
-	margin: 0 10px;
-	font-size: 18px;
-}
+	.footer-tittle h4 {
+		color: #fff;
+	}
 
-.footer-social a:hover {
-	color: #007bff;
-}</style>{% endblock %}
+	.footer-pera p,
+	.footer-number p,
+	.footer-copy-right p {
+		color: #fff;
+	}
+
+	.footer-social a {
+		color: #fff;
+		margin: 0 10px;
+		font-size: 18px;
+	}
+
+	.footer-social a:hover {
+		color: #007bff;
+	}
+</style>{% endblock %}

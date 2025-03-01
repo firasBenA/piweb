@@ -10,13 +10,13 @@
 
 	<div class="contact-form-main" style="background-color: #f7fdff; padding: 20px;">
 		<div class="container" style="margin-left: 0; max-width: 100%;">
-			<div class="row">
-				<form id="contact-form" action="{{ path('diagnose_form', {'id': app.request.query.get('id')}) }}" method="POST" novalidate>
-					{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
-					<div class="col-xl-7 col-lg-7">
-						<div
-							class="form-wrapper">
-							<!-- Section Title -->
+			<div
+				class="row">
+				<!-- Left Column: Form Section -->
+				<div class="col-xl-7 col-lg-7">
+					<form id="contact-form" action="{{ path('diagnose_form', {'id': app.request.query.get('id')}) }}" method="POST" novalidate>
+						{{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+						<div class="form-wrapper">
 							<div class="form-tittle">
 								<div class="row">
 									<div class="col-xl-12">
@@ -27,9 +27,9 @@
 									</div>
 								</div>
 							</div>
-							<!-- End Section Title -->
 
 							<input type="hidden" name="dossierMedical" value="{{ dossierMedical.id }}">
+
 							<div class="row">
 								<div class="col-lg-6 col-md-6 mb-30">
 									<div class="select-itms">
@@ -68,39 +68,34 @@
 									</div>
 								</div>
 
-								<!-- New Button to Preview Diagnosis -->
 								<div class="col-lg-12" style="margin-top:12px;width: 100%; margin-bottom:8px;">
 									<button type="button" id="previewDiagnosis" class="btn btn-primary">Preview Diagnosis</button>
 								</div>
 
-								<!-- Diagnosis Result -->
 								<div class="col-lg-12" style="margin-top:12px;">
 									<h2>Diagnosis:</h2>
 									<p id="diagnosisResult" style="color: red; display: none;"></p>
 								</div>
 							</div>
-
 						</div>
+						{{ form_end(form) }}
+					</form>
+				</div>
+
+				<!-- Right Column: Map Section -->
+				<div class="col-xl-5 col-lg-5">
+					<div class="form-wrapper">
+						<h2>Suggested Doctors:</h2>
+						<div
+							id="doctorList" class="doctor-list" style="display: block;"><!-- Doctors will be populated here dynamically -->
+						</div>
+						<input type="hidden" name="medecin" id="medecin">
+						<h1 id="selectedDoctor"></h1>
 					</div>
 
-					<div class="col-xl-5 col-lg-5">
-						<div class="form-wrapper">
-							<h2>Suggested Doctors:</h2>
-							<div
-								id="doctorList" class="doctor-list" style="display: block;"><!-- Doctors will be populated here dynamically -->
-							</div>
-						</div>
-					</div>
-
-					<!-- Hidden input field for storing the selected doctor's ID -->
-					<input
-					type="text" name="medecin" id="medecin">
-					<!-- The div where selected doctor's information will be displayed -->
-					<div id="selectedDoctor"></div>
-
-
-					{{ form_end(form) }}
-				</form>
+					<!-- Map Section -->
+					<div id="map" style="height: 900px; width: 100%;"></div>
+				</div>
 			</div>
 		</div>
 	</div>
@@ -151,7 +146,7 @@ return;
 const medecin = document.getElementById("medecin").value;
 
 const zoneCorps = document.getElementById("diagnostique_zoneCorps").value;
-console.log(zoneCorps);  // Prints the value of the zoneCorps input field
+console.log(zoneCorps); // Prints the value of the zoneCorps input field
 
 
 fetch (`/diagnose-api?id=${dossierMedicalId}`, {
@@ -329,6 +324,30 @@ event.preventDefault();
 fetchDiagnosis();
 
 });
+
+
+// /////////////////
+
+document.addEventListener("DOMContentLoaded", function () {
+let medecinLocations = {{ medecinLocations|json_encode|raw }};
+if (medecinLocations.length > 0) {
+let map = L.map('map').setView([
+medecinLocations[0].latitude,
+medecinLocations[0].longitude
+], 13);
+
+L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {attribution: '© OpenStreetMap contributors'}).addTo(map);
+
+medecinLocations.forEach(function (medecin) {
+L.marker([medecin.latitude, medecin.longitude]).addTo(map).bindPopup (`<b>${
+medecin.nom
+
+}</b>`);
+});
+} else {
+document.getElementById('map').innerHTML = '<p>Aucune localisation disponible.</p>';
+}
+});
 	</script>
 
 
@@ -376,5 +395,12 @@ fetchDiagnosis();
 		.doctor-list button {
 			margin-bottom: 10px; /* Adds space between the buttons */
 		}
+
+		#map {
+			height: 500px;
+			width: 100%;
+		}
 	</style>
+
+
 {% endblock %}

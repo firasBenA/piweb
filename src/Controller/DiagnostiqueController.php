@@ -44,6 +44,19 @@ final class DiagnostiqueController extends AbstractController
             throw $this->createAccessDeniedException('You are not logged in.');
         }
 
+        $medecins = $entityManager->getRepository(User::class)->findAll();
+        
+        $locations = [];
+        foreach ($medecins as $medecin) {
+            if ($medecin->getLatitude() && $medecin->getLongitude()) {
+                $locations[] = [
+                    'nom' => $medecin->getNom(),
+                    'latitude' => $medecin->getLatitude(),
+                    'longitude' => $medecin->getLongitude(),
+                ];
+            }
+        }
+
         $userRepository = $entityManager->getRepository(User::class);
 
 
@@ -268,6 +281,8 @@ final class DiagnostiqueController extends AbstractController
             return $this->redirect($request->getUri());
         }
 
+
+
         // Render the form in the template
         return $this->render('main/diagnostique.html.twig', [
             'form' => $form->createView(),
@@ -275,6 +290,8 @@ final class DiagnostiqueController extends AbstractController
             'dossierMedical' => $dossierMedical,
             'user' => $user,
             'diagnostique' => $diagnostique,
+            'medecinLocations' => $locations,
+            'medecins' => $medecins
         ]);
     }
 

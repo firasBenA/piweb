@@ -7,12 +7,16 @@ use App\Entity\Consultation;
 use App\Entity\Patient;
 use App\Entity\Prescription;
 use App\Entity\User;
+use App\Form\PrescriptionSearchType;
 use App\Form\RendezVousType;
 use App\Repository\PrescriptionRepository;
 use App\Service\pdfService;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\Persistence\ManagerRegistry;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
@@ -182,21 +186,86 @@ final class RendezVousController extends AbstractController
     }
 
 
-
     #[Route('patdash/{id}', name: 'patientDashboard')]
-    public function dashboard(Security $security, PrescriptionRepository $prescriptionRepository): Response
-    {
+    public function dashboard(
+        Request $request,
+        Security $security,
+        PrescriptionRepository $prescriptionRepository,
+        EntityManagerInterface $entityManager
+    ): Response {
         // Get the currently logged-in patient
         $patient = $security->getUser();
 
-        // Retrieve the prescriptions associated with the patient
+        // Retrieve all prescriptions associated with the patient (default)
         $prescriptions = $prescriptionRepository->findBy(['patient' => $patient]);
+
+        // Create search form
+        $form = $this->createForm(PrescriptionSearchType::class);
+        $form->handleRequest($request);
+
+        // Initialize search results
+        $searchPrescriptions = [];
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $searchTerm = $form->get('search')->getData();
+
+            if ($searchTerm) {
+                $queryBuilder = $entityManager->getRepository(Prescription::class)->createQueryBuilder('p');
+                $queryBuilder
+                    ->where('p.titre LIKE :search')
+                    ->andWhere('p.patient = :patient') // Ensure filtering by logged-in patient
+                    ->setParameter('search', '%' . $searchTerm . '%')
+                    ->setParameter('patient', $patient);
+
+                $searchPrescriptions = $queryBuilder->getQuery()->getResult();
+            }
+        }
 
         return $this->render('consultation/patdash.html.twig', [
             'patient' => $patient,
-            'prescriptions' => $prescriptions,
+            'prescriptions' => $prescriptions, // Default list
+            'form' => $form->createView(),
+            'searchPrescriptions' => $searchPrescriptions // Search results
         ]);
     }
+
+
+    #[Route('/prescriptions/search', name: 'prescription_search', methods: ['GET'])]
+    public function search(Request $request, PrescriptionRepository $prescriptionRepository, LoggerInterface $logger): JsonResponse
+    {
+        try {
+            $searchTerm = $request->query->get('search', '');
+            $logger->info('Search term: ' . $searchTerm); // Debugging
+
+            // Search query adjusted to remove `user` filter
+            if (!$searchTerm) {
+                $prescriptions = $prescriptionRepository->findAll(); // Get all prescriptions
+            } else {
+                $prescriptions = $prescriptionRepository->createQueryBuilder('p')
+                    ->where('p.titre LIKE :search')
+                    ->setParameter('search', '%' . $searchTerm . '%')
+                    ->getQuery()
+                    ->getResult();
+            }
+
+            $data = [];
+            foreach ($prescriptions as $prescription) {
+                $data[] = [
+                    'id' => $prescription->getId(),
+                    'titre' => $prescription->getTitre(),
+                    'contenue' => $prescription->getContenue(),
+                    'date' => $prescription->getDatePrescription()->format('Y-m-d'), // Ensure correct method
+                    'medecin' => ['nom' => $prescription->getMedecin()->getNom()],
+                ];
+            }
+
+            return $this->json($data);
+        } catch (\Exception $e) {
+            $logger->error('Error in search: ' . $e->getMessage());
+            return $this->json(['error' => 'An error occurred'], 500);
+        }
+    }
+
 
     #[Route('/prescription/download/{id}', name: 'prescription_download')]
     public function downloadPrescriptionPdf(Prescription $prescription, pdfService $pdfService): Response

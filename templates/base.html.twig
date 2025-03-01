@@ -8,6 +8,10 @@
 		</title>
 		<link rel="icon" href="{{asset('assets/img/favicon.ico')}}">
 		{% block stylesheets %}
+			<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+			<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+
 			<link rel="manifest" href="site.webmanifest">
 			<link
 			rel="shortcut icon" type="image/x-icon" href="{{asset('assets/img/favicon.ico')}}">
@@ -144,11 +148,11 @@
 													Déconnexion
 												</a>
 
-												<a href="{{ path('patientDashboard' ,{'id':user.id}) }}">
+												<a href="{{ path('patientDashboard' ,{'id':app.user.id}) }}">
 													<i class="fas fa-sign-out-alt logout-icon"></i>
 													Profile
 												</a>
-												
+
 											</div>
 										</div>
 									{% else %}
@@ -227,7 +231,7 @@
 								<p>
 									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 									Copyright &copy;
-																																																																																																																																																																																																																																																																																																																																																																																																			All rights reserved | This template is made withAll rights reserved | This template is made with
+																																																																																																																																																																																																																																																																																																																																																																																																																					All rights reserved | This template is made withAll rights reserved | This template is made with
 									<i class="fa fa-heart" aria-hidden="true"></i>
 									by
 									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
@@ -260,5 +264,4 @@
 			<i class="fas fa-level-up-alt"></i>
 		</a>
 	</div>
-</html>
-</html>
+</html></html>
