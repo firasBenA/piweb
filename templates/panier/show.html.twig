@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panier Details{% endblock %}
+
+{% block body %}
+    <h1>Panier Details</h1>
+
+    <table class="table">
+        <tbody>
+            <tr>
+                <th>Id</th>
+                <td>{{ panier.id }}</td>
+            </tr>
+            <tr>
+                <th>CreeLe</th>
+                <td>{{ panier.creeLe ? panier.creeLe|date('Y-m-d H:i:s') : 'Not set' }}</td>
+            </tr>
+            <tr>
+                <th>MajLe</th>
+                <td>{{ panier.majLe ? panier.majLe|date('Y-m-d H:i:s') : 'Not set' }}</td>
+            </tr>
+            <tr>
+                <th>Patient</th>
+                <td>{{ panier.user ? panier.user.id : 'No patient assigned' }}</td>
+            </tr>
+            <tr>
+                <th>Articles</th>
+                <td>
+                    {% if panier.articles is not empty %}
+                        <ul>
+                            {% for article in panier.articles %}
+                                <li>
+                                    {{ article.id }} - {{ article.nom ?? 'No name available' }}
+                                    <br>
+                                    {% if article.image is not null %}
+                                        <img src="{{ asset('uploads/images/' ~ article.image) }}" alt="{{ article.nom }}" width="100">
+                                    {% else %}
+                                        No image available
+                                    {% endif %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    {% else %}
+                        No articles in panier
+                    {% endif %}
+                </td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div>
+        <a href="{{ path('app_panier_index') }}" class="btn btn-primary">Back to list</a>
+        <a href="{{ path('app_panier_edit', {'id': panier.id}) }}" class="btn btn-warning">Edit</a>
+    </div>
+
+    {{ include('panier/_delete_form.html.twig') }}
+{% endblock %}

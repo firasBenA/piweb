@@ -1,0 +1,70 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Panier List{% endblock %}
+
+{% block body %}
+    <h1>Panier List</h1>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Articles</th>
+                <th>Total Price</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for panier in paniers %}
+                <tr>
+                    <td>{{ panier.id }}</td>
+                    <td>{{ panier.user ? panier.user.id : 'No Patient' }}</td> {# Check if user exists #}
+                    <td>
+                        <ul>
+                            {% set total = 0 %}
+                            {% for article in panier.articles %}
+                                <li class="article-item">
+                                    {% if article.image is not empty %}
+                                        <img src="{{ asset('uploads/images/' ~ article.image) }}" 
+                                             alt="{{ article.nom }}" 
+                                             class="article-image">
+                                    {% endif %}
+                                    <span class="article-details">
+                                        <strong>{{ article.nom }}</strong> - {{ article.prix }} TND
+                                    </span>
+                                    {% set total = total + article.prix %}
+                                </li>
+                            {% endfor %}
+                        </ul>
+                    </td>
+                    <td><strong>{{ total }} TND</strong></td>
+                    <td>
+                        <a href="{{ path('app_panier_show', {'id': panier.id}) }}">Show</a>
+                        <a href="{{ path('app_panier_edit', {'id': panier.id}) }}">Edit</a>
+                        {{ include('panier/_delete_form.html.twig', {'panier': panier}) }}
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+    <a href="{{ path('app_panier_new') }}">Create new Panier</a>
+
+    <style>
+        .article-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .article-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .article-details {
+            font-size: 14px;
+        }
+    </style>
+{% endblock %}
