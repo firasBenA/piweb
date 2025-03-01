@@ -1,409 +1,156 @@
+{% extends 'meddtemp.html.twig' %}
 
 {% block body %}
-    <!-- Navbar Start -->
-    <header>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
-
-    <div class="header-area">
-        <div class="main-header header-sticky">
-            <div class="container-fluid">
-                <div class="row align-items-center">
-                    <div class="col-xl-2 col-lg-2 col-md-1">
-                        <div class="logo">
-                            <a href="#"><img src="assets/img/logo/logo.png" alt="Medical Logo"></a>
-                        </div>
-                    </div>
-                    <div class="col-xl-10 col-lg-10 col-md-10">
-                        <div class="menu-main d-flex align-items-center justify-content-end">
-                            <div class="main-menu f-right d-none d-lg-block">
-                                <nav>
-                                    <ul id="navigation" class="d-flex justify-content-end">
-                                        <li><a href="{{ path('home_page') }}">Home</a></li>
-                                        <li><a href="{{ path('medecin_dashboard1', {'id': medecin.id}) }}">Tableau De Board</a></li>
-                                        <li><a href="{{ path('consultation_medecin_list', {'id': medecin.id}) }}">Consultations</a></li>
-                                        <li><a href="{{ path('infomed', {'id': medecin.id}) }}">Mes Informations</a></li>
-                                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
-									{% if app.user %}
-										<div class="profile-dropdown">
-											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
-											<div class="profile-dropdown-content">
-												<a href="{{ path('app_logout') }}">
-													<i class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
-												</a>
-											</div>
-										</div>
-									{% else %}
-										<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
-									{% endif %}
-                                    </ul>
-                                </nav>
-                            </div>
-                            
-                            <!-- Dropdown menu corrigé -->
-                            
-                            
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
-
-    <!-- Navbar End -->
-
     <!-- Main Content Start -->
     <div class="container mt-5">
-        <h1 class="text-center text-primary fw-bold">📅 Liste des Consultations du Dr. {{ app.user.nom }} {{ app.user.prenom }}</h1>
-
-        {% if rendezVous is empty %}
-            <p class="text-center text-muted mt-4">Aucun rendez-vous trouvé.</p>
-        {% else %}
-            <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle shadow-lg rounded">
-                    <thead class="table-dark text-center">
-                        <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Cause</th>
-                            <th>Patient</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-center">
-                        {% for rdv in rendezVous %}
-                            <tr class="bg-white">
-                                <td><strong>#{{ rdv.id }}</strong></td>
-                                <td>{{ rdv.date|date('d/m/Y') }}</td>
-                                <td>{{ rdv.typeRdv }}</td>
-                                <td>{{ rdv.cause }}</td>
-                                <td>{{ rdv.patient.nom }} {{ rdv.patient.prenom }}</td>
-                                <td>
-                                    {% if rdv.statut == 'En attente' %}
-                                        <span class="badge bg-warning text-dark">🕒 En attente</span>
-                                    {% elseif rdv.statut == 'Approuvé' %}
-                                        <span class="badge bg-success">✅ Approuvé</span>
-                                    {% elseif rdv.statut == 'Refusé' %}
-                                        <span class="badge bg-danger">❌ Refusé</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">❓ En Attente</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-<button class="btn btn-success btn-sm me-2 shadow-lg" onclick="openPopup({{ rdv.id }})">✅ Approuver</button>                                        <a href="{{ path('rendezvous_refuser', {'id': rdv.id}) }}" class="btn btn-danger btn-sm me-2 shadow-lg">❌ Refuser</a>
-                                        <a href="{{ path('rendezvous_modifier', {'id': rdv.id}) }}" class="btn btn-warning btn-sm shadow-lg">✏ Modifier</a>
-                                        <a href="{{ path('consultationhis_create', {'id': rdv.id}) }}" class="btn btn-info btn-sm shadow-lg">📝 Notes</a>
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endif %}
-
-         <!-- Modal Popup -->
-        <div id="popupModal" class="modal">
-            <div class="modal-content">
-                <span class="close" onclick="closePopup()">&times;</span>
-                <h2>Approuver le Rendez-vous</h2>
-                <form id="approveForm" method="post">
-    <label for="heure">Choisir une heure:</label>
-    <input type="time" id="heure" name="heure" required>
-    
-    <label for="prix">Prix de la consultation:</label>
-    <input type="number" id="prix" name="prix" required>
-
-    <button type="submit" class="btn btn-success">Confirmer</button>
-</form>
-
+        <!-- Titre et filtre alignés sur la même ligne -->
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="text-primary fw-bold">📅 Liste des Consultations du Dr. {{ app.user.nom }} {{ app.user.prenom }}</h1>
+            <div class="d-flex align-items-center">
+                <span class="me-2 fw-bold">Sélectionner le type :</span>
+                <select id="typeRdvFilter" class="form-select" style="width: auto;">
+                    <option value="">Tous les types</option>
+                    <option value="consultation">Consultation</option>
+                    <option value="suivi">Suivi</option>
+                    <option value="urgence">Urgence</option>
+                </select>
             </div>
         </div>
-        
-        <!-- Retour au Dashboard Button -->
-        <div class="text-center mt-4">
-            <a href="{{ path('medecin_dashboard1') }}" class="btn btn-secondary">Retour au Dashboard</a>
+
+        <!-- Tableau des rendez-vous -->
+        <div id="rendezVousTable">
+            {% include 'consultation/_rendezVous_table.html.twig' %}
         </div>
+
+        <!-- Pagination -->
+        <nav aria-label="Page navigation">
+            <ul class="pagination justify-content-center">
+                {% if page > 1 %}
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadPage({{ page - 1 }})">Précédent</a>
+                    </li>
+                {% endif %}
+                {% for i in 1..pagesCount %}
+                    <li class="page-item {{ i == page ? 'active' : '' }}">
+                        <a class="page-link" href="#" onclick="loadPage({{ i }})">{{ i }}</a>
+                    </li>
+                {% endfor %}
+                {% if page < pagesCount %}
+                    <li class="page-item">
+                        <a class="page-link" href="#" onclick="loadPage({{ page + 1 }})">Suivant</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
     </div>
 
-    <script>
-       function openPopup(rdvId) {
-    document.getElementById("popupModal").style.display = "block";
-    document.getElementById("approveForm").action = "{{ path('rendezvous_approuver', {'id': '__ID__'}) }}".replace("__ID__", rdvId);
-}
-
-function closePopup() {
-    document.getElementById("popupModal").style.display = "none";
-}
-
-    </script>
-    <!-- Main Content End -->
-
-    <!-- Footer Start -->
-    <footer class="bg-dark text-white text-center py-4 mt-5">
-        <div class="footer-area section-bg" style="background-color: #343a40; padding: 60px 0;">
-            <div class="container">
-                <div class="footer-top footer-padding">
-                    <div class="row d-flex justify-content-between">
-                        <div class="col-xl-3 col-lg-3 col-md-4 col-sm-8">
-                            <div class="single-footer-caption mb-50">
-                                <div class="footer-logo">
-                                    <a href="index.html"><img src="assets/img/logo/logo2_footer.png" alt="" style="max-width: 180px;"></a>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-lg-4 col-md-6 col-sm-5">
-                            <div class="single-footer-caption mb-50">
-                                <div class="footer-tittle">
-                                    <h4 class="text-white">About Us</h4>
-                                    <div class="footer-pera">
-                                        <p class="info1 text-white">Lorem ipsum dolor sit amet, adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
-                                        <p class="info1 text-white">Lorem ipsum dolor sit amet, adipiscing elit.</p>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-xl-4 col-lg-4 col-md-6 col-sm-8">
-                            <div class="single-footer-caption mb-50">
-                                <div class="footer-number mb-50">
-                                    <h4 class="text-white"><span>+564</span> 7885 3222</h4>
-                                    <p class="text-white">youremail@gmail.com</p>
-                                </div>
-                                <div class="footer-form">
-                                    <div id="mc_embed_signup">
-                                        <form target="_blank" action="https://spondonit.us12.list-manage.com/subscribe/post?u=1462626880ade1ac87bd9c93a&amp;id=92a4423d01" method="get" class="subscribe_form relative mail_part" novalidate="true">
-                                            <input type="email" name="EMAIL" id="newsletter-form-email" placeholder=" Email Address " class="placeholder hide-on-focus" onfocus="this.placeholder = ''" onblur="this.placeholder = 'Your email address'">
-                                            <div class="form-icon">
-                                                <button type="submit" name="submit" id="newsletter-submit" class="email_icon newsletter-submit button-contactForm">Send</button>
-                                            </div>
-                                            <div class="mt-10 info"></div>
-                                        </form>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="footer-bottom">
-                    <div class="row d-flex justify-content-between align-items-center">
-                        <div class="col-xl-9 col-lg-8">
-                            <div class="footer-copy-right">
-                                <p class="text-white">
-                                    Copyright &copy;<script>document.write(new Date().getFullYear());</script> All rights reserved | This template is made with
-                                    <i class="fa fa-heart" aria-hidden="true"></i> by
-                                    <a href="https://colorlib.com" target="_blank" style="color: #fff; text-decoration: none;">Colorlib</a>
-                                </p>
-                            </div>
-                        </div>
-                        <div class="col-xl-3 col-lg-4">
-                            <div class="footer-social f-right">
-                                <a href="#"><i class="fab fa-twitter" style="color: #fff;"></i></a>
-                                <a href="https://www.facebook.com/sai4ull"><i class="fab fa-facebook-f" style="color: #fff;"></i></a>
-                                <a href="#"><i class="fas fa-globe" style="color: #fff;"></i></a>
-                                <a href="#"><i class="fab fa-instagram" style="color: #fff;"></i></a>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+    <!-- Modal Popup -->
+    <div id="popupModal" class="modal">
+        <div class="modal-content">
+            <span class="close" onclick="closePopup()">&times;</span>
+            <h2>Approuver le Rendez-vous</h2>
+            <form id="approveForm" method="post">
+                <label for="heure">Choisir une heure:</label>
+                <input type="time" id="heure" name="heure" required>
+                <label for="prix">Prix de la consultation:</label>
+                <input type="number" id="prix" name="prix" required>
+                <button type="submit" class="btn btn-success">Confirmer</button>
+            </form>
         </div>
-    </footer>
-    <!-- Footer End -->
-{% endblock %}
-
-{% block stylesheets %}
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    </div>
 {% endblock %}
 
 {% block javascripts %}
-    <!-- Corrected jQuery and Bootstrap version -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
+    {{ parent() }}
     <script>
-        $(document).ready(function() {
-            // Bootstrap dropdown initialization
-            $('#profileDropdown').dropdown();
+        // Fonction pour ouvrir le popup
+        function openPopup(rdvId) {
+            document.getElementById("popupModal").style.display = "block";
+            document.getElementById("approveForm").action = `/approuver/${rdvId}`;
+        }
+
+        // Fonction pour fermer le popup
+        function closePopup() {
+            document.getElementById("popupModal").style.display = "none";
+        }
+
+        // Fermer le popup si l'utilisateur clique en dehors de la fenêtre modale
+        window.onclick = function(event) {
+            const modal = document.getElementById("popupModal");
+            if (event.target === modal) {
+                closePopup();
+            }
+        };
+
+        // Fonction pour charger une page via AJAX
+        function loadPage(page) {
+            const typeRdv = document.getElementById('typeRdvFilter').value;
+            fetch(`/listcon?page=${page}&typeRdv=${typeRdv}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                // Mettre à jour le tableau des rendez-vous
+                const tableBody = document.querySelector('#rendezVousTable tbody');
+                tableBody.innerHTML = '';
+                data.rendezVous.forEach(rdv => {
+                    const row = `
+                        <tr class="bg-white">
+                            <td><strong>#${rdv.id}</strong></td>
+                            <td>${rdv.date}</td>
+                            <td>${rdv.typeRdv}</td>
+                            <td>${rdv.cause}</td>
+                            <td>${rdv.patient}</td>
+                            <td>
+                                ${rdv.statut === 'En attente' ? '<span class="badge bg-warning text-dark">🕒 En attente</span>' : ''}
+                                ${rdv.statut === 'Approuvé' ? '<span class="badge bg-success">✅ Approuvé</span>' : ''}
+                                ${rdv.statut === 'Refusé' ? '<span class="badge bg-danger">❌ Refusé</span>' : ''}
+                            </td>
+                            <td>
+                                <div class="d-flex justify-content-center">
+                                    <button class="btn btn-success btn-sm me-2 shadow-lg" onclick="openPopup(${rdv.id})">✅ Approuver</button>
+                                    <a href="/refuser/${rdv.id}" class="btn btn-danger btn-sm me-2 shadow-lg">❌ Refuser</a>
+                                    <a href="/modifier/${rdv.id}" class="btn btn-warning btn-sm shadow-lg">✏ Modifier</a>
+                                    <a href="/consultationhis_create/${rdv.id}" class="btn btn-info btn-sm shadow-lg">📝 Notes</a>
+                                </div>
+                            </td>
+                        </tr>
+                    `;
+                    tableBody.insertAdjacentHTML('beforeend', row);
+                });
+
+                // Mettre à jour la pagination
+                const pagination = document.querySelector('.pagination');
+                pagination.innerHTML = '';
+                if (data.page > 1) {
+                    pagination.insertAdjacentHTML('beforeend', `
+                        <li class="page-item">
+                            <a class="page-link" href="#" onclick="loadPage(${data.page - 1})">Précédent</a>
+                        </li>
+                    `);
+                }
+                for (let i = 1; i <= data.pagesCount; i++) {
+                    pagination.insertAdjacentHTML('beforeend', `
+                        <li class="page-item ${i === data.page ? 'active' : ''}">
+                            <a class="page-link" href="#" onclick="loadPage(${i})">${i}</a>
+                        </li>
+                    `);
+                }
+                if (data.page < data.pagesCount) {
+                    pagination.insertAdjacentHTML('beforeend', `
+                        <li class="page-item">
+                            <a class="page-link" href="#" onclick="loadPage(${data.page + 1})">Suivant</a>
+                        </li>
+                    `);
+                }
+            });
+        }
+
+        // Appliquer le filtre
+        document.getElementById('typeRdvFilter').addEventListener('change', () => {
+            loadPage(1);
         });
     </script>
 {% endblock %}
-
-
-
-
-<style>
-    body {
-        background-color: #f0f8ff;
-        font-family: 'Poppins', sans-serif;
-    }
-
-    /* Navbar Styling */
-    .header-area {
-        background: #fff;
-        padding: 10px 0;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
-    }
-
-    .main-header {
-        display: flex;
-        align-items: center;
-        justify-content: space-between;
-    }
-
-    .menu-main {
-        display: flex;
-        align-items: center;
-    }
-
-    .main-menu nav ul {
-        list-style: none;
-        padding: 0;
-        margin: 0;
-        display: flex;
-        justify-content: flex-end; /* Aligner les éléments à droite */
-    }
-
-    .main-menu nav ul li {
-        position: relative;
-        margin: 0 15px;
-    }
-
-    .main-menu nav ul li a {
-        text-decoration: none;
-        color: #000;
-        font-weight: normal; /* Retirer le gras */
-        font-size: 16px;
-        padding: 10px 15px;
-        display: block;
-    }
-
-    .main-menu nav ul li a:hover {
-        color: #007bff;
-    }
-
-    .header-right-btn {
-        margin-left: 30px;
-    }
-
-    .header-btn {
-        background-color: #007bff;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    .header-btn:hover {
-        background-color: #0056b3;
-    }
-
-    /* Footer Styling */
-    footer {
-        background-color: #343a40;
-        color: #fff;
-    }
-
-    .social-links a {
-        font-size: 20px;
-        transition: color 0.3s;
-    }
-
-    .social-links a:hover {
-        color: #007bff;
-    }
-
-    .btn-secondary {
-        background-color: #6c757d;
-        color: white;
-        padding: 10px 20px;
-        border-radius: 5px;
-        text-decoration: none;
-        font-weight: bold;
-    }
-
-    .btn-secondary:hover {
-        background-color: #5a6268;
-    }
-
-    /* Table Styling */
-    .table {
-        border-radius: 12px;
-        overflow: hidden;
-    }
-    .table thead {
-        background-color: #343a40;
-        color: white;
-    }
-    .table tbody tr:hover {
-        background-color: #e3f2fd;
-        transition: 0.3s ease-in-out;
-    }
-    .btn {
-        transition: all 0.3s ease-in-out;
-    }
-    .btn:hover {
-        transform: scale(1.05);
-    }
-    .badge {
-        font-size: 14px;
-        padding: 8px 12px;
-        border-radius: 8px;
-    }
-    .table th, .table td {
-        vertical-align: middle;
-    }
-    .table th {
-        font-size: 16px;
-    }
-    .table td {
-        font-size: 14px;
-    }
-
-    .profile-dropdown {
-    position: relative;
-    display: inline-block;
-}
-
-.profile-dropdown img {
-    width: 40px; /* Taille réduite */
-    height: 40px; /* Taille réduite */
-    border-radius: 50%; /* Cercle parfait */
-    object-fit: cover; /* Assure que l'image remplit bien le cercle */
-    border: 2px solid #fff; /* Bordure blanche pour un meilleur design */
-    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2); /* Ombre légère */
-    cursor: pointer;
-}
-
-.profile-dropdown-content {
-    display: none;
-    position: absolute;
-    right: 0;
-    background-color: white;
-    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-    border-radius: 5px;
-    min-width: 150px;
-    z-index: 1000;
-}
-
-.profile-dropdown:hover .profile-dropdown-content {
-    display: block;
-}
-
-.profile-dropdown-content a {
-    display: block;
-    padding: 10px;
-    text-decoration: none;
-    color: black;
-}
-
-.profile-dropdown-content a:hover {
-    background-color: #f1f1f1;
-}
-
-</style>

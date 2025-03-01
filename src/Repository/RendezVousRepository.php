@@ -157,6 +157,38 @@ class RendezVousRepository extends ServiceEntityRepository
 
     return $rendezVousParJour;
 }
+// RendezVousRepository.php
 
+public function findByWithFilter($user, ?string $type, int $limit, int $offset)
+{
+    $qb = $this->createQueryBuilder('r')
+        ->andWhere('r.patient = :user')
+        ->setParameter('user', $user)
+        ->orderBy('r.date', 'DESC')
+        ->setMaxResults($limit)
+        ->setFirstResult($offset);
+
+    if ($type) {
+        $qb->andWhere('r.typeRdv = :type')
+           ->setParameter('type', $type);
+    }
+
+    return $qb->getQuery()->getResult();
+}
+
+public function countWithFilter($user, ?string $type): int
+{
+    $qb = $this->createQueryBuilder('r')
+        ->select('count(r.id)')
+        ->andWhere('r.patient = :user')
+        ->setParameter('user', $user);
+
+    if ($type) {
+        $qb->andWhere('r.typeRdv = :type')
+           ->setParameter('type', $type);
+    }
+
+    return $qb->getQuery()->getSingleScalarResult();
+}
 
 }

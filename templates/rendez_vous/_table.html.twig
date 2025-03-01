@@ -1,0 +1,69 @@
+{# templates/rendez_vous/_table.html.twig #}
+
+<div class="table-responsive">
+    <table class="table table-hover table-striped align-middle shadow-lg rounded">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Cause</th>
+                <th>Médecin</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            {% for rdv in rendezVous %}
+                <tr class="bg-white">
+                    <td><strong>#{{ rdv.id }}</strong></td>
+                    <td>{{ rdv.date|date('d/m/Y') }}</td>
+                    <td>{{ rdv.typeRdv }}</td>
+                    <td>{{ rdv.cause }}</td>
+                    <td>{{ rdv.medecin.nom}} {{ rdv.medecin.prenom }} </td>
+                    <td>
+                        {% if rdv.statut == 'En attente' %}
+                            <span class="badge bg-warning text-dark">🕒 En attente</span>
+                        {% elseif rdv.statut == 'Approuvé' %}
+                            <span class="badge bg-success">✅ Approuvé</span>
+                        {% elseif rdv.statut == 'Refusé' %}
+                            <span class="badge bg-danger">❌ Refusé</span>
+                        {% else %}
+                            <span class="badge bg-secondary">❓ En Attente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <form action="{{ path('delete_rdv', {'id': rdv.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?');">
+                                <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ rdv.id) }}">
+                                <button type="submit" class="btn btn-danger btn-sm me-2 shadow">🗑 Supprimer</button>
+                            </form>
+                            <a href="{{ path('edit_rdv', {'id': rdv.id}) }}" class="btn btn-warning btn-sm shadow">✏ Modifier</a>
+                            <a href="{{ path('detail_rdv', {'id': rdv.id}) }}" class="btn btn-info btn-sm shadow ms-2">🔍 Détails</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+{% if totalPages > 1 %}
+<nav aria-label="Page navigation" class="mt-4">
+    <ul class="pagination justify-content-center">
+        <li class="page-item {{ currentPage == 1 ? 'disabled' }}">
+            <a class="page-link" href="#" data-page="{{ currentPage - 1 }}">&laquo; Précédent</a>
+        </li>
+        
+        {% for i in 1..totalPages %}
+            <li class="page-item {{ i == currentPage ? 'active' }}">
+                <a class="page-link" href="#" data-page="{{ i }}">{{ i }}</a>
+            </li>
+        {% endfor %}
+        
+        <li class="page-item {{ currentPage == totalPages ? 'disabled' }}">
+            <a class="page-link" href="#" data-page="{{ currentPage + 1 }}">Suivant &raquo;</a>
+        </li>
+    </ul>
+</nav>
+{% endif %}

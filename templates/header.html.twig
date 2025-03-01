@@ -1,0 +1,105 @@
+<header class="header-area">
+    <div class="main-header header-sticky">
+        <div class="container-fluid">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto">
+                    <div class="logo">
+                        <a href="#"><img src="{{ asset('assets/img/logo/logo.png') }}" alt="Medical Logo"></a>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <nav class="d-flex align-items-center">
+                        <ul class="nav">
+                            <li class="nav-item"><a class="nav-link" href="{{ path('home_page') }}">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('diagnostique_page') }}">Diagnostique</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('doctors_page') }}">Doctors</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('listrdv') }}">Mes Rendez Vous</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('blog_page') }}">Blog</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('reclamation_page') }}">Reclamation</a></li>
+                        </ul>
+                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+									{% if app.user %}
+										<div class="profile-dropdown">
+											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
+											<div class="profile-dropdown-content">
+<a href="{% if 'MEDECIN' in app.user.roles %}{{ path('medecin_dashboard1') }}{% else %}{{ path('patient_dashboard1') }}{% endif %}">
+        <i class="fas fa-user-circle"></i> Profil
+    </a>
+												<a href="{{ path('app_logout') }}">
+													<i class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
+												</a>
+											</div>
+										</div>
+									{% else %}
+										<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
+									{% endif %}
+                                        
+								</div>
+                    </nav>
+                </div>
+            </div>
+        </div>
+    </div>
+</header>
+
+
+
+<style>
+    .header-area {
+        background: #fff;
+        padding: 15px 0;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav .nav-item .nav-link {
+        color: #1d1d1d;
+        font-weight: 500;
+        padding: 10px 15px;
+        transition: color 0.3s ease-in-out;
+    }
+
+    .nav .nav-item .nav-link:hover {
+        color: #007bff;
+    }
+
+    .profile-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .profile-dropdown img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+    }
+
+    .profile-dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: white;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        min-width: 150px;
+        z-index: 1000;
+    }
+
+    .profile-dropdown:hover .profile-dropdown-content {
+        display: block;
+    }
+
+    .profile-dropdown-content a {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: black;
+    }
+
+    .profile-dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+</style>

@@ -46,6 +46,7 @@ class RegistrationController extends AbstractController
                 $imageProfilFileName = $this->uploadFile($imageProfilFile, $slugger, 'images_directory');
                 $user->setImageProfil($imageProfilFileName);
             }
+            dump($request->request->all());
 
             $entityManager->persist($user);
             $entityManager->flush();

@@ -29,21 +29,74 @@ final class ConsultationController extends AbstractController
     }
 
     #[Route('/listcon', name: 'consultation_medecin_list')]
-    public function listForMedecin(Security $security, EntityManagerInterface $entityManager): Response
-    {
-        // Get the logged-in medecin (assumed that user is a Medecin)
+    public function listForMedecin(
+        Security $security,
+        EntityManagerInterface $entityManager,
+        Request $request
+    ): Response {
+        // Récupérer le médecin connecté
         $medecin = $security->getUser();
-
+    
         if (!$medecin) {
-            throw $this->createAccessDeniedException('You are not logged in or not a medecin.');
+            throw $this->createAccessDeniedException('Vous n\'êtes pas connecté ou n\'êtes pas un médecin.');
         }
-
-        // Fetch the rendezvous for the logged-in medecin
-        $rendezVous = $entityManager->getRepository(RendezVous::class)->findBy(['medecin' => $medecin]);
-
+    
+        // Récupérer les paramètres de pagination et de filtre
+        $page = $request->query->getInt('page', 1); // Page actuelle
+        $limit = 3; // Nombre d'éléments par page
+        $typeRdv = $request->query->get('typeRdv'); // Filtre par type de rendez-vous
+    
+        // Construire la requête en fonction du filtre
+        $repository = $entityManager->getRepository(RendezVous::class);
+        $queryBuilder = $repository->createQueryBuilder('r')
+            ->where('r.medecin = :medecin')
+            ->setParameter('medecin', $medecin);
+    
+        // Appliquer le filtre par type de rendez-vous si un type est sélectionné
+        if ($typeRdv) {
+            $queryBuilder->andWhere('r.type_rdv = :typeRdv')
+                ->setParameter('typeRdv', $typeRdv);
+        }
+    
+        // Pagination
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($queryBuilder);
+        $totalItems = count($paginator);
+        $pagesCount = ceil($totalItems / $limit);
+    
+        $rendezVous = $paginator
+            ->getQuery()
+            ->setFirstResult(($page - 1) * $limit)
+            ->setMaxResults($limit)
+            ->getResult();
+    
+        // Retourner une réponse JSON si c'est une requête AJAX
+        if ($request->isXmlHttpRequest()) {
+            $rendezVousArray = [];
+            foreach ($rendezVous as $rdv) {
+                $rendezVousArray[] = [
+                    'id' => $rdv->getId(),
+                    'date' => $rdv->getDate()->format('d/m/Y'),
+                    'typeRdv' => $rdv->getTypeRdv(),
+                    'cause' => $rdv->getCause(),
+                    'patient' => $rdv->getPatient()->getNom() . ' ' . $rdv->getPatient()->getPrenom(),
+                    'statut' => $rdv->getStatut(),
+                ];
+            }
+    
+            return $this->json([
+                'rendezVous' => $rendezVousArray,
+                'page' => $page,
+                'pagesCount' => $pagesCount,
+            ]);
+        }
+    
+        // Retourner la vue Twig normale
         return $this->render('consultation/listcon.html.twig', [
             'medecin' => $medecin,
             'rendezVous' => $rendezVous,
+            'page' => $page,
+            'pagesCount' => $pagesCount,
+            'typeRdv' => $typeRdv,
         ]);
     }
 

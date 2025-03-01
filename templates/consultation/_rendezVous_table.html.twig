@@ -1,0 +1,47 @@
+{# templates/consultation/_rendezVous_table.html.twig #}
+
+<div class="table-responsive">
+    <table class="table table-hover table-striped align-middle shadow-lg rounded">
+        <thead class="table-dark text-center">
+            <tr>
+                <th>ID</th>
+                <th>Date</th>
+                <th>Type</th>
+                <th>Cause</th>
+                <th>Patient</th>
+                <th>Statut</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody class="text-center">
+            {% for rdv in rendezVous %}
+                <tr class="bg-white">
+                    <td><strong>#{{ rdv.id }}</strong></td>
+                    <td>{{ rdv.date|date('d/m/Y') }}</td>
+                    <td>{{ rdv.typeRdv }}</td>
+                    <td>{{ rdv.cause }}</td>
+                    <td>{{ rdv.patient.nom }} {{ rdv.patient.prenom }}</td>
+                    <td>
+                        {% if rdv.statut == 'En attente' %}
+                            <span class="badge bg-warning text-dark">🕒 En attente</span>
+                        {% elseif rdv.statut == 'Approuvé' %}
+                            <span class="badge bg-success">✅ Approuvé</span>
+                        {% elseif rdv.statut == 'Refusé' %}
+                            <span class="badge bg-danger">❌ Refusé</span>
+                        {% else %}
+                            <span class="badge bg-secondary">❓ En Attente</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <div class="d-flex justify-content-center">
+                            <button class="btn btn-success btn-sm me-2 shadow-lg" onclick="openPopup({{ rdv.id }})">✅ Approuver</button>
+                            <a href="{{ path('rendezvous_refuser', {'id': rdv.id}) }}" class="btn btn-danger btn-sm me-2 shadow-lg">❌ Refuser</a>
+                            <a href="{{ path('rendezvous_modifier', {'id': rdv.id}) }}" class="btn btn-warning btn-sm shadow-lg">✏ Modifier</a>
+                            <a href="{{ path('consultationhis_create', {'id': rdv.id}) }}" class="btn btn-info btn-sm shadow-lg">📝 Notes</a>
+                        </div>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>

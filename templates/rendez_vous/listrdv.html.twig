@@ -1,70 +1,38 @@
-{% extends 'base.html.twig' %}
+{# templates/rendez_vous/listrdv.html.twig #}
+
+{% extends 'patemp.html.twig' %}
+
 {% block title %}Liste de Rendez-vous{% endblock %}
+
 {% block body %}
     <div class="container mt-5">
         <h1 class="text-center text-primary fw-bold">📅 Liste des Rendez-vous de {{ user.nom }} {{ user.prenom }}</h1>
 
-        {% if rendezVous is empty %}
-            <p class="text-center text-muted mt-4">Aucun rendez-vous trouvé.</p>
-        {% else %}
-            <div class="table-responsive">
-                <table class="table table-hover table-striped align-middle shadow-lg rounded">
-                    <thead class="table-dark text-center">
-                        <tr>
-                            <th>ID</th>
-                            <th>Date</th>
-                            <th>Type</th>
-                            <th>Cause</th>
-                            <th>Médecin</th>
-                            <th>Statut</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody class="text-center">
-                        {% for rdv in rendezVous %}
-                            <tr class="bg-white">
-                                <td><strong>#{{ rdv.id }}</strong></td>
-                                <td>{{ rdv.date|date('d/m/Y') }}</td>
-                                <td>{{ rdv.typeRdv }}</td>
-                                <td>{{ rdv.cause }}</td>
-                                <td>{{ rdv.medecin.nom }}</td>
-                                <td>
-                                    {% if rdv.statut == 'En attente' %}
-                                        <span class="badge bg-warning text-dark">🕒 En attente</span>
-                                    {% elseif rdv.statut == 'Approuvé' %}
-                                        <span class="badge bg-success">✅ Approuvé</span>
-                                    {% elseif rdv.statut == 'Refusé' %}
-                                        <span class="badge bg-danger">❌ Refusé</span>
-                                    {% else %}
-                                        <span class="badge bg-secondary">❓ En Attente</span>
-                                    {% endif %}
-                                </td>
-                                <td>
-                                    <div class="d-flex justify-content-center">
-                                        <form action="{{ path('delete_rdv', {'id': rdv.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer ce rendez-vous ?');">
-                                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ rdv.id) }}">
-                                            <button type="submit" class="btn btn-danger btn-sm me-2 shadow">🗑 Supprimer</button>
-                                        </form>
-                                        <a href="{{ path('edit_rdv', {'id': rdv.id}) }}" class="btn btn-warning btn-sm shadow">✏ Modifier</a>
-                                        <a href="{{ path('detail_rdv', {'id': rdv.id}) }}" class="btn btn-info btn-sm shadow ms-2">🔍 Détails</a> <!-- Ajout du bouton Détails -->
-                                    </div>
-                                </td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
+        <!-- Barre de recherche -->
+        <div class="row mb-4">
+            <div class="col-md-6 offset-md-3">
+                <form id="searchForm" class="input-group">
+                    <input type="text" id="searchInput" name="search" class="form-control" placeholder="Rechercher par nom ou prénom du médecin..." value="{{ search }}">
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-search"></i> Rechercher
+                    </button>
+                </form>
             </div>
-        {% endif %}
+        </div>
+
+        {# Inclure le template partiel pour la table et la pagination #}
+        <div id="rdv-table">
+            {{ include('rendez_vous/_table.html.twig') }}
+        </div>
 
         <div class="text-center mt-4">
             <a href="{{ path('addrendezvous') }}" class="btn btn-success btn-lg shadow px-5 py-2 fw-bold">
                 ➕ Réserver un Nouveau Rendez-vous
             </a>
             <a href="{{ path('patient_dashboard1') }}" class="btn btn-secondary btn-lg shadow px-5 py-2 ml-2">
-    Dashboard
-</a>
+                Dashboard
+            </a>
         </div>
-        
     </div>
 
     <style>
@@ -95,5 +63,81 @@
             padding: 8px 12px;
             border-radius: 8px;
         }
+        .pagination {
+            margin: 20px 0;
+        }
+        .page-item.active .page-link {
+            background-color: #343a40;
+            border-color: #343a40;
+        }
+        .page-link {
+            color: #343a40;
+        }
+        .page-link:hover {
+            color: #0056b3;
+        }
     </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const searchForm = document.getElementById('searchForm');
+        const searchInput = document.getElementById('searchInput');
+
+        // Gérer la soumission du formulaire de recherche
+        searchForm.addEventListener('submit', function (e) {
+            e.preventDefault(); // Empêcher le rechargement de la page
+
+            const searchTerm = searchInput.value;
+            fetch(`{{ path('listrdv') }}?search=${searchTerm}`, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest' // Indiquer que c'est une requête AJAX
+                }
+            })
+            .then(response => response.text())
+            .then(html => {
+                // Remplacer le contenu de la table et de la pagination
+                document.getElementById('rdv-table').innerHTML = html;
+
+                // Réattacher les événements aux nouveaux liens de pagination
+                attachPaginationEvents();
+            })
+            .catch(error => console.error('Erreur lors de la recherche :', error));
+        });
+
+        // Gérer la pagination
+        function attachPaginationEvents() {
+            const paginationLinks = document.querySelectorAll('.pagination a.page-link');
+
+            paginationLinks.forEach(link => {
+                link.addEventListener('click', function (e) {
+                    e.preventDefault(); // Empêcher le comportement par défaut du lien
+
+                    const page = this.getAttribute('data-page'); // Récupérer le numéro de page
+                    if (!page) return;
+
+                    const searchTerm = searchInput.value;
+
+                    // Faire une requête AJAX
+                    fetch(`{{ path('listrdv') }}?page=${page}&search=${searchTerm}`, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        // Remplacer le contenu de la table et de la pagination
+                        document.getElementById('rdv-table').innerHTML = html;
+
+                        // Réattacher les événements aux nouveaux liens de pagination
+                        attachPaginationEvents();
+                    })
+                    .catch(error => console.error('Erreur lors du chargement de la page :', error));
+                });
+            });
+        }
+
+        // Attacher les événements de pagination au chargement initial
+        attachPaginationEvents();
+    });
+    </script>
 {% endblock %}

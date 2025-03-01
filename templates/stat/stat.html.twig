@@ -1,4 +1,7 @@
+{% extends 'patemp.html.twig' %}
+
 {% block stylesheets %}
+    {{ parent() }}
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         .container {
@@ -15,127 +18,136 @@
         }
         .chart-container canvas {
             width: 100% !important;
-            height: 150px !important; /* Taille réduite pour les graphiques */
+            height: 150px !important;
         }
         .stats-header {
             color: #333;
             font-size: 1.5rem;
             font-weight: bold;
         }
-        .btn-primary {
-            margin-top: 20px;
+        #loading {
+            display: none;
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 1000;
         }
     </style>
 {% endblock %}
 
-<header class="header-area">
-    <div class="main-header header-sticky">
-        <div class="container-fluid">
-            <div class="row align-items-center justify-content-between">
-                <div class="col-auto">
-                    <div class="logo">
-                        <a href="#"><img src="{{ asset('assets/img/logo/logo.png') }}" alt="Medical Logo"></a>
-                    </div>
-                </div>
-                <div class="col-auto">
-                    <nav class="d-flex align-items-center">
-                        <ul class="nav">
-                            <li class="nav-item"><a class="nav-link" href="{{ path('home_page') }}">Home</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('diagnostique_page') }}">Diagnostique</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('doctors_page') }}">Doctors</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('listrdv') }}">Mes Rendez Vous</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('blog_page') }}">Blog</a></li>
-                            <li class="nav-item"><a class="nav-link" href="{{ path('reclamation_page') }}">Reclamation</a></li>
-                        </ul>
-                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
-                            {% if app.user %}
-                                <div class="profile-dropdown">
-                                    <img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
-                                    <div class="profile-dropdown-content">
-                                        <a href="{{ path('app_logout') }}">
-                                            <i class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
-                                        </a>
-                                    </div>
-                                </div>
-                            {% else %}
-                                <a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
-                            {% endif %}
-                        </div>
-                    </nav>
-                </div>
-            </div>
-        </div>
-    </div>
-</header>
+{% block body %}
+
 
 <div class="container">
     <h2 class="text-center mb-4">Tableau de Bord des Statistiques Médicales</h2>
 
-    <form method="get" action="{{ path('app_dashboard') }}" class="mb-4">
-        <div class="row">
-            <div class="col-md-6">
-                <label for="specialite" class="form-label">Choisissez une spécialité</label>
-                <select id="specialite" name="specialite" class="form-select" onchange="this.form.submit()">
-                    <option value="">-- Sélectionner une spécialité --</option>
-                    {% for specialite in specialites %}
-                        <option value="{{ specialite.specialite }}" {% if specialite.specialite == selectedSpecialite %}selected{% endif %}>
-                            {{ specialite.specialite }}
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <label for="specialite" class="form-label">Spécialité</label>
+            <select id="specialite" class="form-select">
+                <option value="">-- Sélectionner une spécialité --</option>
+                {% for specialite in specialites %}
+                    <option value="{{ specialite.specialite }}" {{ specialite.specialite == selectedSpecialite ? 'selected' : '' }}>
+                        {{ specialite.specialite }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+        <div class="col-md-6">
+            <label for="medecin" class="form-label">Médecin</label>
+            <select id="medecin" class="form-select">
+                <option value="">-- Sélectionner un médecin --</option>
+                {% if medecins %}
+                    {% for medecin in medecins %}
+                        <option value="{{ medecin.id }}" {{ medecin.id == selectedMedecin ? 'selected' : '' }}>
+                            {{ medecin.nom }} {{ medecin.prenom }}
                         </option>
                     {% endfor %}
-                </select>
-            </div>
+                {% endif %}
+            </select>
         </div>
-    </form>
+    </div>
 
-    {% if selectedSpecialite %}
-        <div class="row mb-4">
-            <h3 class="col-12 stats-header">Médecins de la spécialité "{{ selectedSpecialite }}"</h3>
-            <form method="get" action="{{ path('app_dashboard') }}">
-                <input type="hidden" name="specialite" value="{{ selectedSpecialite }}">
-                <div class="col-md-6">
-                    <label for="medecin" class="form-label">Choisissez un médecin</label>
-                    <select id="medecin" name="medecin" class="form-select" onchange="this.form.submit()">
-                        <option value="">-- Sélectionner un médecin --</option>
-                        {% for medecin in medecins %}
-                            <option value="{{ medecin.id }}" {% if medecin.id == selectedMedecin %}selected{% endif %}>
-                                {{ medecin.nom }} {{ medecin.prenom }}
-                            </option>
-                        {% endfor %}
-                    </select>
-                </div>
-            </form>
-        </div>
-    {% endif %}
+    <div id="stats-container"></div>
+    <div id="loading" class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+    </div>
+</div>
 
-    {% if statistiques %}
+
+{% endblock %}
+
+{% block javascripts %}
+{{ parent() }}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+let chartSexe, chartAge, chartJour;
+
+function showLoading(show) {
+    document.getElementById('loading').style.display = show ? 'block' : 'none';
+}
+
+async function loadMedecins(specialite) {
+    showLoading(true);
+    try {
+        const response = await fetch(`/api/medecins?specialite=${encodeURIComponent(specialite)}`);
+        const medecins = await response.json();
+        
+        const select = document.getElementById('medecin');
+        select.innerHTML = '<option value="">-- Sélectionner un médecin --</option>';
+        medecins.forEach(medecin => {
+            const option = new Option(medecin.nomComplet, medecin.id);
+            select.add(option);
+        });
+    } catch (error) {
+        console.error('Erreur de chargement des médecins:', error);
+    } finally {
+        showLoading(false);
+    }
+}
+
+async function loadStats(medecinId) {
+    showLoading(true);
+    try {
+        const response = await fetch(`/api/stats/${medecinId}`);
+        const stats = await response.json();
+        updateStatsDisplay(stats);
+        updateCharts(stats);
+    } catch (error) {
+        console.error('Erreur de chargement des stats:', error);
+    } finally {
+        showLoading(false);
+    }
+}
+
+function updateStatsDisplay(stats) {
+    const container = document.getElementById('stats-container');
+    container.innerHTML = `
         <div class="row">
-            <!-- Colonne des statistiques du médecin -->
             <div class="col-md-4">
                 <div class="card">
                     <div class="card-body">
-                        <h4 class="card-title">Statistiques du médecin {{ statistiques.medecin.nom }} {{ statistiques.medecin.prenom }}</h4>
-                        <p><strong>Rendez-vous approuvés :</strong> {{ statistiques.pourcentageApprouves }}%</p>
-                        <p><strong>Rendez-vous annulés :</strong> {{ statistiques.pourcentageAnnules }}%</p>
+                        <h4 class="card-title">Statistiques du médecin ${stats.medecin.nom} ${stats.medecin.prenom}</h4>
+                        <p><strong>Rendez-vous approuvés :</strong> ${stats.pourcentageApprouves}%</p>
+                        <p><strong>Rendez-vous annulés :</strong> ${stats.pourcentageAnnules}%</p>
                     </div>
                 </div>
             </div>
-
-            <!-- Colonne des graphiques de répartition par sexe et âge -->
             <div class="col-md-8">
                 <div class="row">
                     <div class="col-md-6">
                         <div class="card chart-container">
                             <div class="card-body">
-                                <h5>Répartition des rendez-vous approuvés par sexe</h5>
+                                <h5>Répartition par sexe</h5>
                                 <canvas id="statistiquesSexe"></canvas>
                             </div>
                         </div>
                     </div>
-
                     <div class="col-md-6">
                         <div class="card chart-container">
                             <div class="card-body">
-                                <h5>Répartition des rendez-vous approuvés par âge</h5>
+                                <h5>Répartition par âge</h5>
                                 <canvas id="statistiquesAge"></canvas>
                             </div>
                         </div>
@@ -143,177 +155,102 @@
                     <div class="col-md-6">
                         <div class="card chart-container">
                             <div class="card-body">
-                                <h5>Répartition des rendez-vous par jours</h5>
-                                            <canvas id="jourSemaineChart" width="400" height="200"></canvas>
-
+                                <h5>Répartition par jours</h5>
+                                <canvas id="jourSemaineChart"></canvas>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    `;
+}
 
-        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-        <script>
-            var ctxSexe = document.getElementById('statistiquesSexe').getContext('2d');
-            var chartSexe = new Chart(ctxSexe, {
-                type: 'pie',
-                data: {
-                    labels: ['Homme', 'Femme'],
-                    datasets: [{
-                        data: [{{ statistiques.pourcentageHomme }}, {{ statistiques.pourcentageFemme }}],
-                        backgroundColor: ['#36a2eb', '#ff6384'],
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,  // Permet de contrôler la taille
-                    aspectRatio: 1,  // La taille peut être modifiée selon l'aspect désiré
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(tooltipItem) {
-                                    return tooltipItem.label + ': ' + tooltipItem.raw.toFixed(2) + '%';
-                                }
-                            }
-                        }
+function updateCharts(stats) {
+    if (chartSexe) chartSexe.destroy();
+    if (chartAge) chartAge.destroy();
+    if (chartJour) chartJour.destroy();
+
+    // Chart Sexe
+    const ctxSexe = document.getElementById('statistiquesSexe').getContext('2d');
+    chartSexe = new Chart(ctxSexe, {
+        type: 'pie',
+        data: {
+            labels: ['Homme', 'Femme'],
+            datasets: [{
+                data: [stats.pourcentageHomme, stats.pourcentageFemme],
+                backgroundColor: ['#36a2eb', '#ff6384']
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                tooltip: {
+                    callbacks: {
+                        label: (ctx) => `${ctx.label}: ${ctx.raw.toFixed(2)}%`
                     }
                 }
-            });
+            }
+        }
+    });
 
-            var ctxAge = document.getElementById('statistiquesAge').getContext('2d');
-            var chartAge = new Chart(ctxAge, {
-                type: 'bar',
-                data: {
-                    labels: ['0-18', '19-35', '36-50', '51-70', '71+'],
-                    datasets: [{
-                        label: 'Répartition des rendez-vous approuvés par âge',
-                        data: [
-                            {{ statistiques.statistiquesAge['0-18'] }},
-                            {{ statistiques.statistiquesAge['19-35'] }},
-                            {{ statistiques.statistiquesAge['36-50'] }},
-                            {{ statistiques.statistiquesAge['51-70'] }},
-                            {{ statistiques.statistiquesAge['71+'] }}
-                        ],
-                        backgroundColor: '#42a5f5',
-                        hoverOffset: 4
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    aspectRatio: 1,
-                    scales: {
-                        y: {
-                            ticks: {
-                                callback: function(value) {
-                                    return value + '%';  // Ajoute le signe pourcentage sur l'axe Y
-                                }
-                            },
-                            min: 0,  // Minimum à 0 pour l'axe Y
-                            max: 100  // Maximum à 100 pour l'axe Y
-                        }
-                    }
+    // Chart Age
+    const ctxAge = document.getElementById('statistiquesAge').getContext('2d');
+    chartAge = new Chart(ctxAge, {
+        type: 'bar',
+        data: {
+            labels: ['0-18', '19-35', '36-50', '51-70', '71+'],
+            datasets: [{
+                label: '% des rendez-vous',
+                data: Object.values(stats.statistiquesAge),
+                backgroundColor: '#42a5f5'
+            }]
+        },
+        options: {
+            scales: {
+                y: {
+                    ticks: { callback: (value) => `${value}%` },
+                    min: 0,
+                    max: 100
                 }
-            });
+            }
+        }
+    });
 
-            var ctxJourSemaine = document.getElementById('jourSemaineChart').getContext('2d');
-            const jourSemaineData = {{ statistiques.rendezVousParJour|json_encode|raw }};
-            new Chart(ctxJourSemaine, {
-                type: 'bar',
-                data: {
-                    labels: ['Dimanche', 'Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi'],
-                    datasets: [{
-                        label: 'Rendez-vous par jour',
-                        data: jourSemaineData,
-                        backgroundColor: 'rgba(75, 192, 192, 0.2)',
-                        borderColor: 'rgba(75, 192, 192, 1)',
-                        borderWidth: 1
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
-                    }
-                }
-            });
-        </script>
-    {% endif %}
-</div>
+    // Chart Jours
+    const ctxJour = document.getElementById('jourSemaineChart').getContext('2d');
+    chartJour = new Chart(ctxJour, {
+        type: 'bar',
+        data: {
+            labels: ['Dim', 'Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam'],
+            datasets: [{
+                label: 'Nombre de rendez-vous',
+                data: stats.rendezVousParJour,
+                backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                borderColor: 'rgba(75, 192, 192, 1)',
+                borderWidth: 1
+            }]
+        }
+    });
+}
 
-<footer class="bg-light text-center py-4 mt-4">
-    <p>&copy; 2025 Medical. Tous droits réservés.</p>
-</footer>
-
-<style>
-    .header-area {
-        background: #fff;
-        padding: 15px 0;
-        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+// Event Listeners
+document.getElementById('specialite').addEventListener('change', function() {
+    if (this.value) {
+        loadMedecins(this.value);
+        document.getElementById('medecin').value = '';
+        document.getElementById('stats-container').innerHTML = '';
     }
+});
 
-    .nav .nav-item .nav-link {
-        color: #1d1d1d;
-        font-weight: 500;
-        padding: 10px 15px;
-        transition: color 0.3s ease-in-out;
-        text-decoration: none;
-    }
+document.getElementById('medecin').addEventListener('change', function() {
+    if (this.value) loadStats(this.value);
+});
 
-    .nav .nav-item .nav-link:hover {
-        color: #007bff;
-        text-decoration: none;
-    }
-
-    .btn {
-        border-radius: 20px;
-    }
-
-    .profile-dropdown {
-        position: relative;
-        display: inline-block;
-    }
-
-    .profile-dropdown img {
-        width: 40px;
-        height: 40px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #fff;
-        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
-        cursor: pointer;
-    }
-
-    .profile-dropdown-content {
-        display: none;
-        position: absolute;
-        right: 0;
-        background-color: white;
-        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
-        border-radius: 5px;
-        min-width: 150px;
-        z-index: 1000;
-    }
-
-    .profile-dropdown:hover .profile-dropdown-content {
-        display: block;
-    }
-
-    .profile-dropdown-content a {
-        display: block;
-        padding: 10px;
-        text-decoration: none;
-        color: black;
-    }
-
-    .profile-dropdown-content a:hover {
-        background-color: #f1f1f1;
-    }
-</style>
+// Initialisation
+document.addEventListener('DOMContentLoaded', () => {
+    const initialMedecin = document.getElementById('medecin').value;
+    if (initialMedecin) loadStats(initialMedecin);
+});
+</script>
+{% endblock %}

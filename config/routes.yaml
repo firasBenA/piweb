@@ -15,3 +15,4 @@ medecin_dashboard:
 patient_dashboard:
     path: /patient
     controller: App\Controller\RendezVousController::index
+

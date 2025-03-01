@@ -87,27 +87,66 @@ final class RendezVousController extends AbstractController
     
 
     // List rendez-vous for the logged-in patient
-    #[Route('/listrdv', name: 'listrdv')]
-public function listRendezVous(ManagerRegistry $rm, Security $security): Response
+// ...
+
+#[Route('/listrdv', name: 'listrdv')]
+public function listRendezVous(ManagerRegistry $rm, Security $security, Request $request): Response
 {
     $entityManager = $rm->getManager();
-    $user = $security->getUser(); // Récupérer l'utilisateur connecté
+    $user = $security->getUser();
 
-    // Vérifier que l'utilisateur est connecté et qu'il a le rôle 'ROLE_PATIENT'
-  
     if (!in_array('PATIENT', $user->getRoles())) {
         throw $this->createAccessDeniedException('Seuls les patients peuvent prendre un rendez-vous.');
     }
-    // Récupérer les rendez-vous pour cet utilisateur
-    $rendezVous = $entityManager->getRepository(RendezVous::class)->findBy(['patient' => $user]);
 
+    // Récupérer les paramètres de pagination et de recherche
+    $page = $request->query->getInt('page', 1);
+    $limit = 3;
+    $offset = ($page - 1) * $limit;
+    $search = $request->query->get('search'); // Paramètre de recherche
+
+    $repository = $entityManager->getRepository(RendezVous::class);
+    $queryBuilder = $repository->createQueryBuilder('r')
+        ->leftJoin('r.medecin', 'm') // Joindre la table des médecins
+        ->where('r.patient = :patient')
+        ->setParameter('patient', $user);
+
+    // Appliquer le filtre de recherche si un terme est fourni
+    if ($search) {
+        $queryBuilder->andWhere('m.nom LIKE :search OR m.prenom LIKE :search')
+            ->setParameter('search', '%' . $search . '%');
+    }
+
+    // Pagination
+    $queryBuilder->orderBy('r.date', 'DESC');
+    $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($queryBuilder);
+    $totalRendezVous = count($paginator);
+    $totalPages = ceil($totalRendezVous / $limit);
+
+    $rendezVous = $paginator
+        ->getQuery()
+        ->setFirstResult($offset)
+        ->setMaxResults($limit)
+        ->getResult();
+
+    // Si c'est une requête AJAX, on retourne uniquement le contenu de la table
+    if ($request->isXmlHttpRequest()) {
+        return $this->render('rendez_vous/_table.html.twig', [
+            'rendezVous' => $rendezVous,
+            'currentPage' => $page,
+            'totalPages' => $totalPages,
+        ]);
+    }
+
+    // Sinon, on retourne la page complète
     return $this->render('rendez_vous/listrdv.html.twig', [
         'rendezVous' => $rendezVous,
         'user' => $user,
+        'currentPage' => $page,
+        'totalPages' => $totalPages,
+        'search' => $search, // Passer le terme de recherche au template
     ]);
 }
-
-
     // Delete rendez-vous
     #[Route('/deleteRdv/{id}', name: 'delete_rdv')]
     public function deleteRendezVous(ManagerRegistry $rm, int $id): Response
