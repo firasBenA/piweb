@@ -10,6 +10,7 @@ use App\Repository\PatientRepository;
 use App\Repository\PrescriptionRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -43,129 +44,173 @@ class PrescriptionController extends AbstractController
     public function new(
         Request $request,
         DiagnostiqueRepository $diagnostiqueRepository,
-        MedecinRepository $medecinRepository,
-        EntityManagerInterface $entityManager
+        EntityManagerInterface $entityManager,
+        Security $security // Inject Security service to get the logged-in user (medecin)
     ) {
-        // Safely get the diagnostique_id from the query parameters
+        // Get the currently logged-in user (medecin)
+        $user = $security->getUser();
+
+        // Make sure the logged-in user is a medecin
+        if (!$user || !$user->getRoles('ROLE_MEDECIN')) {
+            throw $this->createAccessDeniedException('You are not authorized to create prescriptions.');
+        }
+
         $diagnostiqueId = $request->query->get('diagnostique_id');
 
-        // Check if diagnostique_id is not set or is invalid
         if (!$diagnostiqueId) {
-            // Redirect to an appropriate route or handle the error (e.g., home page or an error message)
             return $this->redirectToRoute('home');
         }
 
-        // Find the Diagnostique by ID
         $diagnostique = $diagnostiqueRepository->find($diagnostiqueId);
 
-        // If Diagnostique is not found, throw a 404 exception
         if (!$diagnostique) {
             throw $this->createNotFoundException('Diagnostique not found!');
         }
 
-        // Get associated DossierMedical and Patient
         $dossierMedical = $diagnostique->getDossierMedical();
-        $patient = $dossierMedical->getPatient();
+        $patient = $dossierMedical->getUser(); // This is now the patient user
 
-        // Find a Medecin (Modify as per your business logic)
-        $medecin = $medecinRepository->findOneBy([]);
-        if (!$medecin) {
-            throw $this->createNotFoundException('Medecin not found!');
-        }
-
-        // Create a new Prescription
+        // Create a new Prescription instance
         $prescription = new Prescription();
         $prescription->setDiagnostique($diagnostique);
         $prescription->setDossierMedical($dossierMedical);
-        $prescription->setMedecin($medecin);
+        $prescription->setMedecin($user); // Set the logged-in medecin as the prescriber
+        $prescription->setPatient($patient); // Set the patient associated with the prescription
         $prescription->setDatePrescription(new \DateTime());
 
-        // Create the form and pass the diagnostique_id as an option
+        // Create and handle the form
+        $form = $this->createForm(PrescriptionType::class, $prescription);
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Update the diagnostique status if needed
+            $diagnostique->setStatus(1);
+
+            // Persist the prescription
+            $entityManager->persist($prescription);
+            $entityManager->flush();
+
+            // Redirect to the patient's dossier
+            return $this->redirectToRoute('PrescriptionMedecin_page', [
+                'id' => $patient->getId(),
+                'user' => $user
+            ]);
+        }
+
+        // Render the form view
+        return $this->render('prescription/new.html.twig', [
+            'form' => $form->createView(),
+            'diagnostique' => $diagnostique,
+            'patient' => $patient,
+            'user' => $user
+        ]);
+    }
+
+
+
+
+    #[Route('/prescription/{id}/edit', name: 'app_prescription_edit')]
+    public function editPrescription(
+        Request $request,
+        Prescription $prescription,
+        EntityManagerInterface $entityManager,
+        Security $security
+    ) {
+
+        $user = $security->getUser();
+
+        $diagnostique = $prescription->getDiagnostique();
+
+        if (!$diagnostique) {
+            throw $this->createNotFoundException("Aucun diagnostique trouvé pour cette prescription.");
+        }
+
+        $dossierMedical = $diagnostique->getDossierMedical();
+        $patient = $dossierMedical->getUser();
+
         $form = $this->createForm(PrescriptionType::class, $prescription);
 
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Update the Diagnostique status (if necessary)
-            $diagnostique->setStatus(1); // Modify as needed
-
-            // Persist both Prescription and updated Diagnostique
-            $entityManager->persist($prescription);
             $entityManager->flush();
 
-            // Redirect to patient's dossierMedical page (or another appropriate page)
-            return $this->redirectToRoute('medecinDossierMedicalByPatient_page', [
+            return $this->redirectToRoute('PrescriptionMedecin_page', [
                 'id' => $patient->getId()
             ]);
         }
 
-        // Return the view with form and relevant data
-        return $this->render('prescription/new.html.twig', [
+        return $this->render('prescription/edit.html.twig', [
             'form' => $form->createView(),
-            'diagnostique' => $diagnostique,
-            'patient' => $patient,
+            'user' => $user
         ]);
     }
-
-
-
-    #[Route('/prescription/{id}/edit', name: 'app_prescription_edit')]
-public function editPrescription(
-    Request $request, 
-    Prescription $prescription, 
-    EntityManagerInterface $entityManager,
-    DiagnostiqueRepository $diagnostiqueRepository
-) {
-    // Ensure we have the Diagnostique associated with this Prescription
-    $diagnostique = $prescription->getDiagnostique(); // Get existing diagnostique
-    
-    if (!$diagnostique) {
-        throw $this->createNotFoundException("Aucun diagnostique trouvé pour cette prescription.");
-    }
-
-    $dossierMedical = $diagnostique->getDossierMedical();
-    $patient = $dossierMedical->getPatient();
-
-    // Create the form and disable diagnostique field
-    $form = $this->createForm(PrescriptionType::class, $prescription);
-
-    $form->handleRequest($request);
-
-    if ($form->isSubmitted() && $form->isValid()) {
-        $entityManager->flush(); // No need to persist, it's already managed
-        
-        return $this->redirectToRoute('medecinDossierMedicalByPatient_page', [
-            'id' => $patient->getId()
-        ]);
-    }
-
-    return $this->render('prescription/edit.html.twig', [
-        'form' => $form->createView(),
-    ]);
-}
 
 
     #[Route('/delete/{id}', name: 'app_prescription_delete', methods: ['POST'])]
-    public function delete(PatientRepository $patientRepository, Prescription $prescription, EntityManagerInterface $entityManager): RedirectResponse
+    public function delete(Prescription $prescription, EntityManagerInterface $entityManager, Security $security): RedirectResponse
     {
+        $user = $security->getUser();
+
+        $diagnostique = $prescription->getDiagnostique();
+
+        if (!$diagnostique) {
+            throw $this->createNotFoundException("Aucun diagnostique trouvé pour cette prescription.");
+        }
+
+        $dossierMedical = $diagnostique->getDossierMedical();
+        $patient = $dossierMedical->getUser();
+
         $entityManager->remove($prescription);
         $entityManager->flush();
 
         $this->addFlash('success', 'Prescription deleted successfully.');
 
-        $patient = $patientRepository->findOneBy([]);
+        return $this->redirectToRoute('PrescriptionMedecin_page', [
+            'id' => $patient->getId(),
+            'user' => $user
 
-        return $this->redirectToRoute('dossierMedicalByPatient_page', [
-            'id' => $patient->getId()
+        ]);
+    }
+
+    #[Route('/delete/{id}', name: 'admin_app_prescription_delete', methods: ['POST'])]
+    public function deleteAdmin(Prescription $prescription, EntityManagerInterface $entityManager, Security $security): RedirectResponse
+    {
+        $user = $security->getUser();
+
+        $diagnostique = $prescription->getDiagnostique();
+
+        if (!$diagnostique) {
+            throw $this->createNotFoundException("Aucun diagnostique trouvé pour cette prescription.");
+        }
+
+        $dossierMedical = $diagnostique->getDossierMedical();
+        $patient = $dossierMedical->getUser();
+
+        $entityManager->remove($prescription);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Prescription deleted successfully.');
+
+        return $this->redirectToRoute('prescriptionAdmin', [
+            'id' => $patient->getId(),
+            'user' => $user
+
         ]);
     }
 
 
     #[Route('/{id}', name: "prescription_details", methods: ['GET'])]
-    public function showPrescriptionDetails(Prescription $prescription): Response
-    {
+    public function showPrescriptionDetails(
+        Prescription $prescription,
+        Security $security
+    ): Response {
+        $user = $security->getUser();
+
+
         return $this->render('prescription/details.html.twig', [
             'prescription' => $prescription,
+            'user' => $user
         ]);
     }
 }

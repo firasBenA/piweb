@@ -3,8 +3,11 @@
 namespace App\Entity;
 
 use App\Repository\ArticleRepository;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: ArticleRepository::class)]
 class Article
@@ -20,7 +23,7 @@ class Article
 
     #[ORM\Column(length: 255, nullable: false)]
     #[Assert\NotBlank(message: 'ce champ est obligatoire.')]
-    
+
     private ?string $contenue = '';
 
     #[ORM\Column(length: 255, nullable: false)]
@@ -34,15 +37,20 @@ class Article
 
     #[ORM\Column(length: 255, nullable: false)]
     #[Assert\NotBlank(message: 'ce champ est obligatoire.')]
-    
+
     private ?string $commantaire = '';
 
     #[ORM\Column(nullable: false)]
     #[Assert\Positive(message: 'Le nombre de j\'aime doit être un nombre positif ou zéro.')]
     private ?int $nbJaime = 0;
 
-    #[ORM\ManyToOne(inversedBy: 'article')]
-    private ?Evenement $evenement = null;
+    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: "articles")]
+    private Collection $evenement;
+
+    public function __construct()
+    {
+        $this->evenement = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -115,14 +123,27 @@ class Article
         return $this;
     }
 
-    public function getEvenement(): ?Evenement
+    /**
+     * @return Collection<int, Evenement>
+     */
+    public function getEvenement(): Collection
     {
         return $this->evenement;
     }
 
-    public function setEvenement(?Evenement $evenement): static
+    public function addEvenement(Evenement $evenement): self
     {
-        $this->evenement = $evenement;
+        if (!$this->evenement->contains($evenement)) {
+            $this->evenement[] = $evenement;
+        }
+
+        return $this;
+    }
+
+    public function removeEvenement(Evenement $evenement): self
+    {
+        $this->evenement->removeElement($evenement);
+
         return $this;
     }
 }

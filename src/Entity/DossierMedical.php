@@ -7,6 +7,8 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -23,11 +25,9 @@ class DossierMedical
     #[Assert\Type("\DateTimeInterface", message: "Please provide a valid date.")]
     private ?\DateTimeInterface $datePrescription = null;
 
-    #[ORM\OneToOne(targetEntity: Patient::class, inversedBy: 'dossierMedical', cascade: ['persist', 'remove'])]
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'dossierMedical')]
     #[ORM\JoinColumn(nullable: false)]
-    #[Assert\NotBlank(message: "The patient is required.")]
-    private ?Patient $patient = null;
-
+    private ?User $user = null;
 
     /**
      * @var Collection<int, Prescription>
@@ -64,16 +64,19 @@ class DossierMedical
         return $this;
     }
 
-    public function getPatient(): ?Patient
+    public function getUser(): ?User
     {
-        return $this->patient;
+        return $this->user;
     }
 
-    public function setPatient(Patient $patient): self
+    // Setter for user
+    public function setUser(?User $user): self
     {
-        $this->patient = $patient;
-        return $this;    
+        $this->user = $user;
+
+        return $this;
     }
+    
 
     public function getPrescriptions(): Collection
     {

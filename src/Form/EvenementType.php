@@ -61,7 +61,6 @@ class EvenementType extends AbstractType
                 'required' => true,
                 'empty_data' => '', // Forces an empty string if the field is left empty
                 'attr' => ['class' => 'form-control'],
-                
             ])
             ->add('medecin', EntityType::class, [
                 'class' => Medecin::class,

@@ -36,6 +36,7 @@ class PrescriptionType extends AbstractType
                 'disabled' => true // Use the custom option
 
             ])
+            
             ->add('save', SubmitType::class, ['label' => 'Create Prescription']);
     }
 

@@ -39,9 +39,8 @@ class Reclamation
     #[ORM\Column(length: 255)]
     private ?string $etat = null;
 
-    #[ORM\ManyToOne(inversedBy: 'reclamations')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Patient $Patient = null;
+    #[ORM\ManyToOne(targetEntity: Patient::class, inversedBy: 'reclamations')]
+    private ?Patient $patient = null;
 
     public function getId(): ?int
     {
@@ -98,12 +97,12 @@ class Reclamation
 
     public function getPatient(): ?Patient
     {
-        return $this->Patient;
+        return $this->patient;
     }
 
-    public function setPatient(?Patient $Patient): static
+    public function setPatient(?Patient $patient): static
     {
-        $this->Patient = $Patient;
+        $this->patient = $patient;
 
         return $this;
     }

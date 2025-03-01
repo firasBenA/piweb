@@ -39,7 +39,6 @@ class Medecin
     #[ORM\OneToMany(mappedBy: 'medecin', targetEntity: Prescription::class, cascade: ['persist', 'remove'])]
     private Collection $prescriptions;
 
-
     #[ORM\Column]
     private ?int $age = null;
 
@@ -48,6 +47,7 @@ class Medecin
 
     #[ORM\Column(length: 255)]
     private ?string $imageDeProfil = null;
+
 
     /**
      * @var Collection<int, RendezVous>
@@ -73,20 +73,22 @@ class Medecin
     #[ORM\OneToMany(targetEntity: Diagnostique::class, mappedBy: 'medecin')]
     private Collection $diagnostiques;
 
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: "medecin", cascade: ["persist", "remove"])]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+    #[ORM\OneToMany(mappedBy: 'medecin', targetEntity: Patient::class)]
+    private Collection $patient;
+
+
     public function __construct()
     {
         $this->rendezVouses = new ArrayCollection();
         $this->consultations = new ArrayCollection();
         $this->evenements = new ArrayCollection();
         $this->diagnostiques = new ArrayCollection();
-        $this->patients = new ArrayCollection();
+        $this->patient = new ArrayCollection();
     }
-
-    /**
-     * @var Collection<int, Patient>
-     */
-    #[ORM\OneToMany(mappedBy: 'medecin', targetEntity: Patient::class)]
-    private Collection $patients;
 
 
     // Getters and Setters
@@ -117,9 +119,26 @@ class Medecin
         return $this;
     }
 
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(?User $user): self
+{
+    $this->user = $user;
+
+    // Ensure bidirectional relationship
+    if ($user !== null && $user->getMedecin() !== $this) {
+        $user->setMedecin($this);
+    }
+
+    return $this;
+}
+
     public function getPatients(): Collection
     {
-        return $this->patients;
+        return $this->patient;
     }
 
     public function getId(): ?int

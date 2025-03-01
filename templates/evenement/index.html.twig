@@ -1,45 +1,67 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Evenement{% endblock %}
-
+{% block title %}Evenements{% endblock %}
+{% block stylesheets %}
+    {{ parent() }}
+    <style>
+        .title {
+            text-align: center;
+            margin-top: 20px;
+            font-weight: bold;
+            color: #343a40;
+        }
+        .table-container {
+            margin: 30px auto;
+            width: 70%;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        }
+    </style>
+{% endblock %}
 {% block body %}
-    <h1 class="title">Evenement</h1>
-
-    <table class="table table-striped">
-        <thead>
-            <tr>
-                <th>Id</th>
-                <th>Nom</th>
-                <th>Contenue</th>
-                <th>Type</th>
-                <th>Statut</th>
-                <th>Lieux event</th>
-                <th>Date event</th>
-                <th>Actions</th>
-            </tr>
-        </thead>
-        <tbody>
-        {% for evenement in evenements %}
-            <tr>
-                <td>{{ evenement.id }}</td>
-                <td>{{ evenement.nom }}</td>
-                <td>{{ evenement.contenue }}</td>
-                <td>{{ evenement.type }}</td>
-                <td>{{ evenement.statut }}</td>
-                <td>{{ evenement.lieuxEvent }}</td>
-                <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : '' }}</td>
-                <td>
-                    <a class="btn btn-info" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
-                    <a class="btn btn-secondary" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}"> Modifier</a>
-                </td>
-            </tr>
-        {% else %}
-            <tr>
-                <td colspan="8">no records found</td>
-            </tr>
-        {% endfor %}
-        </tbody>
-    </table>
-
-    <a class="btn btn-primary" href="{{ path('app_evenement_ajouter') }}">Creer un evenement</a>
+    <div class="container">
+        <h1 class="title">Evenements</h1>
+        <div class="table-container">
+            <table class="table table-hover text-center">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Id</th>
+                        <th>Nom</th>
+                        <th>Contenu</th>
+                        <th>Type</th>
+                        <th>Statut</th>
+                        <th>Lieu</th>
+                        <th>Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for evenement in evenements %}
+                        <tr>
+                            <td>{{ evenement.id }}</td>
+                            <td>{{ evenement.nom }}</td>
+                            <td>{{ evenement.contenue }}</td>
+                            <td>{{ evenement.type }}</td>
+                            <td>{{ evenement.statut }}</td>
+                            <td>{{ evenement.lieuxEvent }}</td>
+                            <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : 'N/A' }}</td>
+                            <td>
+                                <a class="btn btn-info btn-sm btn-action" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
+                                <a class="btn btn-warning btn-sm btn-action" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-muted">Il n'y a pas d'événements pour le moment</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        <div class="text-center">
+            <a class="btn btn-success" href="{{ path('app_evenement_ajouter') }}">Créer un événement</a>
+        </div>
+    </div>
 {% endblock %}

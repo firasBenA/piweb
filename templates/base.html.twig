@@ -11,6 +11,13 @@
 		
 
 		{% block stylesheets %}
+			<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+			<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+
+
+			<link rel="manifest" href="site.webmanifest">
+			<link
+			rel="shortcut icon" type="image/x-icon" href="{{asset('assets/img/favicon.ico')}}">
 
 			<!-- CSS here -->
 			<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
@@ -34,55 +41,50 @@
 
 		{% endblock %}
 
-		{% block javascripts %}
-			<!-- JS here -->
+		<script src="{{asset('assets/js/vendor/modernizr-3.5.0.min.js')}}"></script>
+		<!-- Jquery, Popper, Bootstrap -->
+		<script src="{{asset('assets/js/vendor/jquery-1.12.4.min.js')}}"></script>
+		<script src="{{asset('assets/js/popper.min.js')}}"></script>
+		<script src="{{asset('assets/js/bootstrap.min.js')}}"></script>
+		<!-- Jquery Mobile Menu -->
+		<script src="{{asset('assets/js/jquery.slicknav.min.js')}}"></script>
 
-			<script src="{{asset('assets/js/vendor/modernizr-3.5.0.min.js')}}"></script>
-			<!-- Jquery, Popper, Bootstrap -->
-			<script src="{{asset('assets/js/vendor/jquery-1.12.4.min.js')}}"></script>
-			<script src="{{asset('assets/js/popper.min.js')}}"></script>
-			<script src="{{asset('assets/js/bootstrap.min.js')}}"></script>
-			<!-- Jquery Mobile Menu -->
-			<script src="{{asset('assets/js/jquery.slicknav.min.js')}}"></script>
+		<!-- Jquery Slick , Owl-Carousel Plugins -->
+		<script src="{{asset('assets/js/owl.carousel.min.js')}}"></script>
+		<script src="{{asset('assets/js/slick.min.js')}}"></script>
+		<!-- One Page, Animated-HeadLin -->
+		<script src="{{asset('assets/js/wow.min.js')}}"></script>
+		<script src="{{asset('assets/js/animated.headline.js')}}"></script>
+		<script src="{{asset('assets/js/jquery.magnific-popup.js')}}"></script>
 
-			<!-- Jquery Slick , Owl-Carousel Plugins -->
-			<script src="{{asset('assets/js/owl.carousel.min.js')}}"></script>
-			<script src="{{asset('assets/js/slick.min.js')}}"></script>
-			<!-- One Page, Animated-HeadLin -->
-			<script src="{{asset('assets/js/wow.min.js')}}"></script>
-			<script src="{{asset('assets/js/animated.headline.js')}}"></script>
-			<script src="{{asset('assets/js/jquery.magnific-popup.js')}}"></script>
+		<!-- Date Picker -->
+		<script src="{{asset('assets/js/gijgo.min.js')}}"></script>
+		<!-- Nice-select, sticky -->
+		<script src="{{asset('assets/js/jquery.nice-select.min.js')}}"></script>
+		<script src="{{asset('assets/js/jquery.sticky.js')}}"></script>
 
-			<!-- Date Picker -->
-			<script src="{{asset('assets/js/gijgo.min.js')}}"></script>
-			<!-- Nice-select, sticky -->
-			<script src="{{asset('assets/js/jquery.nice-select.min.js')}}"></script>
-			<script src="{{asset('assets/js/jquery.sticky.js')}}"></script>
+		<!-- counter , waypoint -->
+		<script src="{{asset('assets/js/jquery.counterup.min.js')}}"></script>
+		<script src="{{asset('assets/js/waypoints.min.js')}}"></script>
+		<script src="{{asset('assets/js/jquery.countdown.min.js')}}"></script>
+		<!-- contact js -->
+		<script src="{{asset('assets/js/contact.js')}}"></script>
+		<script src="{{asset('assets/js/jquery.form.js')}}"></script>
+		<script src="{{asset('assets/js/jquery.validate.min.js')}}"></script>
+		<script src="{{asset('assets/js/mail-script.js')}}"></script>
+		<script src="{{asset('assets/js/jquery.ajaxchimp.min.js')}}"></script>
 
-			<!-- counter , waypoint -->
-			<script src="{{asset('assets/js/jquery.counterup.min.js')}}"></script>
-			<script src="{{asset('assets/js/waypoints.min.js')}}"></script>
-			<script src="{{asset('assets/js/jquery.countdown.min.js')}}"></script>
-			<!-- contact js -->
-			<script src="{{asset('assets/js/contact.js')}}"></script>
-			<script src="{{asset('assets/js/jquery.form.js')}}"></script>
-			<script src="{{asset('assets/js/jquery.validate.min.js')}}"></script>
-			<script src="{{asset('assets/js/mail-script.js')}}"></script>
-			<script src="{{asset('assets/js/jquery.ajaxchimp.min.js')}}"></script>
+		<!-- Jquery Plugins, main Jquery -->
+		<script src="{{asset('assets/js/plugins.js')}}"></script>
+		<script src="{{asset('assets/js/main.js')}}"></script>
 
-			<!-- Jquery Plugins, main Jquery -->
-			<script src="{{asset('assets/js/plugins.js')}}"></script>
-			<script src="{{asset('assets/js/main.js')}}"></script>
-
-			<!-- Script MEDECIN -->
-			<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-			<script src="{{asset('medecin/assets/js/init-alpine.js')}}"></script>
-			{% block importmap %}
-				{{ importmap('app') }}
-			{% endblock %}
+		<!-- Script MEDECIN -->
+		<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+		<script src="{{asset('medecin/assets/js/init-alpine.js')}}"></script>
+		{% block importmap %}
+			{{ importmap('app') }}
 		{% endblock %}
 	</head>
-
 	<header>
 		<!--? Header Start -->
 		<div class="header-area">
@@ -106,34 +108,61 @@
 											<li>
 												<a href="{{ path('home_page') }}">Home</a>
 											</li>
-											<li>
-												<a href="{{ path('diagnostique_page') }}">Diagnostique</a>
-											</li>
+											{% if dossierMedicalId is defined and dossierMedicalId is not null %}
+												<li>
+													<a href="{{ path('diagnose_form', { 'id': dossierMedicalId }) }}">Diagnostique</a>
+												</li>
+											{% else %}
+												<li>
+													<a href="{{ path('app_login2') }}">Diagnostique</a>
+												</li>
+											{% endif %}
 											<li>
 												<a href="{{ path('doctors_page') }}">Doctors</a>
+
 											</li>
 											<li>
-												<a href="{{ path('appointment_page') }}">Appointment</a>
+												<a href="{{path('addrendezvous')}}">Appointment</a>
 											</li>
 											<li>
-												<a href="{{ path('blog_page') }}">Blog</a>
+												<a href="{{ path('evenement_page') }}">Evenements</a>
 												<ul class="submenu">
 													<li>
-														<a href="{{ path('blog_page') }}">Blog</a>
+														<a href="{{ path('evenement_page') }}">Evenements</a>
 													</li>
 													<li>
-														<a href="{{ path('blog_details_page') }}">Blog Details</a>
+														<a href="{{ path('article_page') }}">Articles</a>
 													</li>
 												</ul>
 											</li>
 											<li>
 												<a href="{{ path('reclamation_page') }}">Reclamation</a>
 											</li>
+
 										</ul>
 									</nav>
 								</div>
 								<div class="header-right-btn f-right d-none d-lg-block ml-30">
-									<a href="#" class="btn header-btn">Sign-In</a>
+									{% if app.user %}
+										<div class="profile-dropdown">
+											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image" style=" width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+											<div class="profile-dropdown-content">
+												<a href="{{ path('app_logout') }}">
+													<i class="fas fa-sign-out-alt logout-icon"></i>
+													Déconnexion
+												</a>
+
+												<a href="{{ path('patientDashboard' ,{'id':app.user.id}) }}">
+													<i class="fas fa-sign-out-alt logout-icon"></i>
+													Profile
+												</a>
+
+											</div>
+										</div>
+									{% else %}
+										<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
+									{% endif %}
+
 								</div>
 							</div>
 						</div>
@@ -145,15 +174,12 @@
 				</div>
 			</div>
 		</div>
+
 		<!-- Header End -->
 	</header>
-
-
 	{% block body %}{% endblock %}
+	<footer><!--? Footer Start--><div class="footer-area section-bg" data-background="assets/img/gallery/footer_bg.jpg">
 
-	<footer>
-		<!--? Footer Start-->
-		<div class="footer-area section-bg" data-background="assets/img/gallery/footer_bg.jpg">
 			<div class="container">
 				<div class="footer-top footer-padding">
 					<div class="row d-flex justify-content-between">
@@ -211,14 +237,10 @@
 								<p>
 									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 									Copyright &copy;
-																																																																																										All rights reserved | This template is made with
-									Copyright &copy;<script>
-										
-									</script>
-									All rights reserved | This template is made with
+																																																																																																																																																																																																																																																																																																																																																																																																																					All rights reserved | This template is made withAll rights reserved | This template is made with
 									<i class="fa fa-heart" aria-hidden="true"></i>
 									by
-									<a href="https://colorlib.com" target="_blank">Colorlib</a>
+
 									<!-- Link back to Colorlib can't be removed. Template is licensed under CC BY 3.0. -->
 								</p>
 							</div>
@@ -244,12 +266,11 @@
 					</div>
 				</div>
 			</div>
-		</div>
-		<!-- Footer End-->
-	</footer><!-- Scroll Up --><div id="back-top">
+		</div><!-- Footer End--></footer><!-- Scroll Up --><div id="back-top">
+
 		<a title="Go to Top" href="#">
 			<i class="fas fa-level-up-alt"></i>
 		</a>
 	</div>
+</html></html>
 
-</html>

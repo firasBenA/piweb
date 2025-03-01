@@ -3,18 +3,63 @@
 namespace App\Controller;
 
 use App\Entity\DossierMedical;
+use App\Entity\Patient;
+use App\Entity\User;
 use App\Repository\MedecinRepository;
+use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\RouterInterface;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class MainController extends AbstractController
 {
     #[Route('/', name: 'home_page')]
-    public function index(): Response
+    public function index(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage, RouterInterface $router): Response
     {
-        return $this->render('main/index.html.twig');
+        $token = $tokenStorage->getToken();
+        $user = $token?->getUser();
+        $dossierMedicalId = null;  // Default value for DossierMedical
+
+        // Check if the user is logged in
+        if ($user) {
+            // If the user is a patient and not already on the 'home_page'
+            if (in_array('ROLE_PATIENT', $user->getRoles())) {
+                // Directly fetch the DossierMedical related to the user if the user is a patient
+                $dossierMedical = $entityManager->getRepository(DossierMedical::class)->findOneBy(['user' => $user]);
+
+                if ($dossierMedical) {
+                    $dossierMedicalId = $dossierMedical->getId();
+                }
+
+                // Avoid redirect loop for patients: Only redirect if the user isn't already on the home page
+                if ($router->getContext()->getPathInfo() !== $router->generate('home_page')) {
+                    return $this->redirectToRoute('home_page');
+                }
+            }
+
+            // Logic for doctors
+            if (in_array('ROLE_MEDECIN', $user->getRoles())) {
+                // Perform doctor-specific actions here, like fetching patient lists or something relevant for medecin
+                // Example:
+                $patients = $entityManager->getRepository(User::class)->findBy(['roles' => 'ROLE_PATIENT']);
+
+                // Redirect the doctor to a different page (e.g., the doctor dashboard)
+                return $this->redirectToRoute('medecin_dashboard'); // Replace 'doctor_dashboard' with your actual route for doctors
+            }
+        }
+
+        // If no user is logged in or any other condition is met
+        return $this->render('main/index.html.twig', [
+            'user' => $user,
+            'dossierMedicalId' => $dossierMedicalId,
+            'patients' => isset($patients) ? $patients : null, // Pass patients data if the user is a doctor
+        ]);
     }
+
+
 
     #[Route('/doctors', name: 'doctors_page')]
     public function doctors(): Response
@@ -22,16 +67,23 @@ class MainController extends AbstractController
         return $this->render('main/doctors.html.twig');
     }
 
-    #[Route('/blog', name: 'blog_page')]
-    public function blog(): Response
+    #[Route('/evenement', name: 'evenement_page')]
+    public function evenement(Security $security): Response
     {
-        return $this->render('main/blog.html.twig');
+        // Get the currently logged-in user
+        $user = $security->getUser();
+
+        // Pass the user to the template
+        return $this->render('main/evenement.html.twig', [
+            'user' => $user
+        ]);
     }
 
-    #[Route('/blog_details', name: 'blog_details_page')]
-    public function blog_details(): Response
+
+    #[Route('/article', name: 'article_page')]
+    public function article(): Response
     {
-        return $this->render('main/blog_details.html.twig');
+        return $this->render('main/article.html.twig');
     }
 
     #[Route('/reclamation', name: 'reclamation_page')]
@@ -52,7 +104,7 @@ class MainController extends AbstractController
         return $this->render('main/createAccount.html.twig');
     }
 
-    #[Route('/login', name: 'login_page')]
+    #[Route('/Login', name: 'createAccount_page')]
     public function Login(): Response
     {
         return $this->render('main/login.html.twig', [
@@ -77,7 +129,11 @@ class MainController extends AbstractController
 
 
 
-
+    #[Route('/map', name: 'app_map')]
+    public function map(): Response
+    {
+        return $this->render('map.html.twig');
+    }
 
 
     //////////////////////////
