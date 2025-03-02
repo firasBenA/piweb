@@ -10,6 +10,7 @@ use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface as EmailTwoFactorInterface;
 
+
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'il existe déjà un compte avec cet email.')]
@@ -95,6 +96,23 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     private ?string $emailAuthCode = null;
 
+    #[ORM\Column(type: 'datetime')]
+    private $createdAt;
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime(); 
+    }
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -111,7 +129,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
 
         return $this;
     }
-
+    public function isBlocked(): bool
+    {
+        return in_array('ROLE_BLOCKED', $this->getRoles());
+    }
     /**
      * A visual identifier that represents this user.
      *

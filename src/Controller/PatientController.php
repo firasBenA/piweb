@@ -8,14 +8,19 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+
+
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Form\RegistrationFormType;
 use App\Form\UpdateProfileFormType;
 use App\Form\ChangePasswordFormType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('PATIENT')]
 class PatientController extends AbstractController
 {
     #[Route('/patient', name: 'patient_dashboard')]

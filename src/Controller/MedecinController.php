@@ -11,6 +11,9 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
+#[IsGranted('MEDECIN')]
 class MedecinController extends AbstractController
 {
     #[Route('/medecin', name: 'medecin_dashboard')]

@@ -57,4 +57,16 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
     //            ->getOneOrNullResult()
     //        ;
     //    }
+
+   // src/Repository/UserRepository.php
+public function findByRoles(string $role): array
+{
+    return $this->createQueryBuilder('u')
+        ->andWhere('u.roles LIKE :role OR u.roles LIKE :blocked')
+        ->setParameter('role', '%"' . $role . '"%') // Recherche PATIENT ou MEDECIN
+        ->setParameter('blocked', '%"BLOCKED"%')   // Recherche BLOCKED
+        ->getQuery()
+        ->getResult();
+}
+
 }
