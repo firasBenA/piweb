@@ -10,8 +10,14 @@ admin_dashboard:
 
 medecin_dashboard:
     path: /medecin
-    controller: App\Controller\MedecinController::index
+
+    controller: App\Controller\MedecinController::dashboard
 
 patient_dashboard:
     path: /patient
-    controller: App\Controller\PatientController::index
+    controller: App\Controller\MainController::index
+    
+diagnostique_pdf:
+    path: /diagnostique/pdf/{id}
+    controller: App\Controller\DiagnostiqueController::generatePdf
+

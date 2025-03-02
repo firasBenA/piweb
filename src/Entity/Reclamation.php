@@ -5,6 +5,7 @@ namespace App\Entity;
 use App\Repository\ReclamationRepository;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: ReclamationRepository::class)]
 class Reclamation
@@ -15,23 +16,31 @@ class Reclamation
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le sujet ne peut pas être vide.")]
+    #[Assert\Length(
+        min: 3,
+        max: 255,
+        minMessage: "Le sujet doit contenir au moins {{ limit }} caractères.",
+        maxMessage: "Le sujet ne peut pas dépasser {{ limit }} caractères."
+    )]
     private ?string $sujet = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "La description est requise.")]
+    #[Assert\Length(
+        min: 10,
+        minMessage: "La description doit contenir au moins {{ limit }} caractères."
+    )]
     private ?string $description = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $date_debut = null;
 
-    #[ORM\Column(type: Types::DATE_MUTABLE)]
-    private ?\DateTimeInterface $date_fin = null;
-
     #[ORM\Column(length: 255)]
     private ?string $etat = null;
 
-    #[ORM\ManyToOne(inversedBy: 'reclamations')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Patient $Patient = null;
+    #[ORM\ManyToOne(targetEntity: Patient::class, inversedBy: 'reclamations')]
+    private ?Patient $patient = null;
 
     public function getId(): ?int
     {
@@ -74,18 +83,6 @@ class Reclamation
         return $this;
     }
 
-    public function getDateFin(): ?\DateTimeInterface
-    {
-        return $this->date_fin;
-    }
-
-    public function setDateFin(\DateTimeInterface $date_fin): static
-    {
-        $this->date_fin = $date_fin;
-
-        return $this;
-    }
-
     public function getEtat(): ?string
     {
         return $this->etat;
@@ -100,12 +97,12 @@ class Reclamation
 
     public function getPatient(): ?Patient
     {
-        return $this->Patient;
+        return $this->patient;
     }
 
-    public function setPatient(?Patient $Patient): static
+    public function setPatient(?Patient $patient): static
     {
-        $this->Patient = $Patient;
+        $this->patient = $patient;
 
         return $this;
     }

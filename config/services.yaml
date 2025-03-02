@@ -1,3 +1,4 @@
+# config/services.yaml
 # This file is the entry point to configure your own services.
 # Files in the packages/ subdirectory configure your dependencies.
 
@@ -5,6 +6,7 @@
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
     certificats_directory: '%kernel.project_dir%/public/uploads/certificats'
+
     images_directory: '%kernel.project_dir%/public/uploads/images'
 
 services:
@@ -25,6 +27,12 @@ services:
     App\Security\AppAuthenticator:
         arguments:
             $urlGenerator: '@router'
+
+    App\Service\TwilioService:
+        arguments:
+            $twilioSid: '%env(TWILIO_ACCOUNT_SID)%'
+            $twilioToken: '%env(TWILIO_AUTH_TOKEN)%'
+            $twilioPhoneNumber: '%env(TWILIO_PHONE_NUMBER)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

@@ -1,0 +1,41 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Prescription Details
+{% endblock %}
+
+{% block body %}
+	<div class="container mx-auto py-4">
+		<h2 class="text-2xl font-semibold mb-4">Prescription Details</h2>
+		<div class="bg-white p-6 rounded-lg shadow-lg">
+			<div class="mb-4">
+				<strong>ID:</strong>
+				<span>{{ prescription.id }}</span>
+			</div>
+			<div class="mb-4">
+				<strong>Titre:</strong>
+				<span>{{ prescription.titre }}</span>
+			</div>
+			<div class="mb-4">
+				<strong>Contenue:</strong>
+				<p>{{ prescription.contenue }}</p>
+			</div>
+			<div class="mb-4">
+				<strong>Date:</strong>
+				<span>{{ prescription.datePrescription|date('Y-m-d') }}</span>
+			</div>
+			<div class="mb-4">
+				<strong>Doctor:</strong>
+				<span>{{ prescription.medecin.nom }}</span>
+			</div>
+
+			<!-- Diagnostique Details -->
+			<div class="mb-4 mt-6">
+				<div class="mb-4">
+					<strong>Diagnostique :</strong>
+					<span>{{ prescription.diagnostique.nom }}</span>
+				</div>
+				<!-- Add other diagnostique fields as needed -->
+			</div>
+		</div>
+	</div>
+{% endblock %}

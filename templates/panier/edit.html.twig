@@ -1,0 +1,57 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Panier{% endblock %}
+
+{% block body %}
+    <h1>Edit Panier</h1>
+
+    <!-- Start Form -->
+    {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+
+    <!-- Patient selection -->
+    <div>
+        {{ form_label(form.user) }}
+        {{ form_widget(form.user) }}
+    </div>
+
+    <!-- Article selection -->
+    <div>
+        <label>Articles</label>
+        <div class="articles-container">
+            {% for articleField in form.articles %}
+                {% set articleEntity = articleField.vars.data %}
+
+                {% if articleEntity is defined and articleEntity is not empty and articleEntity is not same as(true) and articleEntity is not same as(false) %}
+                    <div class="article-item">
+                        <label>
+                            {{ form_widget(articleField) }}
+                            <span class="article-details">
+                                <strong>{{ articleEntity.nom }}</strong> - {{ articleEntity.prix }} TND
+                            </span>
+                        </label>
+                        {% if articleEntity.image is not empty %}
+                            <img src="{{ asset('uploads/images/' ~ articleEntity.image) }}" 
+                                 alt="{{ articleEntity.nom }}" 
+                                 class="article-image">
+                        {% endif %}
+                    </div>
+                {% endif %}
+            {% endfor %}
+        </div>
+    </div>
+
+    <!-- Buttons (INSIDE the form) -->
+    <div class="button-group">
+        <button type="submit" class="btn btn-primary">Update</button>
+        <a href="{{ path('app_panier_index') }}" class="btn btn-secondary">Back to list</a>
+    </div>
+
+    {{ form_end(form) }}
+    <!-- End Form -->
+
+    <style>
+        .button-group {
+            margin-top: 15px;
+        }
+    </style>
+{% endblock %}

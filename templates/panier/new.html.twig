@@ -1,0 +1,73 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}New Panier{% endblock %}
+
+{% block body %}
+    <h1>Create new Panier</h1>
+
+    <form method="post">
+        {{ form_start(form) }}
+        
+        <div>
+            {{ form_label(form.user) }}
+            {{ form_widget(form.user) }}
+        </div>
+
+        {# DO NOT render form.articles automatically #}
+
+        <div>
+            <label>Articles</label>
+            <div class="articles-container">
+                {% for choice in form.articles.vars.choices %}
+                    {% set articleEntity = choice.data %}
+                    <div class="article-item">
+                        <label>
+                            <input type="checkbox" name="panier[articles][]" value="{{ articleEntity.id }}">
+                            
+                            {% if articleEntity.image is not empty %}
+                                <img src="{{ asset('uploads/images/' ~ articleEntity.image) }}" 
+                                     alt="{{ articleEntity.nom }}" 
+                                     class="article-image">
+                            {% endif %}
+                            <span class="article-details">
+                                <strong>{{ articleEntity.nom }}</strong> - {{ articleEntity.prix }} TND
+                            </span>
+                        </label>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <button type="submit">Create</button>
+
+        {{ form_end(form) }}
+    </form>
+
+    <a href="{{ path('app_panier_index') }}">Back to list</a>
+
+    <style>
+        .articles-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        .article-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .article-image {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 5px;
+        }
+        .article-details {
+            font-size: 14px;
+            margin-left: 10px;
+        }
+        .hidden {
+            display: none !important; /* Hide unwanted default field */
+        }
+    </style>
+{% endblock %}

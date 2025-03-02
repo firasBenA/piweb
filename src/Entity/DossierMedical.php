@@ -7,6 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\ORM\Mapping\JoinColumn;
+use Doctrine\ORM\Mapping\ManyToOne;
+use Symfony\Component\Validator\Constraints as Assert;
+
 
 #[ORM\Entity(repositoryClass: DossierMedicalRepository::class)]
 class DossierMedical
@@ -17,10 +21,13 @@ class DossierMedical
     private ?int $id = null;
 
     #[ORM\Column(type: Types::DATE_MUTABLE)]
+    #[Assert\NotBlank(message: "The date of prescription is required.")]
+    #[Assert\Type("\DateTimeInterface", message: "Please provide a valid date.")]
     private ?\DateTimeInterface $datePrescription = null;
 
-    #[ORM\OneToOne(cascade: ['persist', 'remove'])]
-    private ?Patient $Patient = null;
+    #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'dossierMedical')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
 
     /**
      * @var Collection<int, Prescription>
@@ -57,21 +64,20 @@ class DossierMedical
         return $this;
     }
 
-    public function getPatient(): ?Patient
+    public function getUser(): ?User
     {
-        return $this->Patient;
+        return $this->user;
     }
 
-    public function setPatient(?Patient $Patient): static
+    // Setter for user
+    public function setUser(?User $user): self
     {
-        $this->Patient = $Patient;
+        $this->user = $user;
 
         return $this;
     }
+    
 
-    /**
-     * @return Collection<int, Prescription>
-     */
     public function getPrescriptions(): Collection
     {
         return $this->prescriptions;
@@ -90,9 +96,9 @@ class DossierMedical
     public function removePrescription(Prescription $prescription): static
     {
         if ($this->prescriptions->removeElement($prescription)) {
-            // set the owning side to null (unless already changed)
+            // Ensure the owning side is cleared only if it's still referencing this DossierMedical
             if ($prescription->getDossierMedical() === $this) {
-                $prescription->setDossierMedical(null);
+                $prescription->setDossierMedical($this); // Keep the relation intact
             }
         }
 

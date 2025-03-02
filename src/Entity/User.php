@@ -6,6 +6,10 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+
+use Doctrine\ORM\Mapping\OneToMany;
+use Doctrine\ORM\Mapping\OneToOne;
+use PhpParser\Node\Expr\Cast\String_;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -30,7 +34,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
      * @var list<string> The user roles
      */
     #[ORM\Column]
-    
+
     private array $roles = [];
 
     /**
@@ -62,10 +66,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'Veuillez choisir votre sexe.')]
     private ?string $sexe = null;
 
-    #[ORM\Column]
+
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
     #[Assert\NotBlank(message: 'Veuillez entrer votre numéro de téléphone.')]
     #[Assert\Regex(pattern: '/^\d{8}$/', message: 'Le numéro de téléphone doit contenir exactement 8 chiffres.')]
-    private ?int $telephone = null;
+    private ?string $telephone = null; // ✅ Make sure it's "string", not "String"
+
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\File(
@@ -88,6 +94,28 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Assert\NotBlank(message: 'Veuillez télécharger votre certificat.', groups: ['medecin'])]
     private ?string $certificat = null;
+
+
+    #[ORM\OneToOne(targetEntity: DossierMedical::class, mappedBy: 'user')]
+    private ?DossierMedical $dossierMedical = null;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: RendezVous::class)]
+    private Collection $rendezVouses;
+
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: 'App\Entity\Consultation')]
+    private Collection $consultations;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $latitude = null;
+
+    #[ORM\Column(type: 'float', nullable: true)]
+    private ?float $longitude = null;
+
+    public function __construct()
+    {
+        $this->rendezVouses = new ArrayCollection();
+        $this->consultations = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -137,6 +165,29 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->roles = $roles;
 
+        return $this;
+    }
+
+
+    public function getLatitude(): ?float
+    {
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
         return $this;
     }
 
@@ -224,15 +275,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getTelephone(): ?int
+
+    public function getTelephone(): ?string
     {
         return $this->telephone;
     }
-
-    public function setTelephone(int $telephone): static
+    
+    public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
-
         return $this;
     }
 
@@ -304,4 +355,68 @@ public function removeEvenement(Evenement $evenement): static
 
     return $this;
 }
+
+  public function getDossierMedical(): ?DossierMedical
+    {
+        return $this->dossierMedical;
+    }
+
+    public function setDossierMedical(?DossierMedical $dossierMedical): self
+    {
+        $this->dossierMedical = $dossierMedical;
+
+        return $this;
+    }
+
+    public function getRendezVouses(): Collection
+    {
+        return $this->rendezVouses;
+    }
+
+    public function addRendezVouse(RendezVous $rendezvous): self
+    {
+        if (!$this->rendezVouses->contains($rendezvous)) {
+            $this->rendezVouses[] = $rendezvous;
+            $rendezvous->setUser($this); // set the user in the rendezvous
+        }
+
+        return $this;
+    }
+
+    public function removeRendezVouse(RendezVous $rendezvous): self
+    {
+        $this->rendezVouses->removeElement($rendezvous);
+        // set the owning side to null (unless already changed)
+        if ($rendezvous->getUser() === $this) {
+            $rendezvous->setUser(null);
+        }
+
+        return $this;
+    }
+
+    public function getConsultations(): Collection
+    {
+        return $this->consultations;
+    }
+
+    public function addConsultation(Consultation $consultation): self
+    {
+        if (!$this->consultations->contains($consultation)) {
+            $this->consultations[] = $consultation;
+            $consultation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsultation(Consultation $consultation): self
+    {
+        if ($this->consultations->removeElement($consultation)) {
+            if ($consultation->getUser() === $this) {
+                $consultation->setUser(null);
+            }
+        }
+
+        return $this;
+    }
 }

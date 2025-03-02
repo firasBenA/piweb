@@ -1,19 +1,11 @@
-{% extends 'base.html.twig' %}
 
-{% block title %}Login{% endblock %}
-
-{% block stylesheets %}
-    {{ parent() }}
-    <link rel="stylesheet" href="{{asset('./medecin/assets/css/tailwind.output.css')}}"/>
-{% endblock %}
-
-{% block javascripts %}
-    {{ parent() }}
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-    <script src="{{asset('./medecin/assets/js/init-alpine.js')}}"></script>
-{% endblock %}
 
 {% block body %}
+
+    <link rel="stylesheet" href="{{asset('./medecin/assets/css/tailwind.output.css')}}"/>
+<script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script src="{{asset('./medecin/assets/js/init-alpine.js')}}"></script>
+<body>
     <div class="flex items-center min-h-screen p-6 bg-gray-50 dark:bg-gray-900">
         <div class="flex-1 h-full max-w-4xl mx-auto overflow-hidden bg-white rounded-lg shadow-xl dark:bg-gray-800">
             <div class="flex flex-col overflow-y-auto md:flex-row">
@@ -28,6 +20,8 @@
                         </h1>
                         <form method="post">
                             {% if error %}
+
+                                {{ csrf_token('authenticate') }}
                                 <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
                             {% endif %}
 
@@ -65,4 +59,6 @@
             </div>
         </div>
     </div>
+
+    </body>
 {% endblock %}

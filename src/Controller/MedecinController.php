@@ -2,6 +2,171 @@
 
 namespace App\Controller;
 
+
+
+use App\Entity\Diagnostique;
+use App\Entity\DossierMedical;
+use App\Entity\Patient;
+use App\Entity\Prescription;
+use Doctrine\ORM\EntityManagerInterface;
+use Knp\Component\Pager\PaginatorInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\String\Slugger\SluggerInterface;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
+final class MedecinController extends AbstractController
+{
+
+
+    #[Route('/medash', name: 'medecinDashboard')]
+    public function dashboard(Security $security): Response
+    {
+        // Fetch the currently authenticated user (Medecin)
+        $medecin = $security->getUser();
+
+        return $this->render('consultation/meddash.html.twig', [
+            'medecin' => $medecin,
+        ]);
+    }
+
+    #[Route('/prescription', name: 'PrescriptionMedecin_page')]
+    public function prescriptionDashboard(
+        Security $security,
+        EntityManagerInterface $entityManager,
+        Request $request,
+        PaginatorInterface $paginator
+    ): Response {
+        // Fetch the currently authenticated user (Medecin)
+        $user = $security->getUser();
+        $queryBuilder = $entityManager->getRepository(Diagnostique::class)->createQueryBuilder('d');
+
+        // Get the current page number (default: 1)
+        $page = $request->query->getInt('page', 1);
+        $diagnostiques = $paginator->paginate(
+            $queryBuilder->getQuery(),
+            $page,
+            5
+        );
+
+        // Handle AJAX requests for pagination
+        if ($request->isXmlHttpRequest()) {
+            return new JsonResponse([
+                'results' => $this->renderView('medecin/_diagnostics_table.html.twig', [
+                    'diagnostiques' => $diagnostiques
+                ]),
+                'pagination' => $this->renderView('_pagination.html.twig', [
+                    'pagination' => $diagnostiques
+                ])
+            ]);
+        }
+
+        $prescriptions = $entityManager->getRepository(Prescription::class)->findAll();
+
+        return $this->render('medecin/prescriptionDashboard.html.twig', [
+            'medecin' => $user,
+            'diagnostiques' => $diagnostiques,
+            'prescriptions' => $prescriptions
+        ]);
+    }
+
+
+
+    #[Route('/infomed', name: 'infomed')]
+    public function show(Security $security): Response
+    {
+        // Récupérer l'utilisateur actuellement connecté
+        $medecin = $security->getUser();
+
+        // Vérifier si l'utilisateur est bien connecté et possède le rôle médecin
+        if (!$medecin || !in_array('ROLE_MEDECIN', $medecin->getRoles())) {
+            throw $this->createAccessDeniedException("Accès refusé.");
+        }
+
+        // Afficher la vue avec les informations du médecin connecté
+        return $this->render('consultation/infomed.html.twig', [
+            'medecin' => $medecin,
+        ]);
+    }
+
+
+
+    /*#[Route('/medecin/dashboard/{id}', name: 'medecinDashboard_page')]
+    public function dashboard(int $id, EntityManagerInterface $entityManager): Response
+    {
+        // Fetch the doctor (medecin) by its ID
+        $medecin = $entityManager->getRepository(Medecin::class)->find($id);
+
+        if (!$medecin) {
+            throw $this->createNotFoundException('Médecin non trouvé.');
+        }
+
+        // Fetch patients related to the doctor (medecin)
+        $patients = $medecin->getPatients(); // Directly using the relation
+
+        return $this->render('medecin/index.html.twig', [
+            'medecin' => $medecin,
+            'patients' => $patients,
+        ]);
+    }*/
+
+
+
+    #[Route('/medecin/dossierMedicalByPatient/{id}', name: 'medecinDossierMedicalByPatient_page')]
+    public function MedecinDossierMedical(int $id, EntityManagerInterface $entityManager): Response
+    {
+        // Fetch the patient by ID
+        $patient = $entityManager->getRepository(Patient::class)->find($id);
+
+        // Debugging - Log the patient object
+        dump($patient);
+
+        if (!$patient) {
+            throw $this->createNotFoundException('No patient found with this ID.');
+        }
+
+        // Fetch the dossier medical linked to the patient
+        $dossierMedical = $entityManager->getRepository(DossierMedical::class)->findOneBy(['patient' => $patient]);
+
+        // Debugging - Log the dossierMedical object
+        dump($dossierMedical);
+
+        if (!$dossierMedical) {
+            throw $this->createNotFoundException('No dossier medical found for this patient.');
+        }
+
+        // Fetch the diagnostiques related to the dossier medical
+        $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy(['dossierMedical' => $dossierMedical]);
+
+        $prescriptions = $dossierMedical->getPrescriptions();
+        $medecins = [];
+        foreach ($prescriptions as $prescription) {
+            if ($prescription->getMedecin() && !in_array($prescription->getMedecin(), $medecins, true)) {
+                $medecins[] = $prescription->getMedecin();
+            }
+        }
+        // Debugging - Log the diagnostiques
+        dump($diagnostiques);
+
+        return $this->render('medecin/dossierMedicalPatient.html.twig', [
+            'dossierMedical' => $dossierMedical,
+            'patient' => $patient, // Pass the patient to Twig
+            'diagnostiques' => $diagnostiques, // Pass the diagnostiques to Twig
+            'medecins' => $medecins,
+        ]);
+    }
+    #[Route('/formMed', name: 'formMed_page')]
+    public function formMed(): Response
+    {
+        return $this->render('medecin/form.html.twig', [
+            'controller_name' => 'MedecinController',
+        ]);
+
+        /*
 use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -89,5 +254,6 @@ class MedecinController extends AbstractController
         }
 
         return $newFilename;
+    }*/
     }
 }

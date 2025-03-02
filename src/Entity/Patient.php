@@ -6,6 +6,8 @@ use App\Repository\PatientRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+use Proxies\__CG__\App\Entity\Medecin;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: PatientRepository::class)]
 class Patient
@@ -16,6 +18,7 @@ class Patient
     private ?int $id = null;
 
     #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: "Le nom ne peut pas être vide.")]
     private ?string $nom = null;
 
     #[ORM\Column(length: 255)]
@@ -30,8 +33,15 @@ class Patient
     #[ORM\Column]
     private ?int $age = null;
 
-    #[ORM\Column]
+    #[ORM\Column(nullable: true)]
     private ?int $telephone = null;
+
+    #[ORM\ManyToOne(targetEntity: Medecin::class, inversedBy: 'patients')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?Medecin $medecin = null;
+
+    #[ORM\OneToOne(mappedBy: 'patient', targetEntity: DossierMedical::class, cascade: ['persist'])]
+    private ?DossierMedical $dossierMedical = null;
 
     /**
      * @var Collection<int, RendezVous>
@@ -57,12 +67,28 @@ class Patient
     #[ORM\OneToMany(targetEntity: Diagnostique::class, mappedBy: 'Patient')]
     private Collection $diagnostiques;
 
+    #[ORM\OneToOne(inversedBy: 'patient', targetEntity: User::class)]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+
+
+
+
+    /**
+     * @var Collection<int, Panier>
+     */
+    #[ORM\OneToMany(targetEntity: Panier::class, mappedBy: 'user')]
+    private Collection $paniers;
+
     public function __construct()
     {
         $this->rendezVouses = new ArrayCollection();
         $this->consultations = new ArrayCollection();
         $this->reclamations = new ArrayCollection();
         $this->diagnostiques = new ArrayCollection();
+
+        $this->paniers = new ArrayCollection();
+
     }
 
     public function getId(): ?int
@@ -89,6 +115,18 @@ class Patient
     public function setPrenom(string $prenom): static
     {
         $this->prenom = $prenom;
+        return $this;
+    }
+
+    public function getMedecin(): ?Medecin
+    {
+        return $this->medecin;
+    }
+
+    public function setMedecin(?Medecin $medecin): self
+    {
+        $this->medecin = $medecin;
+
         return $this;
     }
 
@@ -257,6 +295,49 @@ class Patient
             }
         }
 
+        return $this;
+    }
+
+
+    /**
+     * @return Collection<int, Panier>
+     */
+    public function getPaniers(): Collection
+    {
+        return $this->paniers;
+    }
+
+    public function addPanier(Panier $panier): static
+    {
+        if (!$this->paniers->contains($panier)) {
+            $this->paniers->add($panier);
+            $panier->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePanier(Panier $panier): static
+    {
+        if ($this->paniers->removeElement($panier)) {
+            // set the owning side to null (unless already changed)
+            if ($panier->getUser() === $this) {
+                $panier->setUser(null);
+            }
+        }
+
+
+        return $this;
+    }
+
+    public function getUser(): ?User
+    {
+        return $this->user;
+    }
+
+    public function setUser(User $user): static
+    {
+        $this->user = $user;
         return $this;
     }
 }

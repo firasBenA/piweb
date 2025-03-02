@@ -18,7 +18,7 @@ class Evenement
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
-    private ?int $id = null;
+    private ?int $id;
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(
@@ -74,6 +74,7 @@ class Evenement
      */
     #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'evenement')]
   
+
     private Collection $article;
 
     public function __construct()
@@ -189,7 +190,7 @@ public function removeUser(User $user): static
     /**
      * @return Collection<int, Article>
      */
-    public function getArticle(): Collection
+    public function getArticles(): Collection
     {
         return $this->article;
     }
@@ -203,6 +204,7 @@ public function removeUser(User $user): static
     
             $this->article->add($article);
             $article->setEvenement(new ArrayCollection([$this])); // ✅ Set only this Evenement
+
         }
     
         return $this;
@@ -210,14 +212,9 @@ public function removeUser(User $user): static
     
 
 
-    public function removeArticle(Article $article): static
+    public function removeArticle(Article $article): self
     {
-        if ($this->article->removeElement($article)) {
-            // set the owning side to null (unless already changed)
-            if ($article->getEvenement() === $this) {
-                $article->setEvenement(null);
-            }
-        }
+        $this->article->removeElement($article);
 
         return $this;
     }
