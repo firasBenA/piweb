@@ -32,6 +32,7 @@ class PrescriptionController extends AbstractController
     private TwilioService $twilioService;
 
 
+
     public function __construct(EntityManagerInterface $entityManager, TwilioService $twilioService)
     {
         $this->entityManager = $entityManager;
@@ -106,9 +107,12 @@ class PrescriptionController extends AbstractController
             if ($phoneNumber) {
                 try {
                     $this->twilioService->sendSms($phoneNumber, $message);
-                    return new JsonResponse(['status' => 'SMS sent successfully to ' . $phoneNumber]);
+                    return $this->redirectToRoute('PrescriptionMedecin_page', [
+                        'id' => $patient->getId(),
+                        'user' => $user
+                    ]);
                 } catch (\Exception $e) {
-                    return new JsonResponse(['error' => $e->getMessage()], 500);
+                    return new JsonResponse(['erroreeeee' => $e->getMessage()], 500);
                 }
             }
 
