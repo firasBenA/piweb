@@ -2,7 +2,7 @@
     <tr>
         <td>{{ diagnostique.id }}</td>
         <td>{{ diagnostique.nom }}</td>
-        <td>{{ diagnostique.description }}</td>
+        <td>{{ diagnostique.zoneCorps }}</td>
         <td>{{ diagnostique.dateDiagnostique|date('Y-m-d') }}</td>
         <td class="px-4 py-3 text-xs">
             {% if diagnostique.status == 0 %}

@@ -184,7 +184,7 @@ document.body.removeChild(link);
 document.getElementById('searchInput').addEventListener('input', function () {
 let searchValue = this.value.trim();
 
-fetch('/prescriptions/search?search=' + encodeURIComponent(searchValue)).then(response => response.json()).then(data => {
+fetch('/prescription/prescriptions/search?search=' + encodeURIComponent(searchValue)).then(response => response.json()).then(data => {
 let tableBody = document.getElementById('prescriptionsTable');
 tableBody.innerHTML = ''; // Clear existing table
 

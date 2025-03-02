@@ -171,7 +171,7 @@ class AdminController extends AbstractController
                 $data[] = [
                     'id' => $diagnostique->getId(),
                     'nom' => $diagnostique->getNom(),
-                    'description' => $diagnostique->getDescription(),
+                    'zoneCorps' => $diagnostique->getZoneCorps(),
                     'date' => $diagnostique->getDateDiagnostique()->format('Y-m-d'),
                     'medecin' => $diagnostique->getMedecin() ? $diagnostique->getMedecin()->getNom() : null,
                     'status' => $diagnostique->getStatus(),

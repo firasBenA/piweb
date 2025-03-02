@@ -57,7 +57,7 @@ final class MedecinController extends AbstractController
                 'results' => $this->renderView('medecin/_diagnostics_table.html.twig', [
                     'diagnostiques' => $diagnostiques
                 ]),
-                'pagination' => $this->renderView('pagination.html.twig', [
+                'pagination' => $this->renderView('_pagination.html.twig', [
                     'pagination' => $diagnostiques
                 ])
             ]);
