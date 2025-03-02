@@ -208,10 +208,10 @@ public function approuverRendezVous(Request $request, RendezVous $rendezVous, En
                 $patient = $rendezVous->getPatient();
                 $mailService->sendEmail(
                     $patient->getEmail(),
-                    'Votre rendez-vous a été approuvé',
-                    'Votre rendez-vous avec le médecin a été approuvé.',
+                    'Votre rendez-vous a été modifié',
+                    'Votre rendez-vous avec le médecin a été modifié.',
                     '<p>Bonjour ' . $patient->getNom() . ',</p>
-                    <p>Votre rendez-vous avec le médecin ' . $rendezVous->getMedecin()->getNom() . ' a été approuvé.</p>
+                    <p>Votre rendez-vous avec le médecin ' . $rendezVous->getMedecin()->getNom() . ' a été modifié.</p>
                     <p>Nous vous remercions pour votre patience et nous vous attendons à la consultation.</p>'
                 );
 

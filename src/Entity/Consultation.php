@@ -38,10 +38,7 @@ class Consultation
     #[Assert\Type("\DateTimeInterface", message: "La date doit être valide.")]
     private ?\DateTimeInterface $date = null;
 
-    #[ORM\Column]
-    #[Assert\NotNull(message: "Le prix est obligatoire.")]
-    #[Assert\Positive(message: "Le prix doit être un nombre positif.")]
-    private ?int $prix = null;
+    
 
     #[ORM\Column(length: 255)]
     #[Assert\NotNull(message: "Le type de consultation est obligatoire.")]
@@ -102,16 +99,7 @@ class Consultation
         return $this;
     }
 
-    public function getPrix(): ?int
-    {
-        return $this->prix;
-    }
-
-    public function setPrix(int $prix): static
-    {
-        $this->prix = $prix;
-        return $this;
-    }
+ 
 
     public function getTypeConsultation(): ?string
     {
