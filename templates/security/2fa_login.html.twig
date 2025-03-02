@@ -11,7 +11,7 @@
         <div class="col-md-6" style="height:500px">
             <div class="card" style="margin-top:150px">
                 <div class="card-header text-center">
-                    <h1>Two-Factor Authentication</h1>
+                    <h1>Authentification à deux facteurs</h1>
                 </div>
                 <div class="card-body">
                     {% if error %}
@@ -19,10 +19,10 @@
                     {% endif %}
                     <form action="{{ path('2fa_login_check') }}" method="post">
                         <div class="form-group">
-                            <label for="2fa_code">Authentication Code:</label>
+                            <label for="2fa_code">Code d'authentification:</label>
                             <input type="text" id="2fa_code" name="_auth_code" class="form-control" required>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Verify</button>
+                        <button type="submit" class="btn btn-primary btn-block">Verifier</button>
                     </form>
                 </div>
             </div>

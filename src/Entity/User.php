@@ -102,6 +102,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
     {
         $this->createdAt = new \DateTime(); 
     }
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $failedLoginAttempts = 0;
+    
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $lockUntil = null;
+
+    public function getFailedLoginAttempts(): int
+{
+    return $this->failedLoginAttempts;
+}
+
+public function setFailedLoginAttempts(int $attempts): self
+{
+    $this->failedLoginAttempts = $attempts;
+    return $this;
+}
+
+public function getLockUntil(): ?\DateTimeInterface
+{
+    return $this->lockUntil;
+}
+
+public function setLockUntil(?\DateTimeInterface $lockUntil): self
+{
+    $this->lockUntil = $lockUntil;
+    return $this;
+}
+
 
     public function getCreatedAt(): ?\DateTimeInterface
     {

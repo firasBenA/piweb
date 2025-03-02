@@ -8,11 +8,8 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
-
-
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
-
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use App\Form\RegistrationFormType;
 use App\Form\UpdateProfileFormType;
@@ -86,9 +83,10 @@ class PatientController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && !$form->isValid()) {
-            return $this->render('patient_dashboard.html.twig', [
-                'form' => $form->createView(),
-            ]);
+            return $this->json([
+                'status' => 'error',
+                'errors' => $form->getErrors(true),
+            ], 400);
         }
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -103,13 +101,16 @@ class PatientController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Profil mis à jour avec succès.');
-            return $this->redirectToRoute('patient_dashboard');
+            return $this->json([
+                'status' => 'success',
+                'message' => 'Profil mis à jour avec succès.',
+            ]);
         }
 
-        return $this->render('patient_dashboard.html.twig', [
-            'form' => $form->createView(),
-        ]);
+        return $this->json([
+            'status' => 'error',
+            'message' => 'Une erreur s\'est produite.',
+        ], 500);
     }
 
     #[Route('/patient/delete-profile', name: 'patient_delete_profile')]
@@ -139,7 +140,6 @@ class PatientController extends AbstractController
                 $newFilename
             );
         } catch (FileException $e) {
-            // handle exception if something happens during file upload
             throw new \Exception('File upload error: ' . $e->getMessage());
         }
 

@@ -2,17 +2,17 @@
 <html>
 <head>
     <meta charset="UTF-8">
-    <title>Reset your password</title>
+    <title>Réinitialiser votre mot de passe</title>
 </head>
 <body>
-    <p>To reset your password, please visit the following link:</p>
+    <p>Pour réinitialiser votre mot de passe, veuillez consulter le lien suivant :</p>
 
     <a href="{{ url('app_reset_password', {token: resetToken.token}) }}">
-        Reset your password
+        Réinitialiser votre mot de passe
     </a>
 
-    <p>This link will expire in {{ resetToken.expiresAt|date('g') }} hour(s).</p>
+    <p>Ce lien expirera dans {{ resetToken.expiresAt|date('g') }} heure(s).</p>
 
-    <p>Cheers!</p>
+    
 </body>
 </html>

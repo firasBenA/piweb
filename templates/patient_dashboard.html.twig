@@ -1,263 +1,108 @@
-{% extends 'base.html.twig' %}
-
-{% block title %}Tableau de Bord Patient{% endblock %}
-
 {% block stylesheets %}
-    {{ parent() }}
-    <style>
-        .dashboard-container {
-            padding: 30px;
-            background-color: #f8f9fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-
-        .profile-card {
-            background-color: #fff;
-            border-radius: 12px;
-            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
-            padding: 25px;
-            width: 100%;
-            max-width: 600px;
-            text-align: center;
-            margin-bottom: 30px;
-            transition: box-shadow 0.3s ease;
-        }
-
-        .profile-card:hover {
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
-        }
-
-        .profile-card img {
-            border-radius: 50%;
-            width: 150px;
-            height: 150px;
-            object-fit: cover;
-            margin-bottom: 15px;
-            border: 4px solid #007bff;
-            padding: 4px;
-        }
-
-        .profile-card h2 {
-            font-size: 28px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 10px;
-        }
-
-        .profile-card p {
-            font-size: 16px;
-            color: #666;
-            margin: 5px 0;
-        }
-
-        .contact-info {
-            text-align: left;
-            padding-left: 20px;
-        }
-
-        .contact-info p {
-            font-size: 16px;
-            margin-bottom: 10px;
-        }
-
-        .contact-info p strong {
-            color: #333;
-            font-weight: bold;
-        }
-
-        .contact-info a {
-            color: #007bff;
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        .contact-info a:hover {
-            text-decoration: underline;
-        }
-
-        .empty-message {
-            font-size: 18px;
-            color: #555;
-            text-align: center;
-            margin-top: 20px;
-        }
-
-        .profile-dropdown {
-            position: relative;
-            display: inline-block;
-        }
-
-        .profile-dropdown-content {
-            display: none;
-            position: absolute;
-            right: 0;
-            background-color: #f9f9f9;
-            min-width: 160px;
-            box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
-            z-index: 1;
-        }
-
-        .profile-dropdown-content a {
-            color: black;
-            padding: 12px 16px;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-        }
-
-        .profile-dropdown-content a:hover {
-            background-color: #f1f1f1;
-        }
-
-        .profile-dropdown:hover .profile-dropdown-content {
-            display: block;
-        }
-
-        .profile-dropdown img {
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            object-fit: cover;
-            cursor: pointer;
-        }
-
-        .logout-icon {
-            margin-right: 8px;
-        }
-
-        .edit-button, .delete-button {
-            background-color: #007bff;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-            font-size: 18px;
-        }
-
-        .edit-button:hover {
-            background-color: #0056b3;
-        }
-
-        .delete-button {
-            background-color: #dc3545;
-        }
-
-        .delete-button:hover {
-            background-color: #c82333;
-        }
-
-        /* Modal styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            overflow: auto;
-            background-color: rgb(0,0,0);
-            background-color: rgba(0,0,0,0.4);
-            padding-top: 60px;
-        }
-
-        .modal-content {
-            background-color: #fefefe;
-            margin: 5% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 80%;
-            max-width: 600px;
-            border-radius: 10px;
-        }
-
-        .close {
-            color: #aaa;
-            float: right;
-            font-size: 28px;
-            font-weight: bold;
-        }
-
-        .close:hover,
-        .close:focus {
-            color: black;
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .modal-form label {
-            display: block;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        .modal-form input,
-        .modal-form select {
-            margin-bottom: 10px;
-            padding: 10px;
-            width: 100%;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-
-        .save-button {
-            background-color: #28a745;
-            color: white;
-            padding: 10px 20px;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .save-button:hover {
-            background-color: #218838;
-        }
-    </style>
-{% endblock %}
-
-{% block profile_image_dropdown %}
-
-    <div class="profile-dropdown">
-        <img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
-        <div class="profile-dropdown-content">
-            <a href="{{ path('app_logout') }}">
-                <i class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
-            </a>
-        </div>
-    </div>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
-<div class="dashboard-container">
-    {% if app.user %}
-        <div class="profile-card">
-            <img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
-            <h2>{{ app.user.nom }} {{ app.user.prenom }}</h2>
-            <div class="contact-info">
-                <p><strong>Email:</strong> {{ app.user.email }}</p>
-                <p><strong>Téléphone:</strong> {{ app.user.telephone }}</p>
-                <p><strong>Adresse:</strong> {{ app.user.adresse }}</p>
-                <p><strong>Âge:</strong> {{ app.user.age }}</p>
-                <p><strong>Sexe:</strong> {{ app.user.sexe }}</p>
+<header class="header-area">
+    <div class="main-header header-sticky">
+        <div class="container-fluid">
+            <div class="row align-items-center justify-content-between">
+                <div class="col-auto">
+                    <div class="logo">
+                        <a href="#"><img src="{{ asset('assets/img/logo/logo.png') }}" alt="Medical Logo"></a>
+                    </div>
+                </div>
+                <div class="col-auto">
+                    <nav class="d-flex align-items-center">
+                        <ul class="nav">
+                            <li class="nav-item"><a class="nav-link" href="{{ path('home_page') }}">Home</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('diagnostique_page') }}">Diagnostique</a></li>
+                            <li class="nav-item"><a class="nav-link" href="{{ path('doctors_page') }}">Doctors</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Mes Rendez Vous</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#">Blog</a></li>
+                            <li class="nav-item"><a class="nav-link" href="#>Reclamation</a></li>
+                        </ul>
+                        <div class="header-right-btn f-right d-none d-lg-block ml-30">
+									{% if app.user %}
+										<div class="profile-dropdown">
+											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
+											<div class="profile-dropdown-content">
+												<a href="{{ path('app_logout') }}">
+													<i class="fas fa-sign-out-alt logout-icon"></i> Déconnexion
+												</a>
+											</div>
+										</div>
+									{% else %}
+										<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
+									{% endif %}
+								</div>
+                    </nav>
+                </div>
             </div>
-            <button class="edit-button" onclick="openModal()">Modifier</button>
-            <button class="delete-button" onclick="confirmDelete()">Supprimer</button>
         </div>
-    {% else %}
-        <p class="empty-message">Vous devez être connecté pour voir cette page.</p>
-    {% endif %}
+    </div>
+</header>
+
+<div class="container mt-5">
+    <div class="text-center mb-4">
+        <h1>Bienvenue {{ app.user.nom }} {{ app.user.prenom }}</h1>
+        <p>Voici votre espace personnel</p>
+    </div>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Mes Informations</h5>
+                    <p><strong>Email :</strong> {{ app.user.email }}</p>
+                    <p><strong>Âge :</strong> {{ app.user.age }} ans</p>
+                    <p><strong>Téléphone :</strong> {{ app.user.telephone }}</p>
+                    <p><strong>Adresse :</strong> {{ app.user.adresse }}</p>
+                    <p><strong>Sexe :</strong> {{ app.user.sexe }}</p>
+                    <div class="button-container">
+                    <button class="edit-button" onclick="openModal()">Modifier</button>
+                    <button class="delete-button" onclick="confirmDelete()">Supprimer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h5 class="card-title">Mes Rendez-vous</h5>
+                    <a href="#" class="btn btn-success mb-3">
+                        <i class="fas fa-calendar-plus"></i> Ajouter un Rendez-vous
+                    </a>
+                    <a href="#" class="btn btn-info mb-3">
+                        <i class="fas fa-chart-line"></i> Statistiques Médecin
+                    </a>
+                    <table class="table table-striped">
+                        <thead>
+                            <tr>
+                                <th>Date</th>
+                                <th>Médecin</th>
+                                <th>Statut</th>
+                            </tr>
+                        </thead>
+                        
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
 </div>
+
+<footer class="bg-light text-center py-4 mt-4">
+    <p>&copy; 2025 Medical. Tous droits réservés.</p>
+</footer>
 
 <!-- The Modal -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">&times;</span>
-        {{ form_start(form, {'attr': {'class': 'modal-form', 'novalidate': 'novalidate'}}) }}
+        {{ form_start(form, {'attr': {'class': 'modal-form', 'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
             <div>
                 {{ form_label(form.nom) }}
                 {{ form_errors(form.nom) }}
@@ -298,8 +143,8 @@
                 {{ form_errors(form.imageProfil) }}
                 {{ form_widget(form.imageProfil) }}
             </div>
-            <button type="submit" class="save-button">Enregistrer</button>
-            <button type="button" class="save-button" onclick="openPasswordModal()">Changer le mot de passe</button>
+            <button type="submit" class="btn btn-success">Enregistrer</button>
+            <button type="button" class="btn btn-info" onclick="openPasswordModal()">Changer le mot de passe</button>
         {{ form_end(form) }}
     </div>
 </div>
@@ -324,7 +169,7 @@
                 {{ form_errors(passwordForm.confirmPassword) }}
                 {{ form_widget(passwordForm.confirmPassword) }}
             </div>
-            <button type="submit" class="save-button">Changer le mot de passe</button>
+            <button type="submit" class="btn btn-success">Changer le mot de passe</button>
         {{ form_end(passwordForm) }}
     </div>
 </div>
@@ -357,9 +202,222 @@
 
     function confirmDelete() {
         if (confirm('Êtes-vous sûr de vouloir supprimer votre compte ?')) {
-            // Redirect to the delete route or perform the delete action
             window.location.href = '{{ path('patient_delete_profile') }}';
         }
     }
 </script>
+
+<style>
+    body {
+        background-color: #f8f9fa;
+        font-family: 'Poppins', sans-serif;
+    }
+
+    .header-area {
+        background: #fff;
+        padding: 15px 0;
+        box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+    }
+
+    .nav .nav-item .nav-link {
+        color: #1d1d1d;
+        font-weight: 500;
+        padding: 10px 15px;
+        transition: color 0.3s ease-in-out;
+        text-decoration: none;
+    }
+
+    .nav .nav-item .nav-link:hover {
+        color: #007bff;
+        text-decoration: none;
+    }
+
+    .sign-in-btn {
+        background: linear-gradient(90deg, #2979FF, #005BEA);
+        color: white;
+        border-radius: 8px;
+        padding: 10px 20px;
+        font-weight: 600;
+        transition: all 0.3s ease-in-out;
+        box-shadow: 0px 4px 6px rgba(0, 91, 234, 0.3);
+        border: none;
+    }
+
+    .sign-in-btn:hover {
+        background: linear-gradient(90deg, #005BEA, #2979FF);
+        color: white;
+    }
+
+    .sign-in-btn:focus {
+        box-shadow: none;
+        outline: none;
+    }
+
+    .card {
+        border-radius: 10px;
+    }
+
+    .table th, .table td {
+        vertical-align: middle;
+    }
+
+    .btn {
+        border-radius: 20px;
+    }
+
+    .row > .col-md-6 {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .profile-dropdown {
+        position: relative;
+        display: inline-block;
+    }
+
+    .profile-dropdown img {
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        object-fit: cover;
+        border: 2px solid #fff;
+        box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.2);
+        cursor: pointer;
+    }
+
+    .profile-dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: white;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1);
+        border-radius: 5px;
+        min-width: 150px;
+        z-index: 1000;
+    }
+
+    .profile-dropdown:hover .profile-dropdown-content {
+        display: block;
+    }
+
+    .profile-dropdown-content a {
+        display: block;
+        padding: 10px;
+        text-decoration: none;
+        color: black;
+    }
+
+    .profile-dropdown-content a:hover {
+        background-color: #f1f1f1;
+    }
+
+    .modal {
+        display: none;
+        position: fixed;
+        z-index: 1;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0, 0, 0, 0.4);
+        padding-top: 60px;
+    }
+
+    .modal-content {
+        background-color: #fefefe;
+        margin: 5% auto;
+        padding: 20px;
+        border: none;
+        width: 80%;
+        max-width: 600px;
+        border-radius: 10px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    }
+
+    .close {
+        color: #aaa;
+        float: right;
+        font-size: 28px;
+        font-weight: bold;
+    }
+
+    .close:hover,
+    .close:focus {
+        color: black;
+        text-decoration: none;
+        cursor: pointer;
+    }
+
+    .modal-form label {
+        display: block;
+        margin-bottom: 5px;
+        font-weight: bold;
+    }
+
+    .modal-form input,
+    .modal-form select {
+        margin-bottom: 10px;
+        padding: 10px;
+        width: 100%;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .save-button {
+        background-color: #28a745;
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .save-button:hover {
+        background-color: #218838;
+    }
+
+    /* Styles pour les boutons Modifier et Supprimer */
+        .button-container {
+            display: flex;
+            justify-content: center; /* Centrer les boutons horizontalement */
+            gap: 20px; /* Ajouter un espace entre les boutons */
+            margin-top: 20px;
+        }
+
+        .edit-button, .delete-button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+        .edit-button {
+            background-color: #6c5ce7; /* Violet moderne */
+            color: white;
+        }
+
+        .edit-button:hover {
+            background-color: #5a4acf; /* Violet plus foncé au survol */
+            transform: translateY(-2px);
+        }
+
+        .delete-button {
+            background-color: #ff7675; /* Rouge doux */
+            color: white;
+        }
+
+        .delete-button:hover {
+            background-color: #e66767; /* Rouge plus foncé au survol */
+            transform: translateY(-2px);
+        }
+
+        /* Centrer le titre "Mes Informations" et le mettre en gras */
+        .card-title {
+            text-align: center;
+            font-weight: bold;
+        }
+</style>
 {% endblock %}

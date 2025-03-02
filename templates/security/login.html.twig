@@ -11,6 +11,32 @@
     {{ parent() }}
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
     <script src="{{asset('./medecin/assets/js/init-alpine.js')}}"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const countdownEl = document.getElementById('countdown');
+            if (countdownEl) {
+                const lockUntil = new Date(countdownEl.dataset.lockUntil);
+                
+                function updateCountdown() {
+                    const now = new Date();
+                    const diff = lockUntil - now;
+                    
+                    if (diff <= 0) {
+                        countdownEl.innerHTML = 'Vous pouvez réessayer maintenant !';
+                        return;
+                    }
+                    
+                    const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+                    const seconds = Math.floor((diff % (1000 * 60)) / 1000);
+                    
+                    countdownEl.innerHTML = `Réessayez dans ${minutes} min ${seconds} s`;
+                }
+                
+                setInterval(updateCountdown, 1000);
+                updateCountdown();
+            }
+        });
+    </script>
 {% endblock %}
 
 {% block body %}
@@ -24,12 +50,20 @@
                 <div class="flex items-center justify-center p-6 sm:p-12 md:w-1/2">
                     <div class="w-full">
                         <h1 class="mb-4 text-xl font-semibold text-gray-700 dark:text-gray-200">
-                            Login
+                            Se connecter
                         </h1>
-                        <form method="post">
-                            {% if error %}
-                                <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
+                        <form method="post" novalidate="novalidate">
+
+                             {% if error %}
+                                <div class="mb-4 p-4 rounded-lg bg-red-100 border border-red-400 text-red-700 dark:bg-red-200 dark:text-red-800">
+                                     {{ error.message|trans({}, 'security')|replace({
+                                        ': 0 minutes et 0 secondes': 'quelques instants',
+                                        ': ': ' ' 
+                                    }) }}
+                                </div>
                             {% endif %}
+
+                            
 
                             {% if app.user %}
                                 <div class="mb-3">
@@ -42,8 +76,9 @@
                                 <input type="email" value="{{ last_username }}" name="email" id="inputEmail" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="Jane Doe" autocomplete="email" required autofocus>
                             </label>
                             <label class="block mt-4 text-sm">
-                                <span class="text-gray-700 dark:text-gray-400">Password</span>
+                                <span class="text-gray-700 dark:text-gray-400">Mot de Passe</span>
                                 <input type="password" name="password" id="inputPassword" class="block w-full mt-1 text-sm dark:border-gray-600 dark:bg-gray-700 focus:border-purple-400 focus:outline-none focus:shadow-outline-purple dark:text-gray-300 dark:focus:shadow-outline-gray form-input" placeholder="***************" autocomplete="current-password" required>
+                                
                             </label>
 
                             <input type="hidden" name="_csrf_token" value="{{ csrf_token('authenticate') }}">

@@ -1,10 +1,26 @@
 {% extends 'base.html.twig' %}
 
-{% block body %}
-    <h1>Check your email</h1>
+{% block stylesheets %}
+    {{ parent() }}
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+{% endblock %}
 
-    <p>
-        If an account matching your email exists, then an email was just sent that contains a link that you can use to reset your password.
-        This link will expire in {{ resetToken.expiresAt|date('g') }} hour(s).
-    </p>
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6" style="height:500px">
+            <div class="card" style="margin-top:150px">
+                <div class="card-header text-center">
+                    <h1>Check your email</h1>
+                </div>
+                <div class="card-body">
+                    <p class="text-center">
+                     Un e-mail a été envoyé contenant un lien que vous pouvez utiliser pour réinitialiser votre mot de passe .
+                          </br> Ce lien expirera dans  {{ resetToken.expiresAt|date('g') }} heure(s).
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
 {% endblock %}

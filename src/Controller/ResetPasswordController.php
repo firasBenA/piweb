@@ -3,8 +3,8 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Form\ChangePasswordFormType;
 use App\Form\ResetPasswordRequestFormType;
+use App\Form\ResetPasswordFormType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -19,6 +19,7 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 use SymfonyCasts\Bundle\ResetPassword\Controller\ResetPasswordControllerTrait;
 use SymfonyCasts\Bundle\ResetPassword\Exception\ResetPasswordExceptionInterface;
 use SymfonyCasts\Bundle\ResetPassword\ResetPasswordHelperInterface;
+use Symfony\Component\Form\FormError; 
 
 #[Route('/reset-password')]
 class ResetPasswordController extends AbstractController
@@ -39,12 +40,20 @@ class ResetPasswordController extends AbstractController
     {
         $form = $this->createForm(ResetPasswordRequestFormType::class);
         $form->handleRequest($request);
-
+        
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $email */
             $email = $form->get('email')->getData();
 
-            return $this->processSendingPasswordResetEmail($email, $mailer, $translator);
+        // Vérifiez si l'email existe dans la base de données
+        $user = $this->entityManager->getRepository(User::class)->findOneBy(['email' => $email]);
+
+        if (!$user) {
+            // Ajoutez une erreur au champ email
+            $form->get('email')->addError(new FormError('Aucun compte trouvé avec cet email.'));
+        } else {
+
+            return $this->processSendingPasswordResetEmail($email, $mailer, $translator);}
         }
 
         return $this->render('reset_password/request.html.twig', [
@@ -102,7 +111,7 @@ class ResetPasswordController extends AbstractController
         }
 
         // The token is valid; allow the user to change their password.
-        $form = $this->createForm(ChangePasswordFormType::class);
+        $form = $this->createForm(ResetPasswordFormType::class);
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
