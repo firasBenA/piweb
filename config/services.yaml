@@ -28,5 +28,11 @@ services:
         arguments:
             $urlGenerator: '@router'
 
+    App\Service\TwilioService:
+        arguments:
+            $twilioSid: '%env(TWILIO_ACCOUNT_SID)%'
+            $twilioToken: '%env(TWILIO_AUTH_TOKEN)%'
+            $twilioPhoneNumber: '%env(TWILIO_PHONE_NUMBER)%'
+
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

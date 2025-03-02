@@ -8,6 +8,7 @@ use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
+use PhpParser\Node\Expr\Cast\String_;
 use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -64,10 +65,11 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'Veuillez choisir votre sexe.')]
     private ?string $sexe = null;
 
-    #[ORM\Column]
+    #[ORM\Column(type: 'string', length: 20, nullable: true)]
     #[Assert\NotBlank(message: 'Veuillez entrer votre numéro de téléphone.')]
     #[Assert\Regex(pattern: '/^\d{8}$/', message: 'Le numéro de téléphone doit contenir exactement 8 chiffres.')]
-    private ?int $telephone = null;
+    private ?string $telephone = null; // ✅ Make sure it's "string", not "String"
+
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\File(
@@ -270,15 +272,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getTelephone(): ?int
+    public function getTelephone(): ?string
     {
         return $this->telephone;
     }
-
-    public function setTelephone(int $telephone): static
+    
+    public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
-
         return $this;
     }
 

@@ -45,7 +45,7 @@ final class DiagnostiqueController extends AbstractController
         }
 
         $medecins = $entityManager->getRepository(User::class)->findAll();
-        
+
         $locations = [];
         foreach ($medecins as $medecin) {
             if ($medecin->getLatitude() && $medecin->getLongitude()) {
@@ -278,7 +278,10 @@ final class DiagnostiqueController extends AbstractController
             $this->entityManager->flush();
 
             // Redirect to another route after successful submission
-            return $this->redirect($request->getUri());
+            
+            dd($request->request->all()); 
+
+            return $this->redirectToRoute('diagnose_form');
         }
 
 
@@ -382,6 +385,7 @@ final class DiagnostiqueController extends AbstractController
         $entityManager->persist($diagnosis);
         $entityManager->flush();
 
+        $this->addFlash('success', 'Your diagnosis has been submitted successfully!');
         return new JsonResponse([
             'message' => 'Diagnostic enregistré avec succès',
             'disease' => $diagnosisName,
