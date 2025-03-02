@@ -3,12 +3,16 @@
 namespace App\Controller;
 
 use App\Entity\Prescription;
+use App\Entity\User;
 use App\Form\PrescriptionType;
 use App\Repository\DiagnostiqueRepository;
 use App\Repository\MedecinRepository;
 use App\Repository\PatientRepository;
 use App\Repository\PrescriptionRepository;
+use App\Service\pdfService;
+use App\Service\TwilioService;
 use Doctrine\ORM\EntityManagerInterface;
+use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -25,11 +29,14 @@ class PrescriptionController extends AbstractController
 {
 
     private EntityManagerInterface $entityManager;
+    private TwilioService $twilioService;
 
 
-    public function __construct(EntityManagerInterface $entityManager)
+    public function __construct(EntityManagerInterface $entityManager,TwilioService $twilioService)
     {
         $this->entityManager = $entityManager;
+        $this->twilioService = $twilioService;
+
     }
 
     #[Route('/', name: 'app_prescription_index', methods: ['GET'])]
@@ -45,13 +52,14 @@ class PrescriptionController extends AbstractController
         Request $request,
         DiagnostiqueRepository $diagnostiqueRepository,
         EntityManagerInterface $entityManager,
-        Security $security // Inject Security service to get the logged-in user (medecin)
+        Security $security,
+        TwilioService $twilioService // Inject TwilioService
     ) {
         // Get the currently logged-in user (medecin)
         $user = $security->getUser();
 
         // Make sure the logged-in user is a medecin
-        if (!$user || !$user->getRoles('ROLE_MEDECIN')) {
+        if (!$user || !in_array('ROLE_MEDECIN', $user->getRoles())) {
             throw $this->createAccessDeniedException('You are not authorized to create prescriptions.');
         }
 
@@ -70,6 +78,9 @@ class PrescriptionController extends AbstractController
         $dossierMedical = $diagnostique->getDossierMedical();
         $patient = $dossierMedical->getUser(); // This is now the patient user
 
+        $patientId = $dossierMedical->getUser()->getId();
+        $patient = $entityManager->getRepository(User::class)->find($patientId);
+        
         // Create a new Prescription instance
         $prescription = new Prescription();
         $prescription->setDiagnostique($diagnostique);
@@ -89,6 +100,18 @@ class PrescriptionController extends AbstractController
             // Persist the prescription
             $entityManager->persist($prescription);
             $entityManager->flush();
+
+            // ✅ SEND SMS TO THE PATIENT
+            $phoneNumber = '+216' . $patient->getTelephone();
+            $message = 'Allez voir votre ordonnance!';
+            if ($phoneNumber) {
+                try {
+                    $this->twilioService->sendSms($phoneNumber, $message);
+                    return new JsonResponse(['status' => 'SMS sent successfully to ' . $phoneNumber]);
+                } catch (\Exception $e) {
+                    return new JsonResponse(['error' => $e->getMessage()], 500);
+                }
+            }
 
             // Redirect to the patient's dossier
             return $this->redirectToRoute('PrescriptionMedecin_page', [
@@ -212,5 +235,66 @@ class PrescriptionController extends AbstractController
             'prescription' => $prescription,
             'user' => $user
         ]);
+    }
+
+
+    #[Route('/prescriptions/search', name: 'prescription_search', methods: ['GET'])]
+    public function search(Request $request, PrescriptionRepository $prescriptionRepository, LoggerInterface $logger): JsonResponse
+    {
+        try {
+            $searchTerm = $request->query->get('search', '');
+            $logger->info('Search term: ' . $searchTerm); // Debugging
+
+            // Search query adjusted to remove `user` filter
+            if (!$searchTerm) {
+                $prescriptions = $prescriptionRepository->findAll(); // Get all prescriptions
+            } else {
+                $prescriptions = $prescriptionRepository->createQueryBuilder('p')
+                    ->where('p.titre LIKE :search')
+                    ->setParameter('search', '%' . $searchTerm . '%')
+                    ->getQuery()
+                    ->getResult();
+            }
+
+            $data = [];
+            foreach ($prescriptions as $prescription) {
+                $data[] = [
+                    'id' => $prescription->getId(),
+                    'titre' => $prescription->getTitre(),
+                    'contenue' => $prescription->getContenue(),
+                    'date' => $prescription->getDatePrescription()->format('Y-m-d'), // Ensure correct method
+                    'medecin' => ['nom' => $prescription->getMedecin()->getNom()],
+                ];
+            }
+
+            return $this->json($data);
+        } catch (\Exception $e) {
+            $logger->error('Error in search: ' . $e->getMessage());
+            return $this->json(['error' => 'An error occurred'], 500);
+        }
+    }
+
+
+    #[Route('/prescription/download/{id}', name: 'prescription_download')]
+    public function downloadPrescriptionPdf(Prescription $prescription, pdfService $pdfService): Response
+    {
+        // Get the patient from the prescription's dossierMedical
+        $patient = $prescription->getDossierMedical()->getUser();
+
+        $html = $this->renderView('pdf/prescription.html.twig', [
+            'prescription' => $prescription,
+            'patient' => $patient,
+        ]);
+
+        $pdfContent = $pdfService->generateBinaryPdf($html);
+
+        return new Response(
+            $pdfContent,
+            200,
+            [
+                'Content-Type' => 'application/pdf',
+                'Content-Disposition' => 'inline; filename="prescription_' . $prescription->getId() . '.pdf"',
+            ]
+        );
     }
 }
