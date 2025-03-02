@@ -7,6 +7,7 @@ use App\Entity\Reponse;
 use App\Form\ReponseType;
 use App\Repository\ReclamationRepository;
 use App\Repository\UserRepository;
+use App\Service\EmailServiceReclamtion;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -23,6 +24,12 @@ use SendinBlue\Client\Model\SendSmtpEmail;
 #[Route('/reponse')]
 final class ResponseController extends AbstractController
 {
+    private $emailService;
+
+    public function __construct(EmailServiceReclamtion $emailService)
+    {
+        $this->emailService = $emailService;
+    }
     #[Route('/liste', name: 'reponse_reclamation_page')]
     public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, Request $request): Response
     {
@@ -69,15 +76,12 @@ final class ResponseController extends AbstractController
             // Dynamically fetch the email address of the user (patient) linked to the reclamation
             $patient = $reclamation->getUser(); // Assuming you have a User associated with Reclamation
             $emailAddress = $patient->getEmail(); // Get the email address dynamically
+            $subject = "Réclamation Traitée ";
 
-                   $apiInstance = new TransactionalEmailsApi(null, $config);
-    
-            // Create the email content
-            $sendSmtpEmail = new SendSmtpEmail([
-                'sender' => ['name' => 'Sender Name', 'email' => 'mechket.mlayeh@gmail.com'],
-                'to' => [['email' => $emailAddress]],
-            'htmlContent' => "
-                <body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;\">
+
+            // HTML message with styling
+            $message = "
+               <body style=\"font-family: Arial, sans-serif; background-color: #f4f4f4; padding: 20px;\">
                     <div style=\"max-width: 600px; background: #ffffff; padding: 20px; border-radius: 8px; box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1); margin: auto;\">
                         <!-- Header avec une icône -->
                         <div style=\"text-align: center;\">
@@ -103,15 +107,12 @@ final class ResponseController extends AbstractController
 
                         <p style=\"font-size: 14px; color: #777; text-align: center;\">Merci de nous faire confiance !<br><strong>Service Support</strong></p>
                     </div>
-                </body>
-            ",
-                
-                'subject' => 'Réclamation Traitée',
-            ]);
+                </body>;
+            ";  
     
             // Try to send the email
             try {
-                $response = $apiInstance->sendTransacEmail($sendSmtpEmail);
+                $this->emailService->sendEmail($emailAddress, $subject, $message);
                 $this->addFlash('success', 'Email sent successfully!'); // Set success message
             } catch (\Exception $e) {
                 $this->addFlash('error', 'Error sending email: ' . $e->getMessage()); // Set error message
@@ -122,7 +123,7 @@ final class ResponseController extends AbstractController
       
             // Flash message to notify success
             $this->addFlash('success', 'Réponse ajoutée avec succès et réclamation marquée comme traitée !');
-            return $this->redirectToRoute('reponse_reclamation_page');
+            return $this->redirectToRoute('reponseRecAdmin');
         }
     
         return $this->render('reponse/ajouter.html.twig', [
