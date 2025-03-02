@@ -32,11 +32,10 @@ class PrescriptionController extends AbstractController
     private TwilioService $twilioService;
 
 
-    public function __construct(EntityManagerInterface $entityManager,TwilioService $twilioService)
+    public function __construct(EntityManagerInterface $entityManager, TwilioService $twilioService)
     {
         $this->entityManager = $entityManager;
         $this->twilioService = $twilioService;
-
     }
 
     #[Route('/', name: 'app_prescription_index', methods: ['GET'])]
@@ -80,7 +79,7 @@ class PrescriptionController extends AbstractController
 
         $patientId = $dossierMedical->getUser()->getId();
         $patient = $entityManager->getRepository(User::class)->find($patientId);
-        
+
         // Create a new Prescription instance
         $prescription = new Prescription();
         $prescription->setDiagnostique($diagnostique);
@@ -275,10 +274,15 @@ class PrescriptionController extends AbstractController
     }
 
 
-    #[Route('/prescription/download/{id}', name: 'prescription_download')]
-    public function downloadPrescriptionPdf(Prescription $prescription, pdfService $pdfService): Response
+    #[Route('/download/{id}', name: 'prescription_download')]
+    public function downloadPrescriptionPdf(int $id, pdfService $pdfService, PrescriptionRepository $prescriptionRepository): Response
     {
-        // Get the patient from the prescription's dossierMedical
+        $prescription = $prescriptionRepository->find($id);
+
+        if (!$prescription) {
+            throw $this->createNotFoundException('Prescription not found.');
+        }
+
         $patient = $prescription->getDossierMedical()->getUser();
 
         $html = $this->renderView('pdf/prescription.html.twig', [
