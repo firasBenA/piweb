@@ -1,0 +1,3 @@
+services:
+    Endroid\QrCode\Builder\BuilderInterface:
+        alias: 'Endroid\QrCode\Builder\Builder'

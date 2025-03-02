@@ -80,48 +80,55 @@
         }
     </style>
 {% endblock %}
-
 {% block body %}
     <div class="container">
         <h1 class="title">Détails de l'Événement</h1>
-        <div class="table-container">
-            <table class="table">
-                <tbody>
-                    <tr>
-                        <th>Nom</th>
-                        <td>{{ evenement.nom }}</td>
-                    </tr>
-                    <tr>
-                        <th>Contenu</th>
-                        <td>{{ evenement.contenue }}</td>
-                    </tr>
-                    <tr>
-                        <th>Type</th>
-                        <td>{{ evenement.type }}</td>
-                    </tr>
-                    <tr>
-                        <th>Statut</th>
-                        <td>{{ evenement.statut }}</td>
-                    </tr>
-                    <tr>
-                        <th>Lieu</th>
-                        <td>{{ evenement.lieuxEvent }}</td>
-                    </tr>
-                    <tr>
-                        <th>Date</th>
-                        <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : 'N/A' }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <div class="details-container d-flex justify-content-between align-items-center">
+            <div class="table-container">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Nom</th>
+                            <td>{{ evenement.nom }}</td>
+                        </tr>
+                        <tr>
+                            <th>Contenu</th>
+                            <td>{{ evenement.contenue }}</td>
+                        </tr>
+                        <tr>
+                            <th>Type</th>
+                            <td>{{ evenement.type }}</td>
+                        </tr>
+                        <tr>
+                            <th>Statut</th>
+                            <td>{{ evenement.statut }}</td>
+                        </tr>
+                        <tr>
+                            <th>Lieu</th>
+                            <td>{{ evenement.lieuxEvent }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : 'N/A' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="qr-code-container text-center">
+<img src="{{ asset('uploads/qrcodes/qrcode_event_' ~ evenement.id ~ '.png') }}" alt="QR Code">
+    <p class="mt-2"><strong>Scannez pour les détails</strong></p>
+</div>
+
         </div>
-        <div class="btn-group">
+        <div class="btn-group mt-3">
             <a class="btn btn-primary" href="{{ path('app_evenement_index') }}">Retour à la liste</a>
             {% if is_granted('ROLE_MEDECIN') %}
                 <a class="btn btn-warning" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
-                <form action="{{ path('app_evenement_delete', {'id': evenement.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');">
+                <form action="{{ path('app_evenement_delete', {'id': evenement.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" class="d-inline">
                     <button type="submit" class="btn btn-danger">Supprimer</button>
                 </form>
             {% endif %}
         </div>
     </div>
 {% endblock %}
+

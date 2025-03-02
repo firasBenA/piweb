@@ -1,13 +1,53 @@
 {% extends 'base.html.twig' %}
 
+{% block stylesheets %}
+{{ parent() }}
+<style>
+
+    .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        text-align: center;
+    }
+    .btn {
+        margin: 10px;
+    }
+</style>
+{% endblock %}
+
 {% block body %}
 <div class="container">
     <h1>Participation à l'événement</h1>
-    <p>Vous souhaitez participer à l'événement : <strong>{{ evenement.nom }}</strong>?</p>
-    
-<form action="{{ path('app_evenement_send_email', {'id': evenement.id}) }}" method="POST">
-        <button type="submit" class="btn btn-success">Confirmer</button>
-        <a href="{{ path('app_evenement_index') }}" class="btn btn-secondary">Annuler</a>
-    </form>
+    {% set isParticipating = evenement.users.contains(app.user) %}
+    {% if isParticipating %}
+        <p>Vous participez déjà à l'événement : <strong>{{ evenement.nom }}</strong>.</p>
+        <form action="{{ path('app_evenement_cancel_participation', {'id': evenement.id}) }}" method="POST">
+            <button type="submit" class="btn btn-danger" id="cancel-btn">Annuler la participation</button>
+        </form>
+    {% else %}
+        <p>Vous souhaitez participer à l'événement : <strong>{{ evenement.nom }}</strong>?</p>
+        <form action="{{ path('app_evenement_send_email', {'id': evenement.id}) }}" method="POST">
+            <button type="submit" class="btn btn-success" id="confirm-btn">Confirmer</button>
+        </form>
+    {% endif %}
+    <a href="{{ path('app_evenement_index') }}" class="btn btn-secondary">Retour</a>
 </div>
+
+{% block javascripts %}
+<script>
+    document.getElementById('confirm-btn')?.addEventListener('click', function(event) {
+        if (!confirm('Êtes-vous sûr de vouloir confirmer votre participation ?')) {
+            event.preventDefault();
+        }
+    });
+    document.getElementById('cancel-btn')?.addEventListener('click', function(event) {
+        if (!confirm('Êtes-vous sûr de vouloir annuler votre participation ?')) {
+            event.preventDefault();
+        }
+    });
+</script>
+{% endblock %}
 {% endblock %}

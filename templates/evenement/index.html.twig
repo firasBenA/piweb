@@ -94,7 +94,7 @@
         <div class="event-container" id="eventList">
             {% for evenement in evenements %}
                 <div class="event-card">
-                    <img src="{{ asset('uploads/images/type/' ~ evenement.type ~ '.jpg') }}" class="event-img" alt="{{ evenement.type }}">
+                    <img src="{{ asset('uploads/images/' ~ evenement.type ~ '.jpg') }}" class="event-img" alt="{{ evenement.type }}">
                     <div class="event-content">
                         <span class="badge bg-primary">{{ evenement.dateEvent|date('d M') }}</span>
                         <h2 class="event-title">{{ evenement.nom }}</h2>

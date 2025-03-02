@@ -39,6 +39,7 @@ class Article
     )]
     
     private ?string $image = null;
+    
     #[ORM\ManyToMany(targetEntity: User::class)]
     #[ORM\JoinTable(name: "article_likes")]
     private Collection $likedByUsers;

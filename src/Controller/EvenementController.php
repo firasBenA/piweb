@@ -5,6 +5,11 @@ namespace App\Controller;
 use App\Entity\Evenement;
 use App\Form\EvenementType;
 use App\Repository\EvenementRepository;
+use Endroid\QrCode\Builder\Builder;
+use Endroid\QrCode\Encoding\Encoding;
+use Endroid\QrCode\Writer\PngWriter;
+use Endroid\QrCode\ErrorCorrectionLevel;
+use Endroid\QrCode\Builder\BuilderInterface;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -132,5 +137,73 @@ final class EvenementController extends AbstractController
     ]);
 }
 
+#[Route('/evenement/cancel/{id}', name: 'app_evenement_cancel_participation', methods: ['POST'])]
+public function cancelParticipation(Evenement $evenement, EntityManagerInterface $entityManager): Response
+{
+    $user = $this->getUser();
+
+    if (!$user) {
+        $this->addFlash('error', 'Vous devez être connecté pour annuler votre participation.');
+        return $this->redirectToRoute('app_evenement_index');
+    }
+
+    if ($evenement->getUsers()->contains($user)) {
+        $evenement->removeUser($user);
+        $entityManager->persist($evenement);
+        $entityManager->flush();
+
+        $this->addFlash('success', 'Votre participation a été annulée.');
+    } else {
+        $this->addFlash('warning', 'Vous ne participez pas à cet événement.');
+    }
+
+    return $this->redirectToRoute('app_evenement_index');
+}
+
+
+
+#[Route('/evenement/qrcode/{id}', name: 'generate_qr')]
+public function generateQrCode(EntityManagerInterface $em, int $id): JsonResponse
+{
+    $evenement = $em->getRepository(Evenement::class)->find($id);
+
+    if (!$evenement) {
+        return new JsonResponse(['error' => 'Event not found'], 404);
+    }
+
+    $data = json_encode([
+        'Nom' => $evenement->getNom(),
+        'Contenu' => $evenement->getContenue(),
+        'Type' => $evenement->getType(),
+        'Statut' => $evenement->getStatut(),
+        'Lieu' => $evenement->getLieuxEvent(),
+        'Date' => $evenement->getDateEvent()?->format('Y-m-d'),
+    ]);
+
+    $qrCode = Builder::create()
+        ->writer(new PngWriter())
+        ->data($data)
+        ->encoding(new Encoding('UTF-8'))
+        ->size(300)
+        ->build();
+
+    $uploadsDir = $this->getParameter('kernel.project_dir') . '/public/uploads/qrcodes';
+    if (!file_exists($uploadsDir)) {
+        mkdir($uploadsDir, 0777, true);
+    }
+
+    $fileName = 'qrcode_' . $id . '.png';
+    $filePath = $uploadsDir . '/' . $fileName;
+    file_put_contents($filePath, $qrCode->getString());
+
+    return new JsonResponse(['qr_code_url' => '/uploads/qrcodes/' . $fileName]);
+}
 
 }
+
+ 
+    
+
+
+
+

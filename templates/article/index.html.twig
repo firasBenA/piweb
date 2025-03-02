@@ -195,6 +195,9 @@
             <a href="{{ path('app_article_new') }}" class="btn btn-primary">Créer un article</a>
         </div>
     {% endif %}
+    <div class="pagination-container text-center">
+            {{ knp_pagination_render(article) }}
+        </div>
 </div>
 
 <script>
