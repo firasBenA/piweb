@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+
 use App\Entity\DossierMedical;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
@@ -28,6 +29,7 @@ class RegistrationController extends AbstractController
             /** @var string $plainPassword */
             $plainPassword = $form->get('plainPassword')->getData();
 
+
             // Encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
 
@@ -49,6 +51,7 @@ class RegistrationController extends AbstractController
                 $user->setImageProfil($imageProfilFileName);
             }
 
+
             // Create a new DossierMedical for the user
             $dossierMedical = new DossierMedical();
             $dossierMedical->setUser($user); 
@@ -68,11 +71,11 @@ class RegistrationController extends AbstractController
         ]);
     }
 
-
     private function uploadFile($file, SluggerInterface $slugger, $directoryParameter): string
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $slugger->slug($originalFilename);
+
         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
 
         try {

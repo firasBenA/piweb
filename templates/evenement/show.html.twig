@@ -1,68 +1,134 @@
 {% extends 'base.html.twig' %}
 
-{% block title %}Événement{% endblock %}
+{% block title %}Événement - Détails{% endblock %}
 
 {% block stylesheets %}
     {{ parent() }}
     <style>
         .title {
             text-align: center;
-            margin-top: 20px;
+            margin-top: 30px;
             font-weight: bold;
-            color: #343a40;
+            color: #2c3e50;
+            font-size: 2.5rem;
         }
         .table-container {
             margin: 30px auto;
-            width: 70%;
+            width: 80%;
+            max-width: 900px;
             background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0px 6px 15px rgba(0, 0, 0, 0.1);
+        }
+        .table-container table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        .table-container th,
+        .table-container td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #e9ecef;
+        }
+        .table-container th {
+            background-color: #f8f9fa;
+            color: #495057;
+            font-weight: 600;
+        }
+        .table-container tr:hover {
+            background-color: #f8f9fa;
+            transition: background-color 0.2s ease;
+        }
+        .btn-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 25px;
+        }
+        .btn {
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 500;
+            text-transform: uppercase;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            border: none;
+            color: white;
+        }
+        .btn-primary:hover {
+            background-color: #2980b9;
+        }
+        .btn-warning {
+            background-color: #f39c12;
+            border: none;
+            color: white;
+        }
+        .btn-warning:hover {
+            background-color: #e67e22;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+            border: none;
+            color: white;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
         }
     </style>
 {% endblock %}
-
 {% block body %}
     <div class="container">
-        <h1 class="title">Événement</h1>
-        <div class="table-container">
-            <table class="table table-bordered">
-                <tbody>
-                    <tr>
-                        <th>Id</th>
-                        <td>{{ evenement.id }}</td>
-                    </tr>
-                    <tr>
-                        <th>Nom</th>
-                        <td>{{ evenement.nom }}</td>
-                    </tr>
-                    <tr>
-                        <th>Contenu</th>
-                        <td>{{ evenement.contenue }}</td>
-                    </tr>
-                    <tr>
-                        <th>Type</th>
-                        <td>{{ evenement.type }}</td>
-                    </tr>
-                    <tr>
-                        <th>Statut</th>
-                        <td>{{ evenement.statut }}</td>
-                    </tr>
-                    <tr>
-                        <th>Lieu</th>
-                        <td>{{ evenement.lieuxEvent }}</td>
-                    </tr>
-                    <tr>
-                        <th>Date</th>
-                        <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : 'N/A' }}</td>
-                    </tr>
-                </tbody>
-            </table>
+        <h1 class="title">Détails de l'Événement</h1>
+        <div class="details-container d-flex justify-content-between align-items-center">
+            <div class="table-container">
+                <table class="table">
+                    <tbody>
+                        <tr>
+                            <th>Nom</th>
+                            <td>{{ evenement.nom }}</td>
+                        </tr>
+                        <tr>
+                            <th>Contenu</th>
+                            <td>{{ evenement.contenue }}</td>
+                        </tr>
+                        <tr>
+                            <th>Type</th>
+                            <td>{{ evenement.type }}</td>
+                        </tr>
+                        <tr>
+                            <th>Statut</th>
+                            <td>{{ evenement.statut }}</td>
+                        </tr>
+                        <tr>
+                            <th>Lieu</th>
+                            <td>{{ evenement.lieuxEvent }}</td>
+                        </tr>
+                        <tr>
+                            <th>Date</th>
+                            <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : 'N/A' }}</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="qr-code-container text-center">
+<img src="{{ asset('uploads/qrcodes/qrcode_event_' ~ evenement.id ~ '.png') }}" alt="QR Code">
+    <p class="mt-2"><strong>Scannez pour les détails</strong></p>
+</div>
+
         </div>
-        <div class="text-center mt-3">
+        <div class="btn-group mt-3">
             <a class="btn btn-primary" href="{{ path('app_evenement_index') }}">Retour à la liste</a>
-            <a class="btn btn-warning" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
-            {{ include('evenement/_delete_form.html.twig') }}
+            {% if is_granted('ROLE_MEDECIN') %}
+                <a class="btn btn-warning" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
+                <form action="{{ path('app_evenement_delete', {'id': evenement.id}) }}" method="post" onsubmit="return confirm('Êtes-vous sûr de vouloir supprimer cet événement ?');" class="d-inline">
+                    <button type="submit" class="btn btn-danger">Supprimer</button>
+                </form>
+            {% endif %}
         </div>
     </div>
 {% endblock %}
+

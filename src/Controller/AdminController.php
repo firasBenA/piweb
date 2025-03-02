@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+
 use App\Entity\Article;
 use App\Entity\Diagnostique;
 use App\Entity\Evenement;

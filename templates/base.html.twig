@@ -20,6 +20,7 @@
 			rel="shortcut icon" type="image/x-icon" href="{{asset('assets/img/favicon.ico')}}">
 
 			<!-- CSS here -->
+
 			<link rel="stylesheet" href="{{ asset('assets/css/bootstrap.min.css') }}">
 			<link rel="stylesheet" href="{{ asset('assets/css/owl.carousel.min.css') }}">
 			<link rel="stylesheet" href="{{ asset('assets/css/slicknav.css') }}">
@@ -125,17 +126,20 @@
 												<a href="{{path('addrendezvous')}}">Appointment</a>
 											</li>
 											<li>
+											{% if app.user %}
 												<a href="{{ path('evenement_page') }}">Evenements</a>
 												<ul class="submenu">
 													<li>
 														<a href="{{ path('evenement_page') }}">Evenements</a>
 													</li>
 													<li>
-														<a href="{{ path('article_page') }}">Articles</a>
+														<a href="{{ path('article_page') }}">Tous Les Articles</a>
 													</li>
 												</ul>
 											</li>
+											{% endif %}
 											<li>
+											
 												<a href="{{ path('reclamation_page') }}">Reclamation</a>
 											</li>
 
@@ -145,6 +149,7 @@
 								<div class="header-right-btn f-right d-none d-lg-block ml-30">
 									{% if app.user %}
 										<div class="profile-dropdown">
+
 											<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image" style=" width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
 											<div class="profile-dropdown-content">
 												<a href="{{ path('app_logout') }}">
@@ -164,12 +169,15 @@
 									{% endif %}
 
 								</div>
+								
 							</div>
 						</div>
 						<!-- Mobile Menu -->
 						<div class="col-12">
 							<div class="mobile_menu d-block d-lg-none"></div>
 						</div>
+
+						
 					</div>
 				</div>
 			</div>

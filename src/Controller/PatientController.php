@@ -1,6 +1,7 @@
 <?php
 
 namespace App\Controller;
+
 /*
 use App\Entity\Diagnostique;
 use App\Entity\Patient;
@@ -123,6 +124,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
 class PatientController extends AbstractController
@@ -208,6 +210,7 @@ class PatientController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('patient_dashboard');
+
     }*/
 
     #[Route('/patient/delete-profile', name: 'patient_delete_profile')]
@@ -229,6 +232,7 @@ class PatientController extends AbstractController
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $slugger->slug($originalFilename);
+
         $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
 
         try {

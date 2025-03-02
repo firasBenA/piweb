@@ -69,6 +69,7 @@ class RegistrationFormType extends AbstractType
             'label' => 'Rôle',
             'mapped' => false,
             'choices' => [
+
             'Patient' => 'ROLE_PATIENT',
             'Médecin' => 'ROLE_MEDECIN',
             ],

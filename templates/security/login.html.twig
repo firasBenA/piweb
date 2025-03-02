@@ -1,4 +1,5 @@
 
+
 {% block body %}
 
     <link rel="stylesheet" href="{{asset('./medecin/assets/css/tailwind.output.css')}}"/>
@@ -19,6 +20,7 @@
                         </h1>
                         <form method="post">
                             {% if error %}
+
                                 {{ csrf_token('authenticate') }}
                                 <div class="alert alert-danger">{{ error.messageKey|trans(error.messageData, 'security') }}</div>
                             {% endif %}
@@ -57,5 +59,6 @@
             </div>
         </div>
     </div>
+
     </body>
 {% endblock %}

@@ -6,6 +6,7 @@ use App\Repository\UserRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
+
 use Doctrine\ORM\Mapping\OneToMany;
 use Doctrine\ORM\Mapping\OneToOne;
 use PhpParser\Node\Expr\Cast\String_;
@@ -65,6 +66,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[Assert\NotBlank(message: 'Veuillez choisir votre sexe.')]
     private ?string $sexe = null;
 
+
     #[ORM\Column(type: 'string', length: 20, nullable: true)]
     #[Assert\NotBlank(message: 'Veuillez entrer votre numéro de téléphone.')]
     #[Assert\Regex(pattern: '/^\d{8}$/', message: 'Le numéro de téléphone doit contenir exactement 8 chiffres.')]
@@ -92,6 +94,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     )]
     #[Assert\NotBlank(message: 'Veuillez télécharger votre certificat.', groups: ['medecin'])]
     private ?string $certificat = null;
+
 
     #[ORM\OneToOne(targetEntity: DossierMedical::class, mappedBy: 'user')]
     private ?DossierMedical $dossierMedical = null;
@@ -165,6 +168,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
     public function getLatitude(): ?float
     {
         return $this->latitude;
@@ -186,7 +190,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->longitude = $longitude;
         return $this;
     }
-
 
     /**
      * @see PasswordAuthenticatedUserInterface
@@ -272,6 +275,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
+
     public function getTelephone(): ?string
     {
         return $this->telephone;
@@ -319,7 +323,40 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    public function getDossierMedical(): ?DossierMedical
+
+    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: 'users')]
+    private Collection $evenements;
+
+    public function __construct()
+{
+    $this->evenements = new ArrayCollection();
+}
+
+    public function getEvenements(): Collection
+    {
+        return $this->evenements;
+    }
+
+public function addEvenement(Evenement $evenement): static
+{
+    if (!$this->evenements->contains($evenement)) {
+        $this->evenements->add($evenement);
+        $evenement->addUser($this);
+    }
+
+    return $this;
+}
+
+public function removeEvenement(Evenement $evenement): static
+{
+    if ($this->evenements->removeElement($evenement)) {
+        $evenement->removeUser($this);
+    }
+
+    return $this;
+}
+
+  public function getDossierMedical(): ?DossierMedical
     {
         return $this->dossierMedical;
     }

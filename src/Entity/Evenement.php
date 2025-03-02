@@ -7,7 +7,10 @@ use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use App\Entity\User;
 use Symfony\Component\Validator\Constraints as Assert;
+
+
 
 #[ORM\Entity(repositoryClass: EvenementRepository::class)]
 class Evenement
@@ -37,7 +40,7 @@ class Evenement
 
     #[ORM\Column(length: 255)]
     #[Assert\Choice(
-        choices: ['conference', 'seminaire', 'workshop'],
+        choices: ['conference', 'seminaire', 'workshop','webinar','table_ronde','formation'],
         message: 'Choisissez un type valide'
     )]
     private ?string $type = null;
@@ -47,7 +50,7 @@ class Evenement
 
     #[ORM\Column(length: 255)]
     #[Assert\Length(
-        min: 3,
+        min: 2,
         max: 255,
         minMessage: 'le lieu doit contenir au moins {{ limit }} caractères',
         maxMessage: 'le lieu ne peut pas dépasser {{ limit }} caractères'
@@ -61,19 +64,25 @@ class Evenement
     )]
     private ?\DateTimeInterface $date_event = null;
 
-    #[ORM\ManyToOne(inversedBy: 'evenements')]
-    #[ORM\JoinColumn(nullable: false)]
-    private ?Medecin $medecin = null;
+    #[ORM\ManyToMany(targetEntity: User::class, inversedBy: 'evenements')]
+    #[ORM\JoinTable(name: 'user_evenement')]
+    private Collection $users;
 
-    #[ORM\ManyToMany(targetEntity: Article::class, inversedBy: "evenements")]
-    #[ORM\JoinTable(name: "evenement_article")]
+
+    /**
+     * @var Collection<int, Article>
+     */
+    #[ORM\ManyToMany(targetEntity: Article::class, mappedBy: 'evenement')]
+  
+
     private Collection $article;
 
     public function __construct()
-    {
-        $this->article = new ArrayCollection();
-        $this->date_event = new \DateTime();
-    }
+{
+    $this->users = new ArrayCollection();
+    $this->article = new ArrayCollection();
+    $this->date_event = new \DateTime();
+}
 
     public function getId(): ?int
     {
@@ -152,17 +161,31 @@ class Evenement
         return $this;
     }
 
-    public function getMedecin(): ?Medecin
+    
+
+    public function getUsers(): Collection
     {
-        return $this->medecin;
+        return $this->users;
+    }
+    
+    public function addUser(User $user): static
+{
+    if (!$this->users->contains($user)) {
+        $this->users->add($user);
+        $user->addEvenement($this);
     }
 
-    public function setMedecin(?Medecin $medecin): static
-    {
-        $this->medecin = $medecin;
+    return $this;
+}
 
-        return $this;
+public function removeUser(User $user): static
+{
+    if ($this->users->removeElement($user)) {
+        $user->removeEvenement($this);
     }
+
+    return $this;
+}   
 
     /**
      * @return Collection<int, Article>
@@ -171,15 +194,23 @@ class Evenement
     {
         return $this->article;
     }
-
-    public function addArticle(Article $article): self
+    public function addArticle(Article $article): static
     {
         if (!$this->article->contains($article)) {
-            $this->article[] = $article;
-        }
+            // Remove the Article from any existing Evenement before adding it here
+            foreach ($article->getEvenement() as $existingEvenement) {
+                $existingEvenement->removeArticle($article);
+            }
+    
+            $this->article->add($article);
+            $article->setEvenement(new ArrayCollection([$this])); // ✅ Set only this Evenement
 
+        }
+    
         return $this;
     }
+    
+
 
     public function removeArticle(Article $article): self
     {
