@@ -1,67 +1,188 @@
 {% extends 'base.html.twig' %}
 
 {% block title %}Evenements{% endblock %}
+
 {% block stylesheets %}
     {{ parent() }}
     <style>
-        .title {
-            text-align: center;
+    #notification-container {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.notification {
+    background-color: #d4edda; /* Light green */
+    color: #155724; /* Dark green text */
+    padding: 10px 15px;
+    border-radius: 5px;
+    font-size: 14px;
+    box-shadow: 0px 2px 10px rgba(0, 0, 0, 0.1);
+    animation: fade-in 0.5s ease-out;
+}
+
+@keyframes fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+        .event-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
             margin-top: 20px;
+        }
+        .event-card {
+            width: 48%; /* Two cards per row */
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+        .event-img {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+        .event-content {
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            height: 100%;
+        }
+        .event-title {
+            font-size: 18px;
             font-weight: bold;
             color: #343a40;
         }
-        .table-container {
-            margin: 30px auto;
-            width: 70%;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+        .event-description {
+            color: #6c757d;
+            margin-top: 10px;
         }
+        .event-date {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 15px;
+            color: #007bff;
+        }
+        .event-actions {
+            margin-top: 15px;
+            display: flex;
+            gap: 15px;
+        }
+        .btn-sm {
+            font-size: 0.8rem;
+            padding: 5px 10px;
+        }
+        
     </style>
 {% endblock %}
+
 {% block body %}
+    <div id="notification-container"></div>
+
     <div class="container">
-        <h1 class="title">Evenements</h1>
-        <div class="table-container">
-            <table class="table table-hover text-center">
-                <thead class="table-dark">
-                    <tr>
-                        <th>Id</th>
-                        <th>Nom</th>
-                        <th>Contenu</th>
-                        <th>Type</th>
-                        <th>Statut</th>
-                        <th>Lieu</th>
-                        <th>Date</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for evenement in evenements %}
-                        <tr>
-                            <td>{{ evenement.id }}</td>
-                            <td>{{ evenement.nom }}</td>
-                            <td>{{ evenement.contenue }}</td>
-                            <td>{{ evenement.type }}</td>
-                            <td>{{ evenement.statut }}</td>
-                            <td>{{ evenement.lieuxEvent }}</td>
-                            <td>{{ evenement.dateEvent ? evenement.dateEvent|date('Y-m-d') : 'N/A' }}</td>
-                            <td>
-                                <a class="btn btn-info btn-sm btn-action" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
-                                <a class="btn btn-warning btn-sm btn-action" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
-                            </td>
-                        </tr>
-                    {% else %}
-                        <tr>
-                            <td colspan="8" class="text-muted">Il n'y a pas d'événements pour le moment</td>
-                        </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
+        <h1 class="text-center">Événements</h1>
+        <div class="event-container" id="eventList">
+            {% for evenement in evenements %}
+                <div class="event-card">
+                    <img src="{{ asset('uploads/images/' ~ evenement.type ~ '.jpg') }}" class="event-img" alt="{{ evenement.type }}">
+                    <div class="event-content">
+                        <span class="badge bg-primary">{{ evenement.dateEvent|date('d M') }}</span>
+                        <h2 class="event-title">{{ evenement.nom }}</h2>
+                        <p class="event-description">{{ evenement.contenue }}</p>
+                        <div class="event-meta">
+                            <span>{{ evenement.type }}</span>
+                            <span>{{ evenement.lieuxEvent }}</span>
+                        </div>
+                        <div class="event-actions">
+                            {% if is_granted('ROLE_PATIENT') %}
+                                {% set isParticipating = evenement.users.contains(app.user) %}
+                                <a class="btn btn-sm btn-primary" href="{{ path('app_evenement_participer', {'id': evenement.id}) }}">Participer</a>
+                            {% endif %}
+                            <a class="btn btn-primary btn-sm" href="{{ path('app_evenement_afficher', {'id': evenement.id}) }}">Voir</a>
+                            <a class="btn btn-info btn-sm" href="{{ path('app_article_index', {'evenement_id': evenement.id}) }}">Voir Articles</a>
+                            {% if is_granted('ROLE_MEDECIN') %}
+                                <a class="btn btn-warning btn-sm" href="{{ path('app_evenement_modifier', {'id': evenement.id}) }}">Modifier</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+            {% else %}
+                <p class="text-center text-muted">Il n'y a pas d'événements pour le moment.</p>
+            {% endfor %}
         </div>
+             <div class="pagination-container text-center">
+            {{ knp_pagination_render(evenements) }}
+        </div>
+        {% if is_granted('ROLE_MEDECIN') %}
         <div class="text-center">
             <a class="btn btn-success" href="{{ path('app_evenement_ajouter') }}">Créer un événement</a>
         </div>
+        {% endif %}
     </div>
+     
+    <script>
+document.addEventListener("DOMContentLoaded", function () {
+    function showNotification(message) {
+        let container = document.getElementById("notification-container");
+        let notification = document.createElement("div");
+        notification.classList.add("notification");
+        notification.textContent = message;
+        container.appendChild(notification);
+        setTimeout(() => {
+            notification.style.opacity = "0";
+            setTimeout(() => notification.remove(), 500);
+        }, 3000);
+    }
+
+    const eventList = document.getElementById("eventList");
+    if (!eventList) {
+        console.error("Evenement Liste container not found!");
+        return;
+    }
+
+    eventList.addEventListener("click", function (event) {
+        const button = event.target.closest(".participate-btn");
+        if (button) {
+            let eventId = button.getAttribute("data-event-id");
+            fetch(`/evenement/participate/${eventId}`, {
+                method: "POST",
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest"
+                }
+            })
+            .then(response => {
+                if (!response.ok) throw new Error("Fetch failed");
+                return response.json();
+            })
+            .then(data => {
+                const textSpan = button.querySelector(".participation-text");
+                if (data.participating) {
+                    button.style.backgroundColor = "grey";
+                    textSpan.textContent = "✔ Participé";
+                    showNotification("Vous avez participé à cet événement !");
+                } else {
+                    button.style.backgroundColor = "#007bff";
+                    textSpan.textContent = "Participer";
+                    showNotification("Vous avez annulé votre participation.");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+                showNotification("Erreur lors de la mise à jour de la participation.");
+            });
+        }
+    });
+});
+</script>
 {% endblock %}

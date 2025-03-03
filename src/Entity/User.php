@@ -115,7 +115,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
         $this->rendezVouses = new ArrayCollection();
         $this->consultations = new ArrayCollection();
         $this->createdAt = new \DateTime();
-
+        $this->evenements = new ArrayCollection();
     }
 
 
@@ -458,5 +458,34 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
     public function getEmailAuthRecipient(): string
     {
         return $this->getEmail();
+    }
+
+    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: 'users')]
+    private Collection $evenements;
+
+
+
+    public function getEvenements(): Collection
+    {
+        return $this->evenements;
+    }
+
+    public function addEvenement(Evenement $evenement): static
+    {
+        if (!$this->evenements->contains($evenement)) {
+            $this->evenements->add($evenement);
+            $evenement->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeEvenement(Evenement $evenement): static
+    {
+        if ($this->evenements->removeElement($evenement)) {
+            $evenement->removeUser($this);
+        }
+
+        return $this;
     }
 }

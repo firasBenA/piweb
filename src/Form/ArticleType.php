@@ -28,32 +28,18 @@ class ArticleType extends AbstractType
                 'attr' => ['class' => 'form-control'],
             ])
             ->add('image', FileType::class, [
-                'label' => 'Image (JPG, PNG, GIF)',
-                'mapped' => false,
-                'required' => false,
+                'label' => 'Image (JPEG, PNG, GIF)',
+                
                 'constraints' => [
                     new File([
-                        'maxSize' => '2M',
-                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'],
-                        'mimeTypesMessage' => 'Veuillez télécharger une image valide (JPG, PNG, GIF).',
+                        'maxSize' => '5M',
+                        'mimeTypes' => ['image/jpeg', 'image/png', 'image/gif'],
+                        'mimeTypesMessage' => 'Veuillez télécharger une image au format JPEG, PNG, ou GIF.',
                     ])
                 ],
             ])
-            ->add('prix_article', IntegerType::class, [
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ])
-            ->add('commantaire', TextType::class, [
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ])
-            ->add('nbJaime', IntegerType::class, [
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ]);
+
+            ;
     }
 
     public function configureOptions(OptionsResolver $resolver): void

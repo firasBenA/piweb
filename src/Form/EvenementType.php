@@ -3,8 +3,9 @@
 namespace App\Form;
 
 use App\Entity\Evenement;
-use App\Entity\Medecin;
 use App\Entity\Article;
+use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
 use Symfony\Component\Form\FormBuilderInterface;
@@ -33,12 +34,14 @@ class EvenementType extends AbstractType
                 'choices' => [
                     'Conférence' => 'conference',
                     'Séminaire' => 'seminaire',
-                    'Workshop' => 'workshop'
+                    'Workshop' => 'workshop',
+                    'Formation' => 'formation'
                 ],
                 'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
+                'empty_data' => '',
                 'attr' => ['class' => 'form-control'],
             ])
+            
             ->add('statut', ChoiceType::class, [
                 'choices' => [
                     'Planifié' => 'planifie',
@@ -62,23 +65,15 @@ class EvenementType extends AbstractType
                 'empty_data' => '', // Forces an empty string if the field is left empty
                 'attr' => ['class' => 'form-control'],
             ])
-            ->add('medecin', EntityType::class, [
-                'class' => Medecin::class,
-                'choice_label' => 'id',
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ])
+              
             ->add('article', EntityType::class, [
                 'class' => Article::class,
                 'choice_label' => 'titre',
                 'multiple' => true,
-                'expanded' => false,
-                'required' => true,
-                'empty_data' => '', // Forces an empty string if the field is left empty
-                'attr' => ['class' => 'form-control'],
-            ])
-        ;
+                'expanded' => true, // Display as checkboxes
+            ]);
+            
+        ;   
     }
 
     public function configureOptions(OptionsResolver $resolver): void

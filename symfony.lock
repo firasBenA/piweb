@@ -71,6 +71,10 @@
             "ref": "07a97ec434d43b7903c78069a04c92adb6442e52"
         }
     },
+    "endroid/qr-code-bundle": {
+        "version": "5.0.2"
+    },
+
     "phpunit/phpunit": {
         "version": "9.6",
         "recipe": {

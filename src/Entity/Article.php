@@ -5,7 +5,11 @@ namespace App\Entity;
 use App\Repository\ArticleRepository;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
+use Doctrine\ORM\EntityManagerInterface;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Symfony\Component\Validator\Constraints as Assert;
 
 
@@ -23,34 +27,62 @@ class Article
 
     #[ORM\Column(length: 255, nullable: false)]
     #[Assert\NotBlank(message: 'ce champ est obligatoire.')]
-
+    
     private ?string $contenue = '';
 
+    
     #[ORM\Column(length: 255, nullable: false)]
-    #[Assert\NotBlank(message: 'L\'image est obligatoire.')]
-    #[Assert\Url(message: 'L\'URL de l\'image n\'est pas valide.')]
-    private ?string $image = '';
-
-    #[ORM\Column(nullable: false)]
-    #[Assert\Positive(message: 'ce champ doit être un nombre positif')]
-    private ?int $prix_article = 0;
-
-    #[ORM\Column(length: 255, nullable: false)]
-    #[Assert\NotBlank(message: 'ce champ est obligatoire.')]
-
-    private ?string $commantaire = '';
-
-    #[ORM\Column(nullable: false)]
-    #[Assert\Positive(message: 'Le nombre de j\'aime doit être un nombre positif ou zéro.')]
-    private ?int $nbJaime = 0;
-
-    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: "articles")]
-    private Collection $evenement;
+    #[Assert\File(
+        maxSize: '5M',
+        mimeTypes: ['image/jpeg', 'image/png', 'image/gif', 'image/jpg'],
+        mimeTypesMessage: 'Veuillez télécharger une image au format JPEG, PNG, ou GIF.'
+    )]
+    
+    private ?string $image = null;
+    
+    #[ORM\ManyToMany(targetEntity: User::class)]
+    #[ORM\JoinTable(name: "article_likes")]
+    private Collection $likedByUsers;
 
     public function __construct()
     {
-        $this->evenement = new ArrayCollection();
+        $this->likedByUsers = new ArrayCollection();
     }
+
+    public function getLikedByUsers(): Collection
+    {
+        return $this->likedByUsers;
+    }
+
+    public function like(User $user): void
+    {
+        if (!$this->likedByUsers->contains($user)) {
+            $this->likedByUsers->add($user);
+        }
+    }
+
+    public function unlike(User $user): void
+    {
+        $this->likedByUsers->removeElement($user);
+    }
+
+    public function isLikedByUser(User $user): bool
+    {
+        return $this->likedByUsers->contains($user);
+    }
+
+
+
+
+
+    
+
+    #[ORM\ManyToMany(targetEntity: Evenement::class, inversedBy: 'articles')]
+    #[ORM\JoinTable(name: 'evenement_article')]
+    private Collection $evenement;
+
+
+    //private ?Evenement $evenement = null;
 
     public function getId(): ?int
     {
@@ -84,66 +116,25 @@ class Article
         return $this->image;
     }
 
-    public function setImage(string $image): static
-    {
-        $this->image = $image;
-        return $this;
-    }
+    public function setImage(?string $image): static
+{
+    $this->image = $image;
+    return $this;
+}
 
-    public function getPrixArticle(): ?int
-    {
-        return $this->prix_article;
-    }
+    
 
-    public function setPrixArticle(int $prix_article): static
-    {
-        $this->prix_article = $prix_article;
-        return $this;
-    }
+    
 
-    public function getCommantaire(): ?string
-    {
-        return $this->commantaire;
-    }
-
-    public function setCommantaire(string $commantaire): static
-    {
-        $this->commantaire = $commantaire;
-        return $this;
-    }
-
-    public function getNbJaime(): ?int
-    {
-        return $this->nbJaime;
-    }
-
-    public function setNbJaime(int $nbJaime): static
-    {
-        $this->nbJaime = $nbJaime;
-        return $this;
-    }
-
-    /**
-     * @return Collection<int, Evenement>
-     */
-    public function getEvenement(): Collection
+    public function getEvenement(): ?Collection
     {
         return $this->evenement;
     }
 
-    public function addEvenement(Evenement $evenement): self
+    public function setEvenement(?Collection $evenements): static
     {
-        if (!$this->evenement->contains($evenement)) {
-            $this->evenement[] = $evenement;
-        }
-
+        $this->evenement = $evenements ?? new ArrayCollection();
         return $this;
     }
-
-    public function removeEvenement(Evenement $evenement): self
-    {
-        $this->evenement->removeElement($evenement);
-
-        return $this;
-    }
+    
 }

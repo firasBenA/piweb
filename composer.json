@@ -15,6 +15,8 @@
         "dompdf/dompdf": "^3.1",
         "knplabs/knp-snappy-bundle": "^1.10",
         "google/apiclient": "^2.18",
+        "endroid/qr-code": "^5.1",
+        "endroid/qr-code-bundle": "^5.0",
         "knplabs/knp-paginator-bundle": "^6.6",
         "phpdocumentor/reflection-docblock": "^5.6",
         "phpoffice/phpspreadsheet": "^4.0",
@@ -56,10 +58,12 @@
         "symfonycasts/reset-password-bundle": "^1.23",
         "twig/extra-bundle": "^2.12|^3.0",
         "twig/twig": "^2.12|^3.0",
-        "twilio/sdk": "^8.3"
+        "twilio/sdk": "^8.3",
+        "twig/string-extra": "^3.20"
     },
     "config": {
         "allow-plugins": {
+            "endroid/installer": true,
             "php-http/discovery": true,
             "symfony/flex": true,
             "symfony/runtime": true

@@ -83,7 +83,7 @@ class MainController extends AbstractController
     #[Route('/article', name: 'article_page')]
     public function article(): Response
     {
-        return $this->render('main/article.html.twig');
+        return $this->render('main/article.html.twig'); 
     }
 
     #[Route('/reclamation', name: 'reclamation_page')]
