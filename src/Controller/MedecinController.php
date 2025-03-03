@@ -11,11 +11,12 @@ use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Bundle\SecurityBundle\Security;
+use Symfony\Component\HttpFoundation\File\Exception\FileException;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
-
+use Symfony\Component\String\Slugger\SluggerInterface;
 
 final class MedecinController extends AbstractController
 {
@@ -164,18 +165,10 @@ final class MedecinController extends AbstractController
             'controller_name' => 'MedecinController',
         ]);
 
-        /*
-use App\Entity\User;
-use Doctrine\ORM\EntityManagerInterface;
-use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\String\Slugger\SluggerInterface;
-use Symfony\Component\HttpFoundation\File\Exception\FileException;
+    }
 
-class MedecinController extends AbstractController
-{
+
+
     #[Route('/medecin', name: 'medecin_dashboard')]
     public function index(): Response
     {
@@ -252,6 +245,6 @@ class MedecinController extends AbstractController
         }
 
         return $newFilename;
-    }*/
     }
+
 }

@@ -103,7 +103,7 @@ class RegistrationFormType extends AbstractType
             'data_class' => User::class,
             'validation_groups' => function (FormInterface $form) {
                 $data = $form->getData();
-                if ($form->get('roles')->getData() === 'MEDECIN') 
+                if ($form->get('roles')->getData() === 'ROLE_MEDECIN') 
                     {
                     return ['Default', 'medecin'];
                 }

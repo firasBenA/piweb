@@ -1,0 +1,227 @@
+{# templates/includes/header.html.twig #}
+
+<header>
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+
+	<div class="header-area">
+		<div class="main-header header-sticky">
+			<div class="container-fluid">
+				<div class="row align-items-center">
+					<div class="col-xl-2 col-lg-2 col-md-1">
+						<div class="logo">
+							<a href="#"><img src="assets/img/logo/logo.png" alt="Medical Logo"></a>
+						</div>
+					</div>
+					<div class="col-xl-10 col-lg-10 col-md-10">
+						<div class="menu-main d-flex align-items-center justify-content-end">
+							<div class="main-menu f-right d-none d-lg-block">
+								<nav>
+									<ul id="navigation" class="d-flex justify-content-end">
+										<li>
+											<a href="{{ path('home_page') }}">Home</a>
+										</li>
+										<li>
+											<a href="{{ path('PrescriptionMedecin_page', {'id': app.user.id}) }}">Prescription</a>
+										</li>
+
+										<li>
+											<a href="#" ">Consultations</a>
+										</li>
+
+										<div class="header-right-btn f-right d-none d-lg-block ml-30">
+											{% if app.user %}
+												<div class="profile-dropdown">
+													<img src="{{ asset('uploads/images/' ~ app.user.imageProfil) }}" alt="Profile Image">
+													<div class="profile-dropdown-content">
+														<a href="{{ path('app_logout') }}">
+															<i class="fas fa-sign-out-alt logout-icon"></i>
+															Déconnexion
+														</a>
+													</div>
+												</div>
+											{% else %}
+												<a href="{{ path('app_login2') }}" class="btn header-btn">Se connecter</a>
+											{% endif %}
+
+										</ul>
+									</nav>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</header>
+
+	<style>
+		body {
+			background-color: #f0f8ff;
+			font-family: 'Poppins', sans-serif;
+		}
+
+		/* Navbar Styling */
+		.header-area {
+			background: #fff;
+			padding: 10px 0;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+
+		.main-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.menu-main {
+			display: flex;
+			align-items: center;
+		}
+
+		.main-menu nav ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: flex;
+			justify-content: flex-end; /* Aligner les éléments à droite */
+		}
+
+		.main-menu nav ul li {
+			position: relative;
+			margin: 0 15px;
+		}
+
+		.main-menu nav ul li a {
+			text-decoration: none;
+			color: #000;
+			font-weight: normal; /* Retirer le gras */
+			font-size: 16px;
+			padding: 10px 15px;
+			display: block;
+		}
+
+		.main-menu nav ul li a:hover {
+			color: #007bff;
+		}
+
+		.header-right-btn {
+			margin-left: 30px;
+		}
+
+		.header-btn {
+			background-color: #007bff;
+			color: white;
+			padding: 10px 20px;
+			border-radius: 5px;
+			text-decoration: none;
+			font-weight: bold;
+		}
+
+		.header-btn:hover {
+			background-color: #0056b3;
+		}
+
+		/* Footer Styling */
+		footer {
+			background-color: #343a40;
+			color: #fff;
+		}
+
+		.social-links a {
+			font-size: 20px;
+			transition: color 0.3s;
+		}
+
+		.social-links a:hover {
+			color: #007bff;
+		}
+
+		.btn-secondary {
+			background-color: #6c757d;
+			color: white;
+			padding: 10px 20px;
+			border-radius: 5px;
+			text-decoration: none;
+			font-weight: bold;
+		}
+
+		.btn-secondary:hover {
+			background-color: #5a6268;
+		}
+
+		/* Table Styling */
+		.table {
+			border-radius: 12px;
+			overflow: hidden;
+		}
+		.table thead {
+			background-color: #343a40;
+			color: white;
+		}
+		.table tbody tr:hover {
+			background-color: #e3f2fd;
+			transition: 0.3s ease-in-out;
+		}
+		.btn {
+			transition: all 0.3s ease-in-out;
+		}
+		.btn:hover {
+			transform: scale(1.05);
+		}
+		.badge {
+			font-size: 14px;
+			padding: 8px 12px;
+			border-radius: 8px;
+		}
+		.table th,
+		.table td {
+			vertical-align: middle;
+		}
+		.table th {
+			font-size: 16px;
+		}
+		.table td {
+			font-size: 14px;
+		}
+
+		.profile-dropdown {
+			position: relative;
+			display: inline-block;
+		}
+
+		.profile-dropdown img {
+			width: 40px; /* Taille réduite */
+			height: 40px; /* Taille réduite */
+			border-radius: 50%; /* Cercle parfait */
+			object-fit: cover; /* Assure que l'image remplit bien le cercle */
+			border: 2px solid #fff; /* Bordure blanche pour un meilleur design */
+			box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Ombre légère */
+			cursor: pointer;
+		}
+
+		.profile-dropdown-content {
+			display: none;
+			position: absolute;
+			right: 0;
+			background-color: white;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+			border-radius: 5px;
+			min-width: 150px;
+			z-index: 1000;
+		}
+
+		.profile-dropdown:hover .profile-dropdown-content {
+			display: block;
+		}
+
+		.profile-dropdown-content a {
+			display: block;
+			padding: 10px;
+			text-decoration: none;
+			color: black;
+		}
+
+		.profile-dropdown-content a:hover {
+			background-color: #f1f1f1;
+		}
+	</style>

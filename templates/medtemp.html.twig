@@ -19,6 +19,7 @@
                                     <ul id="navigation">
                                         <li><a href="{{ path('home_page') }}">Home</a></li>
                                         <li><a href="{{ path('medecin_dashboard', {'id': medecin.id}) }}">Tableau De Board</a></li>
+                                        <li><a href="{{ path('PrescriptionMedecin_page', {'id': medecin.id}) }}">Prescription</a></li>
                                         <li><a href="{{ path('consultation_medecin_list', {'id': medecin.id}) }}">Consultations</a></li>
                                         <li><a href="{{ path('infomed', {'id': medecin.id}) }}">Mes Informations</a></li>
                                     </ul>

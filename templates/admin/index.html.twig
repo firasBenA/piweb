@@ -1,138 +1,248 @@
 {% extends 'admin/base.html.twig' %}
 
-{% block body %}
-	<div class="container mt-5">
-		<div class="text-center mb-4">
-			<h1>Bienvenue Mr.
-				{{ user.nom }}
-				{{ user.prenom }}</h1>
-			<p>Voici votre dashboard personnel</p>
-		</div>
-
-
-
-	<style>
-		body {
-			background-color: #f8f9fa;
-			font-family: 'Poppins', sans-serif;
-		}
-
-		.card {
-			border-radius: 10px;
-		}
-
-		.table th,
-		.table td {
-			vertical-align: middle;
-		}
-
-		.btn {
-			border-radius: 20px;
-		}
-
-
-		.header-area {
-			background: #fff;
-			padding: 10px 0;
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-		}
-
-		.main-header {
-			display: flex;
-			align-items: center;
-			justify-content: space-between;
-		}
-
-		.menu-main {
-			display: flex;
-			align-items: center;
-		}
-
-		.main-menu nav ul {
-			list-style: none;
-			padding: 0;
-			margin: 0;
-			display: flex;
-		}
-
-		.main-menu nav ul li {
-			position: relative;
-			margin: 0 15px;
-		}
-
-		.main-menu nav ul li a {
-			text-decoration: none;
-			color: #000;
-			font-weight: 600;
-			font-size: 16px;
-			padding: 10px 15px;
-			display: block;
-		}
-
-		.main-menu nav ul li a:hover {
-			color: #007bff;
-		}
-
-		.header-right-btn {
-			margin-left: 30px;
-		}
-
-		.header-btn {
-			background-color: #007bff;
-			color: white;
-			padding: 10px 20px;
-			border-radius: 5px;
-			text-decoration: none;
-			font-weight: bold;
-		}
-
-		.header-btn:hover {
-			background-color: #0056b3;
-		}
-
-		/* Sous-menu */
-		.main-menu nav ul li ul.submenu {
-			display: none;
-			position: absolute;
-			top: 100%;
-			left: 0;
-			background: #fff;
-			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-			border-radius: 5px;
-			min-width: 180px;
-		}
-
-		.main-menu nav ul li:hover ul.submenu {
-			display: block;
-		}
-
-		.main-menu nav ul li ul.submenu li {
-			margin: 0;
-			display: block;
-		}
-
-		.main-menu nav ul li ul.submenu li a {
-			padding: 10px;
-			display: block;
-		}
-
-
-		body {
-			font-family: 'Poppins', sans-serif;
-		}
-
-		.main-menu nav ul li a {
-			font-family: 'Poppins', sans-serif;
-			font-weight: 400;
-			font-size: 16px;
-			color: #2c2c2c;
-			text-transform: capitalize;
-		}
-
-		.header-btn {
-			font-family: 'Poppins', sans-serif;
-			font-weight: 400;
-			font-size: 16px;
-		}
-	</style>
+{% block stylesheets %}
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    
 {% endblock %}
+
+{% block body %}
+<body>
+
+            
+            <main class="h-full pb-16 overflow-y-auto">
+                <div class="container grid px-6 mx-auto">
+                    <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                        Tables
+                    </h2>
+
+                    <!-- Medecins Table -->
+                    <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
+                        Medecins
+                    </h4>
+                    <div class="w-full mb-8 overflow-hidden rounded-lg shadow-xs">
+                        <div class="w-full overflow-x-auto">
+                            <table class="w-full whitespace-no-wrap">
+                                <thead>
+                                    <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                                        
+                                        <th class="px-4 py-3">Email</th>
+                                        <th class="px-4 py-3">Nom</th>
+                                        <th class="px-4 py-3">Prénom</th>
+										<th class="px-4 py-3">age</th>
+										<th class="px-4 py-3">Sexe</th>
+										<th class="px-4 py-3">Telephone</th>
+                                        <th class="px-4 py-3">Adresse</th>
+                                        <th class="px-4 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+    {% for medecin in medecins %}
+        <tr class="text-gray-700 dark:text-gray-400">
+            
+            <td class="px-4 py-3">{{ medecin.email }}</td>
+            <td class="px-4 py-3">{{ medecin.nom }}</td>
+            <td class="px-4 py-3">{{ medecin.prenom }}</td>
+            <td class="px-4 py-3">{{ medecin.age }}</td>
+            <td class="px-4 py-3">{{ medecin.sexe }}</td>
+            <td class="px-4 py-3">{{ medecin.telephone }}</td>
+            <td class="px-4 py-3">{{ medecin.adresse }}</td>
+            <td class="px-4 py-3">
+                {% if 'BLOCKED' in medecin.roles %}
+                    <button class="btn btn-success unblock-user" data-id="{{ medecin.id }}">Unblock</button>
+                {% else %}
+                    <button class="btn btn-danger block-user" data-id="{{ medecin.id }}">Block</button>
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Patients Table -->
+                    <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
+                        Patients
+                    </h4>
+                    <div class="w-full overflow-hidden rounded-lg shadow-xs">
+                        <div class="w-full overflow-x-auto">
+                            <table class="w-full whitespace-no-wrap">
+                                <thead>
+                                    <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                                        
+                                        <th class="px-4 py-3">Email</th>
+                                        <th class="px-4 py-3">Nom</th>
+                                        <th class="px-4 py-3">Prénom</th>
+										<th class="px-4 py-3">age</th>
+										<th class="px-4 py-3">Sexe</th>
+										<th class="px-4 py-3">Telephone</th>
+                                      <th class="px-4 py-3">Adresse</th>
+
+                                        <th class="px-4 py-3">Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                                    {% for patient in patients %}
+                                        <tr class="text-gray-700 dark:text-gray-400">
+                                            
+                                            <td class="px-4 py-3">{{ patient.email }}</td>
+                                            <td class="px-4 py-3">{{ patient.nom }}</td>
+                                            <td class="px-4 py-3">{{ patient.prenom }}</td>
+											<td class="px-4 py-3">{{ patient.age }}</td>
+											<td class="px-4 py-3">{{ patient.sexe }}</td>
+											<td class="px-4 py-3">{{ patient.telephone }}</td>
+                                            <td class="px-4 py-3">{{ patient.adresse }}</td>
+                                            
+                                            <td class="px-4 py-3">
+                                                 {% if 'BLOCKED' in patient.roles %}
+                                                     <button class="btn btn-success unblock-user" data-id="{{ patient.id }}">Unblock</button>
+                                                 {% else %}
+                                                     <button class="btn btn-danger block-user" data-id="{{ patient.id }}">Block</button>
+                                                 {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+
+    <link rel="stylesheet" href="{{asset('./medecin/assets/css/tailwind.output.css')}}"/>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"/>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+    <script src="{{asset('./medecin/assets/js/init-alpine.js')}}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" defer></script>
+    <script src="{{asset('./medecin/assets/js/charts-lines.js')}}" defer></script>
+    <script src="{{asset('./medecin/assets/js/charts-pie.js')}}" defer></script>
+    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
+   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        document.querySelectorAll('.block-user, .unblock-user').forEach(button => {
+            button.addEventListener('click', async function() {
+                const userId = this.getAttribute('data-id');
+                const action = this.classList.contains('block-user') ? 'block' : 'unblock';
+                const url = `/admin/users/${userId}/${action}`;
+
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                            'X-Requested-With': 'XMLHttpRequest'
+                        }
+                    });
+
+                    const data = await response.json();
+
+                    if (data.status === 'User blocked successfully' || data.status === 'User unblocked successfully') {
+                        // Mettre à jour le bouton sans recharger la page
+                        const button = document.querySelector(`[data-id="${userId}"]`);
+                        if (data.newRole === 'BLOCKED') {
+                            button.textContent = 'Unblock';
+                            button.classList.remove('btn-danger');
+                            button.classList.add('btn-success');
+                            button.classList.remove('block-user');
+                            button.classList.add('unblock-user');
+                        } else {
+                            button.textContent = 'Block';
+                            button.classList.remove('btn-success');
+                            button.classList.add('btn-danger');
+                            button.classList.remove('unblock-user');
+                            button.classList.add('block-user');
+                        }
+
+                        // Afficher une notification SweetAlert2
+                        Swal.fire({
+                            icon: 'success',
+                            title: data.status,
+                            showConfirmButton: false,
+                            timer: 1500
+                        });
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'An error occurred',
+                        text: 'Please try again.',
+                    });
+                }
+            });
+        });
+    </script>
+
+<script>
+   function timeSince(date) {
+    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+
+    let interval = seconds / 31536000;
+    if (interval > 1) {
+        return Math.floor(interval) + " ans";
+    }
+    interval = seconds / 2592000;
+    if (interval > 1) {
+        return Math.floor(interval) + " mois";
+    }
+    interval = seconds / 86400;
+    if (interval > 1) {
+        return Math.floor(interval) + " jours";
+    }
+    interval = seconds / 3600;
+    if (interval > 1) {
+        return Math.floor(interval) + " heures";
+    }
+    interval = seconds / 60;
+    if (interval > 1) {
+        return Math.floor(interval) + " minutes";
+    }
+    return Math.floor(seconds) + " secondes";
+}
+
+const eventSource = new EventSource("{{ path('notifications') }}");
+
+eventSource.onmessage = function (event) {
+    const data = JSON.parse(event.data);
+    console.log(data); // Vérifiez les données reçues
+
+    const notificationItem = document.createElement('div');
+    notificationItem.className = 'flex items-center justify-between px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200';
+    notificationItem.innerHTML = `
+        <span>${data.message}</span>
+        <span class="text-green-500">+ Nouveau compte</span>
+        <span class="text-gray-500 text-xs">il y a ${timeSince(data.timestamp)}</span>
+    `;
+
+    const notificationsList = document.getElementById('notifications-list');
+    notificationsList.prepend(notificationItem);
+
+    // Limite le nombre de notifications affichées
+    if (notificationsList.children.length > 10) {
+        notificationsList.removeChild(notificationsList.lastChild);
+    }
+
+    const notificationBadge = document.getElementById('notification-badge');
+    notificationBadge.style.display = 'block';
+};
+
+document.querySelector('[aria-label="Notifications"]').addEventListener('click', function () {
+    const dropdown = document.getElementById('notifications-dropdown');
+    dropdown.classList.toggle('hidden');
+
+    // Masque le badge de notification après avoir ouvert la liste
+    const notificationBadge = document.getElementById('notification-badge');
+    notificationBadge.style.display = 'none';
+});
+</script>
+    
+</body>
+
+{% endblock %}
+

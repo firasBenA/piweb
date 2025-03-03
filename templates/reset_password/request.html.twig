@@ -1,0 +1,58 @@
+
+{% block stylesheets %}
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+     <style>
+        .invalid-feedback {
+            font-size: 1.2rem;
+            margin-top: 0.5rem;
+            color: #dc3545;
+        }
+        .is-invalid {
+            border-color: #dc3545;
+            border-width: 2px;
+        }
+    </style>
+{% endblock %}
+
+{% block body %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6" style="height:500px">
+            <div class="card" style="margin-top:150px">
+                <div class="card-header text-center">
+                    <h1>Reset your password</h1>
+                </div>
+                <div class="card-body">
+                    <p class="text-center">
+                        Entrez votre adresse e-mail et nous vous enverrons un lien pour réinitialiser votre mot de passe.
+                    </p>
+                    {{ form_start(requestForm, {'attr': {'novalidate': 'novalidate'}}) }}
+                        <div class="form-group">
+                            {{ form_label(requestForm.email, 'Adresse email', {'label_attr': {'class': 'font-weight-bold'}}) }}
+                            
+                            {{ form_widget(requestForm.email, {
+                                'attr': {
+                                    'class': 'form-control' ~ (requestForm.email.vars.errors|length ? ' is-invalid'),
+                                    'placeholder': 'exemple@domaine.com'
+                                }
+                            }) }}
+                            
+                            <div class="invalid-feedback">
+                                {% for error in requestForm.email.vars.errors %}
+                                    <div>{{ error.message }}</div>
+                                {% endfor %}
+                            </div>
+                            
+                            {# Message d'aide optionnel #}
+                            <small class="form-text text-muted">
+                                L'email doit correspondre à celui utilisé lors de l'inscription
+                            </small>
+                        </div>
+                        <button class="btn btn-primary btn-block">Envoyer un e-mail de réinitialisation du mot de passe</button>
+                    {{ form_end(requestForm) }}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

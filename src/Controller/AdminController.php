@@ -7,7 +7,9 @@ use App\Entity\Diagnostique;
 use App\Entity\Evenement;
 use App\Entity\Prescription;
 use App\Entity\Reclamation;
+use App\Entity\User;
 use App\Repository\DiagnostiqueRepository;
+use App\Repository\UserRepository;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
@@ -20,19 +22,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
 
+#[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
-    #[Route('/admin', name: 'admin_dashboard')]
-    public function index(Security $security): Response
-    {
-        // Get the logged-in user
-        $user = $security->getUser();
-
-        return $this->render('admin/index.html.twig', [
-            'user' => $user,
-        ]);
-    }
+    
 
     #[Route('admin/prescription', name: 'prescriptionAdmin')]
     public function prescriptionDashboard(
@@ -320,5 +315,95 @@ class AdminController extends AbstractController
         $response->headers->set('Cache-Control', 'max-age=0');
 
         return $response;
+
     }
+    #[Route('/', name: 'admin_dashboard')]
+    public function index(Security $security, UserRepository $userRepository): Response
+    {
+        // Get the logged-in user
+        $user = $security->getUser();
+    
+        // Get the list of medecins and patients
+        $medecins = $userRepository->findByRoles('ROLE_MEDECIN');
+        $patients = $userRepository->findByRoles('ROLE_PATIENT');
+    
+        // Debug: Check the data fetched
+        dump($medecins, $patients);
+    
+        return $this->render('admin/index.html.twig', [
+            'user' => $user,
+            'medecins' => $medecins,
+            'patients' => $patients,
+        ]);
+    }
+
+    
+    #[Route('/users', name: 'admin_users', methods: ['GET'])]
+    public function listUsers(UserRepository $userRepository): Response
+    {
+        // Get the list of medecins and patients
+        $medecins = $userRepository->findByRoles('ROLE_MEDECIN');
+        $patients = $userRepository->findByRoles('ROLE_PATIENT');
+
+        // Render the Twig template
+        return $this->render('admin/index.html.twig', [
+            'medecins' => $medecins,
+            'patients' => $patients,
+        ]);
+    }
+
+    #[Route('/admin/users/{id}/block', name: 'admin_block_user', methods: ['POST'])]
+    public function blockUser(User $user, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Récupérer le rôle actuel de l'utilisateur
+        $currentRoles = $user->getRoles();
+    
+        // Si l'utilisateur n'est pas déjà bloqué, stocker son rôle actuel dans un rôle personnalisé
+        if (!in_array('BLOCKED', $currentRoles)) {
+            // Ajouter un rôle personnalisé pour stocker le rôle d'origine
+            $originalRole = $currentRoles[0]; // Rôle d'origine (MEDECIN ou PATIENT)
+            $user->setRoles(['BLOCKED', 'ORIGINAL_ROLE_' . $originalRole]);
+        }
+    
+        // Bloquer l'utilisateur
+        $entityManager->flush();
+    
+        return $this->json([
+            'status' => 'User blocked successfully',
+            'newRole' => 'BLOCKED',
+            'userId' => $user->getId(),
+        ]);
+    }
+    
+    #[Route('/admin/users/{id}/unblock', name: 'admin_unblock_user', methods: ['POST'])]
+    public function unblockUser(User $user, EntityManagerInterface $entityManager): JsonResponse
+    {
+        // Récupérer tous les rôles de l'utilisateur
+        $currentRoles = $user->getRoles();
+    
+        // Trouver le rôle d'origine (s'il existe)
+        $originalRole = null;
+        foreach ($currentRoles as $role) {
+            if (strpos($role, 'ORIGINAL_ROLE_') === 0) {
+                $originalRole = str_replace('ORIGINAL_ROLE_', '', $role);
+                break;
+            }
+        }
+    
+        // Si aucun rôle d'origine n'est trouvé, attribuer un rôle par défaut (PATIENT ou MEDECIN)
+        if (!$originalRole) {
+            $originalRole = 'ROLE_PATIENT'; // ou une autre logique pour déterminer le rôle par défaut
+        }
+    
+        // Débloquer l'utilisateur et lui redonner son rôle d'origine
+        $user->setRoles([$originalRole]);
+        $entityManager->flush();
+    
+        return $this->json([
+            'status' => 'User unblocked successfully',
+            'newRole' => $originalRole,
+            'userId' => $user->getId(),
+        ]);
+    }
+
 }

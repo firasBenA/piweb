@@ -123,60 +123,68 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\String\Slugger\SluggerInterface;
 use Symfony\Component\HttpFoundation\File\Exception\FileException;
+use Symfony\Component\Validator\Validator\ValidatorInterface;
+use App\Form\RegistrationFormType;
+use App\Form\UpdateProfileFormType;
+use App\Form\ChangePasswordFormType;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
+use Symfony\Component\Security\Http\Attribute\IsGranted;
+
 use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
 
+
+#[IsGranted('PATIENT')]
 class PatientController extends AbstractController
 {
 
     #[Route('/patient', name: 'patient_dashboard')]
-    public function dashboard(EntityManagerInterface $entityManager, TokenStorageInterface $tokenStorage): Response
+    public function index(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, UserPasswordHasherInterface $passwordHasher): Response
     {
-        $token = $tokenStorage->getToken();
-        $user = $token?->getUser();
+        $user = $this->getUser();
+        $form = $this->createForm(UpdateProfileFormType::class, $user);
+        $passwordForm = $this->createForm(ChangePasswordFormType::class);
+        $form->handleRequest($request);
+        $passwordForm->handleRequest($request);
 
-        if (!$user) {
-            throw $this->createAccessDeniedException('You are not logged in.');
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Handle file uploads
+            $imageProfilFile = $form->get('imageProfil')->getData();
+
+            if ($imageProfilFile) {
+                $imageProfilFileName = $this->uploadFile($imageProfilFile, $slugger, 'images_directory');
+                $user->setImageProfil($imageProfilFileName);
+            }
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            $this->addFlash('success', 'Profil mis à jour avec succès.');
+            return $this->redirectToRoute('patient_dashboard');
         }
 
-        // Retrieve the patient's dossier medical for the logged-in user
-        $dossierMedical = $entityManager->getRepository(DossierMedical::class)->findOneBy([
-            'user' => $user
-        ]);
+        if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
+            $oldPassword = $passwordForm->get('oldPassword')->getData();
+            $newPassword = $passwordForm->get('newPassword')->getData();
+            $confirmPassword = $passwordForm->get('confirmPassword')->getData();
 
-        if (!$dossierMedical) {
-            throw $this->createNotFoundException('Medical record not found for this patient.');
-        }
+            if ($newPassword !== $confirmPassword) {
+                $this->addFlash('error', 'Les nouveaux mots de passe ne correspondent pas.');
+            } elseif (!$passwordHasher->isPasswordValid($user, $oldPassword)) {
+                $this->addFlash('error', 'L\'ancien mot de passe est incorrect.');
+            } else {
+                $user->setPassword($passwordHasher->hashPassword($user, $newPassword));
+                $entityManager->persist($user);
+                $entityManager->flush();
 
-        // Retrieve related data
-        $prescriptions = $dossierMedical->getPrescriptions();
-        $diagnostiques = $entityManager->getRepository(Diagnostique::class)->findBy([
-            'dossierMedical' => $dossierMedical
-        ]);
-
-        // Collect medecins from prescriptions (avoid duplicates)
-        $medecins = [];
-        foreach ($prescriptions as $prescription) {
-            $medecin = $prescription->getMedecin();
-            if ($medecin && !in_array($medecin, $medecins, true)) {
-                $medecins[] = $medecin;
+                $this->addFlash('success', 'Mot de passe mis à jour avec succès.');
+                return $this->redirectToRoute('patient_dashboard');
             }
         }
 
-        // Pass `dossierMedicalId` explicitly
-        return $this->render('patient/dossierMedical.html.twig', [
-            'user' => $user,
-            'dossierMedical' => $dossierMedical,
-            'prescriptions' => $prescriptions,
-            'medecins' => $medecins,
-            'diagnostiques' => $diagnostiques,
-            'dossierMedicalId' => $dossierMedical->getId(), // ✅ Pass this explicitly
+        return $this->render('patient_dashboard.html.twig', [
+            'form' => $form->createView(),
+            'passwordForm' => $passwordForm->createView(),
         ]);
-    }
-
-    /*#[Route('/patient', name: 'patient_dashboard')]
-    public function index(): Response
-    {
-        return $this->render('patient_dashboard.html.twig');
     }
 
     #[Route('/patient/update-profile', name: 'patient_update_profile', methods: ['POST'])]
@@ -188,27 +196,39 @@ class PatientController extends AbstractController
             return $this->redirectToRoute('app_login2');
         }
 
-        $user->setNom($request->request->get('nom'));
-        $user->setPrenom($request->request->get('prenom'));
-        $user->setEmail($request->request->get('email'));
-        $user->setTelephone($request->request->get('telephone'));
-        $user->setAdresse($request->request->get('adresse'));
-        $user->setAge($request->request->get('age'));
-        $user->setSexe($request->request->get('sexe'));
+        $form = $this->createForm(UpdateProfileFormType::class, $user);
+        $form->handleRequest($request);
 
-        // Handle file uploads
-        $imageProfilFile = $request->files->get('imageProfil');
-
-        if ($imageProfilFile) {
-            $imageProfilFileName = $this->uploadFile($imageProfilFile, $slugger, 'images_directory');
-            $user->setImageProfil($imageProfilFileName);
+        if ($form->isSubmitted() && !$form->isValid()) {
+            return $this->json([
+                'status' => 'error',
+                'errors' => $form->getErrors(true),
+            ], 400);
         }
 
-        $entityManager->persist($user);
-        $entityManager->flush();
+        if ($form->isSubmitted() && $form->isValid()) {
+            // Handle file uploads
+            $imageProfilFile = $form->get('imageProfil')->getData();
 
-        return $this->redirectToRoute('patient_dashboard');
-    }*/
+            if ($imageProfilFile) {
+                $imageProfilFileName = $this->uploadFile($imageProfilFile, $slugger, 'images_directory');
+                $user->setImageProfil($imageProfilFileName);
+            }
+
+            $entityManager->persist($user);
+            $entityManager->flush();
+
+            return $this->json([
+                'status' => 'success',
+                'message' => 'Profil mis à jour avec succès.',
+            ]);
+        }
+
+        return $this->json([
+            'status' => 'error',
+            'message' => 'Une erreur s\'est produite.',
+        ], 500);
+    }
 
     #[Route('/patient/delete-profile', name: 'patient_delete_profile')]
     public function deleteProfile(EntityManagerInterface $entityManager): Response
@@ -237,7 +257,6 @@ class PatientController extends AbstractController
                 $newFilename
             );
         } catch (FileException $e) {
-            // handle exception if something happens during file upload
             throw new \Exception('File upload error: ' . $e->getMessage());
         }
 

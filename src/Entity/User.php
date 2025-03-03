@@ -13,11 +13,13 @@ use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
+use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface as EmailTwoFactorInterface;
+
 
 #[ORM\Entity(repositoryClass: UserRepository::class)]
 #[ORM\UniqueConstraint(name: 'UNIQ_IDENTIFIER_EMAIL', fields: ['email'])]
 #[UniqueEntity(fields: ['email'], message: 'il existe déjà un compte avec cet email.')]
-class User implements UserInterface, PasswordAuthenticatedUserInterface
+class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTwoFactorInterface
 {
     #[ORM\Id]
     #[ORM\GeneratedValue]
@@ -112,8 +114,59 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         $this->rendezVouses = new ArrayCollection();
         $this->consultations = new ArrayCollection();
+        $this->createdAt = new \DateTime();
+
     }
 
+
+    #[ORM\Column(type: 'boolean')]
+    private $emailAuthEnabled = true;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $emailAuthCode = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private $createdAt;
+
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $failedLoginAttempts = 0;
+
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $lockUntil = null;
+
+    public function getFailedLoginAttempts(): int
+    {
+        return $this->failedLoginAttempts;
+    }
+
+    public function setFailedLoginAttempts(int $attempts): self
+    {
+        $this->failedLoginAttempts = $attempts;
+        return $this;
+    }
+
+    public function getLockUntil(): ?\DateTimeInterface
+    {
+        return $this->lockUntil;
+    }
+
+    public function setLockUntil(?\DateTimeInterface $lockUntil): self
+    {
+        $this->lockUntil = $lockUntil;
+        return $this;
+    }
+
+
+    public function getCreatedAt(): ?\DateTimeInterface
+    {
+        return $this->createdAt;
+    }
+
+    public function setCreatedAt(\DateTimeInterface $createdAt): self
+    {
+        $this->createdAt = $createdAt;
+        return $this;
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -130,7 +183,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
         return $this;
     }
-
+    public function isBlocked(): bool
+    {
+        return in_array('ROLE_BLOCKED', $this->getRoles());
+    }
     /**
      * A visual identifier that represents this user.
      *
@@ -276,7 +332,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     {
         return $this->telephone;
     }
-    
+
     public function setTelephone(string $telephone): static
     {
         $this->telephone = $telephone;
@@ -381,5 +437,26 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         }
 
         return $this;
+    }
+
+    public function getEmailAuthCode(): ?string
+    {
+        return $this->emailAuthCode;
+    }
+
+    public function setEmailAuthCode(string $authCode): void
+    {
+        $this->emailAuthCode = $authCode;
+    }
+
+
+    public function isEmailAuthEnabled(): bool
+    {
+        return $this->emailAuthEnabled;
+    }
+
+    public function getEmailAuthRecipient(): string
+    {
+        return $this->getEmail();
     }
 }
