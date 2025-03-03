@@ -277,6 +277,60 @@ class PrescriptionController extends AbstractController
         }
     }
 
+    #[Route('/prescriptions/user/search', name: 'prescriptionUser_search', methods: ['GET'])]
+    public function searchUser(
+        Request $request,
+        PrescriptionRepository $prescriptionRepository,
+        LoggerInterface $logger,
+        Security $security
+    ): JsonResponse {
+        try {
+            $searchTerm = $request->query->get('search', '');
+            $logger->info('Search term: ' . $searchTerm);
+
+            // Get the currently logged-in user (Patient or Medecin)
+            $user = $security->getUser();
+
+            if (!$user instanceof User || !method_exists($user, 'getId')) {
+                throw $this->createAccessDeniedException('Access Denied. Medecin not found.');
+            }
+
+            $userId = $user->getId();
+
+            // Check if the user is a Medecin or a Patient
+            $queryBuilder = $prescriptionRepository->createQueryBuilder('p')
+                ->leftJoin('p.medecin', 'm')
+                ->leftJoin('p.patient', 'pa')
+                ->where('m.id = :userId OR pa.id = :userId')
+                ->setParameter('userId', $userId);
+
+            if ($searchTerm) {
+                $queryBuilder->andWhere('p.titre LIKE :search')
+                    ->setParameter('search', '%' . $searchTerm . '%');
+            }
+
+            $prescriptions = $queryBuilder->getQuery()->getResult();
+
+            // Prepare response data
+            $data = array_map(function ($prescription) {
+                return [
+                    'id' => $prescription->getId(),
+                    'titre' => $prescription->getTitre(),
+                    'contenue' => $prescription->getContenue(),
+                    'date' => $prescription->getDatePrescription()->format('Y-m-d'),
+                    'medecin' => $prescription->getMedecin() ? ['nom' => $prescription->getMedecin()->getNom()] : null,
+                    'patient' => $prescription->getPatient() ? ['nom' => $prescription->getPatient()->getNom()] : null,
+                ];
+            }, $prescriptions);
+
+            return $this->json($data);
+        } catch (\Exception $e) {
+            $logger->error('Error in search: ' . $e->getMessage());
+            return $this->json(['error' => 'An error occurred'], 500);
+        }
+    }
+
+
 
     #[Route('/prescriptions/search', name: 'prescription_search', methods: ['GET'])]
     public function search(Request $request, PrescriptionRepository $prescriptionRepository, LoggerInterface $logger, Security $security): JsonResponse
