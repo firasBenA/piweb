@@ -1,0 +1,161 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Chatbot{% endblock %}
+
+{% block body %}
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            background-color: #f4f4f9;
+            margin: 0;
+            padding: 0;
+        }
+        #chat-container {
+            width: 90%;
+            max-width: 600px;
+            margin: 20px auto;
+            border: 1px solid #ddd;
+            padding: 20px;
+            height: 500px;
+            overflow-y: scroll;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        #message-input {
+            width: calc(100% - 120px);
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        #send-button {
+            padding: 10px 20px;
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        #send-button:hover {
+            background-color: #0056b3;
+        }
+        .user-message, .bot-message {
+            max-width: 70%;
+            padding: 10px;
+            margin-bottom: 10px;
+            border-radius: 10px;
+            position: relative;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+        .user-message {
+            background-color: #007bff;
+            color: #fff;
+            margin-left: auto;
+            text-align: right;
+        }
+        .bot-message {
+            background-color: #e9ecef;
+            color: #333;
+            text-align: left;
+        }
+        .error-message {
+            background-color: #ff6b6b;
+            color: #fff;
+        }
+        #loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+            font-size: 14px;
+            color: #666;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+    </style>
+
+    <div id="chat-container"></div>
+    <div style="text-align: center; margin-top: 20px;">
+        <input type="text" id="message-input" placeholder="Type your message...">
+        <button id="send-button">Send</button>
+    </div>
+    <div id="loading">Loading...</div>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const messageInput = document.getElementById('message-input');
+        const sendButton = document.getElementById('send-button');
+        const loadingDiv = document.getElementById('loading');
+
+        sendButton.addEventListener('click', () => {
+            const message = messageInput.value;
+            if (message.trim() !== '') {
+                addUserMessage(message);
+                messageInput.value = '';
+                sendMessage(message);
+            }
+        });
+
+        messageInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                const message = messageInput.value;
+                if (message.trim() !== '') {
+                    addUserMessage(message);
+                    messageInput.value = '';
+                    sendMessage(message);
+                }
+            }
+        });
+
+        function addUserMessage(message) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('user-message');
+            messageDiv.textContent = message;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function addBotMessage(message, isError = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('bot-message');
+            if (isError) {
+                messageDiv.classList.add('error-message');
+            }
+            messageDiv.textContent = message;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+
+        function sendMessage(message) {
+            loadingDiv.style.display = 'block';
+            fetch('/chat', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: `message=${encodeURIComponent(message)}`
+            })
+            .then(response => response.json())
+            .then(data => {
+                loadingDiv.style.display = 'none';
+                if (data.response) {
+                    addBotMessage(data.response);
+                } else if (data.error) {
+                    addBotMessage(data.error, true);
+                } else {
+                    addBotMessage("Unexpected server response.", true);
+                }
+            })
+            .catch(error => {
+                loadingDiv.style.display = 'none';
+                console.error('Error:', error);
+                addBotMessage('An error occurred while communicating with the server.', true);
+            });
+        }
+    </script>
+{% endblock %}

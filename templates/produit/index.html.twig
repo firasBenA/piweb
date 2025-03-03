@@ -1,0 +1,174 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Produits{% endblock %}
+
+{% block body %}
+    <div class="container my-5">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1 class="fw-bold text-primary">Nos Produits</h1>
+
+            {# Cart Button #}
+            <a href="{{ path('app_cart') }}" class="btn btn-lg btn-warning position-relative">
+                🛒 Panier
+                <span id="cart-count" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                    0
+                </span>
+            </a>
+        </div>
+
+        {# Search & Filter Section #}
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="input-group">
+                    <input type="text" id="searchInput" class="form-control" placeholder="Rechercher un produit...">
+                </div>
+            </div>
+            <div class="col-md-6 d-flex justify-content-end">
+                <button id="openFilterModal" class="btn btn-outline-primary">🔽 Filtrer</button>
+            </div>
+        </div>
+
+        {# Filter Modal #}
+        <div class="modal fade" id="filterModal" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Filtrer les Produits</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label class="form-label">Prix Minimum (€)</label>
+                            <input type="number" class="form-control" id="filterPriceMin">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Prix Maximum (€)</label>
+                            <input type="number" class="form-control" id="filterPriceMax">
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Stock</label>
+                            <select class="form-control" id="filterStock">
+                                <option value="">Tous</option>
+                                <option value="yes">En stock</option>
+                                <option value="no">Rupture</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <button class="btn btn-secondary" data-bs-dismiss="modal">Fermer</button>
+                        <button class="btn btn-primary" id="applyFilters">Appliquer</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        {# Product Cards #}
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-4 g-4" id="productContainer">
+            {% for produit in produits %}
+                <div class="col product-card"
+                     data-name="{{ produit.nom | lower }}"
+                     data-price="{{ produit.prix }}"
+                     data-stock="{{ produit.stock > 0 ? 'yes' : 'no' }}">
+                    <div class="card border-0 shadow-lg h-100">
+                        {# Product Image #}
+                        {% if produit.image %}
+                            <img src="{{ asset('produits/' ~ produit.image) }}" alt="{{ produit.nom }}"
+                                 class="card-img-top rounded-top object-fit-cover" style="width: 100%; height: 200px;">
+                        {% else %}
+                            <img src="{{ asset('assets/img/placeholder.png') }}" alt="Image indisponible"
+                                 class="card-img-top rounded-top object-fit-cover" style="width: 100%; height: 200px;">
+                        {% endif %}
+
+                        {# Product Details #}
+                        <div class="card-body text-center">
+                            <h5 class="card-title fw-bold">{{ produit.nom }}</h5>
+                            <p class="card-text text-muted small">{{ produit.description }}</p>
+                            <p class="text-success fw-bold fs-5">{{ produit.prix }} €</p>
+                            <span class="badge {{ produit.stock > 0 ? 'bg-success' : 'bg-danger' }}">
+                                {{ produit.stock > 0 ? 'En stock' : 'Rupture de stock' }}
+                            </span>
+                        </div>
+
+                        {# Add to Cart Button #}
+                        <div class="card-footer bg-white border-0 text-center">
+                            <button class="btn btn-success w-100 add-to-cart"
+                                    data-id="{{ produit.id }}"
+                                    data-name="{{ produit.nom }}"
+                                    data-price="{{ produit.prix }}"
+                                    data-image="{{ asset('produits/' ~ produit.image) }}">
+                                ➕ Ajouter au Panier
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <p class="text-center text-muted">Aucun produit disponible pour le moment.</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+            function updateCartCount() {
+                $("#cart-count").text(cart.length);
+            }
+
+            $(".add-to-cart").click(function () {
+                let productId = $(this).data("id");
+                let productName = $(this).data("name");
+                let productPrice = $(this).data("price");
+                let productImage = $(this).data("image");
+
+                let existingItem = cart.find(item => item.id === productId);
+                if (existingItem) {
+                    existingItem.quantity += 1;
+                } else {
+                    cart.push({ id: productId, name: productName, price: productPrice, image: productImage, quantity: 1 });
+                }
+
+                localStorage.setItem("cart", JSON.stringify(cart));
+                updateCartCount();
+            });
+
+            updateCartCount();
+
+            // Live Search
+            $("#searchInput").on("keyup", function () {
+                let value = $(this).val().toLowerCase();
+                $(".product-card").each(function () {
+                    let name = $(this).data("name");
+                    $(this).toggle(name.includes(value));
+                });
+            });
+
+            // Filter Modal
+            $("#openFilterModal").click(function () {
+                $("#filterModal").modal("show");
+            });
+
+            // Apply Filters
+            $("#applyFilters").click(function () {
+                let minPrice = parseFloat($("#filterPriceMin").val()) || 0;
+                let maxPrice = parseFloat($("#filterPriceMax").val()) || Infinity;
+                let stockFilter = $("#filterStock").val();
+
+                $(".product-card").each(function () {
+                    let price = parseFloat($(this).data("price")) || 0;
+                    let stock = $(this).data("stock");
+
+                    let priceMatch = price >= minPrice && price <= maxPrice;
+                    let stockMatch = stockFilter === "" || stock === stockFilter;
+
+                    $(this).toggle(priceMatch && stockMatch);
+                });
+
+                $("#filterModal").modal("hide");
+            });
+        });
+    </script>
+
+{% endblock %}

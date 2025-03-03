@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Facture</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 90%; margin: auto; }
+        h1 { text-align: center; color: #4CAF50; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 10px; text-align: left; }
+        th { background: #4CAF50; color: white; }
+        .total { text-align: right; font-size: 18px; font-weight: bold; margin-top: 20px; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>Facture</h1>
+    <p>Date: {{ "now"|date("d/m/Y") }}</p>
+
+    <table>
+        <thead>
+        <tr>
+            <th>Produit</th>
+            <th>Quantité</th>
+            <th>Prix Unitaire</th>
+            <th>Total</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for item in cart %}
+            <tr>
+                <td>{{ item.name }}</td>
+                <td>{{ item.quantity }}</td>
+                <td>{{ item.price }} €</td>
+                <td>{{ (item.price * item.quantity)|number_format(2, ',', '.') }} €</td>
+            </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+
+    <p class="total">Montant Total: {{ cart|reduce((total, item) => total + (item.price * item.quantity), 0)|number_format(2, ',', '.') }} €</p>
+</div>
+</body>
+</html>

@@ -1,0 +1,97 @@
+{# filepath: /c:/Users/omara/piweb/public/produits/show.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Produit{% endblock %}
+
+{% block body %}
+{# -- Light blue background wrapper -- #}
+<div style="background-color: #72c1ec; padding: 30px;">
+    <div class="container" style="max-width: 900px;">
+        <h1 class="text-white mb-4">Produit</h1>
+
+        {# -- Use a card or box with a white background -- #}
+        <div class="row bg-light rounded p-4">
+            {# LEFT SIDE: product info list #}
+            <div class="col-md-6 mb-3 mb-md-0">
+                <ul class="list-group list-group-flush">
+                    {# If you don't want to display the ID, remove this block #}
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>Id</strong>
+                        <span>{{ produit.id }}</span>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>Nom</strong>
+                        <span>{{ produit.nom }}</span>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>Description</strong>
+                        <span>{{ produit.description }}</span>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>Prix</strong>
+                        <span>{{ produit.prix }}</span>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>CreerLe</strong>
+                        <span>
+                            {{ produit.CreerLe ? produit.CreerLe|date('Y-m-d H:i:s') : '' }}
+                        </span>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>MajLe</strong>
+                        <span>
+                            {{ produit.MajLe ? produit.MajLe|date('Y-m-d H:i:s') : '' }}
+                        </span>
+                    </li>
+
+                    <li class="list-group-item d-flex justify-content-between">
+                        <strong>Stock</strong>
+                        <span>{{ produit.stock }}</span>
+                    </li>
+                </ul>
+            </div>
+
+            {# RIGHT SIDE: Image (centered vertically & horizontally) #}
+            <div class="col-md-6 d-flex align-items-center justify-content-center">
+                {% if produit.image %}
+                    <img src="{{ asset('produits/' ~ produit.image) }}"
+                         alt="{{ produit.nom }}"
+                         class="img-fluid rounded"
+                         style="max-width: 100%; max-height: 300px;">
+                {% else %}
+                    <span class="text-muted">No image available</span>
+                {% endif %}
+            </div>
+        </div>
+
+        {# -- Action buttons -- #}
+        <div class="mt-4">
+            <a href="{{ path('app_produit_index') }}" class="btn btn-secondary me-2">
+                Back to list
+            </a>
+            <a href="{{ path('app_produit_edit', {'id': produit.id}) }}"
+               class="btn btn-primary me-2">
+                Edit
+            </a>
+
+            {# Include the delete form if you want a Delete button #}
+            {{ include('produit/_delete_form.html.twig') }}
+        </div>
+    </div>
+</div>
+
+{# -- Optional dark section below, like your ABOUT US -- #}
+<div style="background-color: #0b0e14; padding: 30px;">
+    <div class="container">
+        <h2 class="text-white">ABOUT US</h2>
+        <p class="text-light">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...
+        </p>
+    </div>
+</div>
+{% endblock %}

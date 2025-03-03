@@ -1,0 +1,16 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Paiement Réussi{% endblock %}
+
+{% block body %}
+    <section class="section-padding text-center">
+        <div class="container">
+            <div class="card shadow-lg p-5">
+                <h1 class="text-success fw-bold">🎉 Paiement Réussi !</h1>
+                <p class="text-muted mt-3">Merci pour votre commande. Votre paiement a été traité avec succès.</p>
+                <p class="fw-semibold">Vous recevrez un e-mail de confirmation sous peu.</p>
+                <a href="{{ path('home_page') }}" class="btn btn-primary mt-4">🏠 Retour à l'accueil</a>
+            </div>
+        </div>
+    </section>
+{% endblock %}

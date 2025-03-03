@@ -1,0 +1,52 @@
+{# filepath: templates/produit/edit.html.twig #}
+{% extends 'base.html.twig' %}
+
+{% block title %}Edit Produit{% endblock %}
+
+{% block body %}
+{# -- Light-blue section wrapper for consistent design -- #}
+<div style="background-color: #72c1ec; padding: 30px;">
+    <div class="container" style="max-width: 700px;">
+        <h1 class="text-white mb-4">Edit Produit</h1>
+
+        {# Optional: Show the existing image above the form, if needed #}
+        {% if produit.image %}
+            <div class="bg-light rounded p-3 mb-3 text-center">
+                <p class="fw-bold">Current Image:</p>
+                <img src="{{ asset('produits/' ~ produit.image) }}"
+                     alt="{{ produit.nom }}"
+                     class="img-fluid rounded"
+                     style="max-height: 200px;">
+            </div>
+        {% endif %}
+
+        {# Main form container #}
+        <div class="bg-light rounded p-4">
+            {{ include('produit/_form.html.twig', {'button_label': 'Update'}) }}
+        </div>
+
+        {# Action buttons: back to list + delete #}
+        <div class="mt-3">
+            <a href="{{ path('app_produit_index') }}" class="btn btn-secondary me-2">
+                Back to list
+            </a>
+
+            {# Include the delete form inline, so it doesn't drop below #}
+            {{ include('produit/_delete_form.html.twig', {
+                'style': 'display:inline;',
+                'button_class': 'btn btn-danger'
+            }) }}
+        </div>
+    </div>
+</div>
+
+{# Optional dark section below, matching your ABOUT US design #}
+<div style="background-color: #0b0e14; padding: 30px;">
+    <div class="container">
+        <h2 class="text-white">ABOUT US</h2>
+        <p class="text-light">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor...
+        </p>
+    </div>
+</div>
+{% endblock %}

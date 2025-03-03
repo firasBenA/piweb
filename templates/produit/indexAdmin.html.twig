@@ -1,0 +1,190 @@
+{% extends 'admin/index.html.twig' %}
+
+{% block body %}
+    <div class="p-6 bg-gray-50 dark:bg-gray-900">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-white mb-6">Produits</h1>
+            <button id="statistique"
+               class="mt-4 inline-block px-4 py-2 text-white bg-purple-600 rounded hover:bg-indigo-700">
+                📊 Voir les Statistiques
+            </button>
+            {# Search Bar and Filter Button #}
+            <div class="flex items-center justify-between mb-4">
+                <input type="text" id="searchInput"
+                       class="w-1/2 px-4 py-2 border rounded-md focus:ring focus:ring-purple-300 dark:bg-gray-800 dark:text-white"
+                       placeholder="Rechercher un produit...">
+                <button id="openFilterModal"
+                        class="px-4 py-2 text-white bg-purple-600 rounded-md hover:bg-purple-700 focus:outline-none">
+                    Filtrer
+                </button>
+            </div>
+            <div class="mb-4">
+                <button id="applyDiscount"
+                        class="px-4 py-2 text-white bg-purple-600 rounded-md hover:bg-red-600 focus:outline-none">Appliquer
+                    Remise 20% aux articles moins achetés
+                </button>
+            </div>
+
+
+            {# Filter Modal #}
+            <div class="fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 hidden" id="filterModal">
+                <div class="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-lg w-1/3">
+                    <h2 class="text-lg font-semibold text-gray-800 dark:text-white mb-4">Filtrer les Produits</h2>
+
+                    <label class="block text-sm text-gray-700 dark:text-gray-200 mb-2">Prix Minimum</label>
+                    <input type="number" id="filterPriceMin"
+                           class="w-full px-3 py-2 border rounded-md focus:ring focus:ring-purple-300 dark:bg-gray-700 dark:text-white">
+
+                    <label class="block text-sm text-gray-700 dark:text-gray-200 mt-4">Prix Maximum</label>
+                    <input type="number" id="filterPriceMax"
+                           class="w-full px-3 py-2 border rounded-md focus:ring focus:ring-purple-300 dark:bg-gray-700 dark:text-white">
+
+                    <label class="block text-sm text-gray-700 dark:text-gray-200 mt-4">Stock Disponible</label>
+                    <select id="filterStock"
+                            class="w-full px-3 py-2 border rounded-md focus:ring focus:ring-purple-300 dark:bg-gray-700 dark:text-white">
+                        <option value="">Tous</option>
+                        <option value="yes">En stock</option>
+                        <option value="no">Rupture</option>
+                    </select>
+
+                    <div class="mt-6 flex justify-end space-x-4">
+                        <button class="px-4 py-2 text-gray-600 bg-gray-200 rounded-md hover:bg-gray-300 dark:bg-gray-700 dark:text-white dark:hover:bg-gray-600"
+                                id="closeFilterModal">Fermer
+                        </button>
+                        <button class="px-4 py-2 text-white bg-purple-600 rounded-md hover:bg-purple-700 focus:outline-none"
+                                id="applyFilters">Appliquer
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            {# Products Table #}
+            <div class="overflow-hidden rounded-lg shadow-lg">
+                <table class="w-full table-auto border-collapse bg-white dark:bg-gray-800">
+                    <thead class="bg-purple-600 text-white">
+                    <tr>
+                        <th class="px-4 py-3 text-left">Nom</th>
+                        <th class="px-4 py-3 text-left">Description</th>
+                        <th class="px-4 py-3 text-left">Prix</th>
+                        <th class="px-4 py-3 text-left">Ventes</th>
+                        <th class="px-4 py-3 text-left">Créé Le</th>
+                        <th class="px-4 py-3 text-left">Mis à Jour</th>
+                        <th class="px-4 py-3 text-left">Stock</th>
+                        <th class="px-4 py-3 text-left">Image</th>
+                        <th class="px-4 py-3 text-center">Actions</th>
+                    </tr>
+                    </thead>
+                    <tbody id="productTableBody" class="divide-y dark:divide-gray-700">
+                    {% for produit in produits %}
+                        <tr class="product-row hover:bg-gray-100 dark:hover:bg-gray-700">
+                            <td class="px-4 py-3 text-gray-800 dark:text-white product-name">{{ produit.nom }}</td>
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-300 product-description">{{ produit.description }}</td>
+                            <td class="px-4 py-3 text-gray-800 dark:text-white product-price">{{ produit.prix }}</td>
+                            <td class="px-4 py-3 text-gray-800 dark:text-white font-bold">{{ produit.ventes }}</td>
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-300 product-creerle">{{ produit.CreerLe ? produit.CreerLe|date('Y-m-d H:i:s') : '' }}</td>
+                            <td class="px-4 py-3 text-gray-600 dark:text-gray-300 product-majle">{{ produit.MajLe ? produit.MajLe|date('Y-m-d H:i:s') : '' }}</td>
+                            <td class="px-4 py-3 product-stock">
+                                {{ produit.stock > 0 ? 'En stock' : 'Rupture' }}
+                            </td>
+                            <td class="px-4 py-3">
+                                {% if produit.image %}
+                                    <img src="{{ asset('produits/' ~ produit.image) }}" alt="{{ produit.nom }}"
+                                         class="h-12 w-12 object-cover rounded">
+                                {% else %}
+                                    <span class="text-gray-400">No image</span>
+                                {% endif %}
+                            </td>
+                            <td class="px-4 py-3 flex justify-center space-x-2">
+                                <a href="{{ path('app_produit_show', {'id': produit.id}) }}"
+                                   class="px-3 py-1 text-white bg-blue-500 rounded hover:bg-blue-600">Show</a>
+                                <a href="{{ path('app_produit_edit', {'id': produit.id}) }}"
+                                   class="px-3 py-1 text-white bg-yellow-500 rounded hover:bg-yellow-600">Edit</a>
+                            </td>
+                        </tr>
+                    {% else %}
+                        <tr>
+                            <td colspan="8" class="text-center py-4 text-gray-500 dark:text-gray-400">
+                                <em>No records found</em>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+
+            <a href="{{ path('app_produit_new') }}"
+               class="mt-4 inline-block px-4 py-2 text-white bg-green-600 rounded hover:bg-green-700">
+                Create New
+            </a>
+        </div>
+    </div>
+
+    {# Include jQuery and Tailwind-compatible JavaScript #}
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Open Filter Modal
+            $("#openFilterModal").click(function () {
+                $("#filterModal").removeClass("hidden");
+            });
+
+            // Close Filter Modal
+            $("#closeFilterModal").click(function () {
+                $("#filterModal").addClass("hidden");
+            });
+
+            // Live Search Functionality
+            $("#searchInput").on("keyup", function () {
+                let value = $(this).val().toLowerCase();
+                $(".product-row").each(function () {
+                    $(this).toggle(
+                        $(this).find(".product-name").text().toLowerCase().includes(value) ||
+                        $(this).find(".product-description").text().toLowerCase().includes(value) ||
+                        $(this).find(".product-price").text().toLowerCase().includes(value)
+                    );
+                });
+            });
+
+
+            $("#applyDiscount").click(function () {
+                $.ajax({
+                    url: "{{ path('apply_discount') }}",
+                    type: "POST",
+                    success: function (response) {
+                        alert("Remise appliquée avec succès!");
+                        location.reload();
+                    },
+                    error: function () {
+                        alert("Erreur lors de l'application de la remise.");
+                    }
+                });
+            });
+            $("#statistique").click(function () {
+                window.location.href = "{{ path('app_produit_statistiques') }}";
+            });
+
+            // Apply Filters
+            $("#applyFilters").click(function () {
+                let minPrice = parseFloat($("#filterPriceMin").val()) || 0;
+                let maxPrice = parseFloat($("#filterPriceMax").val()) || Infinity;
+                let stockFilter = $("#filterStock").val();
+
+                $(".product-row").each(function () {
+                    let price = parseFloat($(this).find(".product-price").text()) || 0;
+                    let stock = $(this).find(".product-stock").text().trim();
+
+                    let priceMatch = price >= minPrice && price <= maxPrice;
+                    let stockMatch = stockFilter === "" ||
+                        (stockFilter === "yes" && stock === "En stock") ||
+                        (stockFilter === "no" && stock === "Rupture");
+
+                    $(this).toggle(priceMatch && stockMatch);
+                });
+
+                $("#filterModal").addClass("hidden");
+            });
+        });
+    </script>
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends 'admin/index.html.twig' %}
+
+{% block body %}
+    <div class="p-6 bg-gray-50 dark:bg-gray-900">
+        <div class="container mx-auto">
+            <h1 class="text-2xl font-semibold text-gray-800 dark:text-white mb-6">📊 Statistiques des Produits</h1>
+
+            <div id="chart" class="bg-white p-6 rounded-lg shadow-md dark:bg-gray-800"></div>
+
+            <button id="backButton"
+                    class="mt-4 inline-block px-4 py-2 text-white bg-blue-600 rounded hover:bg-blue-700">
+                ⬅ Retour aux Produits
+            </button>
+        </div>
+    </div>
+
+    {# Include ApexCharts JS Library #}
+    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var options = {
+                series: [{
+                    name: "Ventes",
+                    data: {{ ventesData|raw }}
+                }],
+                chart: {
+                    type: 'bar',
+                    height: 350
+                },
+                plotOptions: {
+                    bar: {
+                        horizontal: false,
+                        columnWidth: '55%',
+                        endingShape: 'rounded'
+                    },
+                },
+                dataLabels: {
+                    enabled: false
+                },
+                xaxis: {
+                    categories: {{ produitLabels|raw }},
+                },
+                fill: {
+                    opacity: 1
+                }
+            };
+
+            var chart = new ApexCharts(document.querySelector("#chart"), options);
+            chart.render();
+
+            // ✅ Fixed back button (using plain JavaScript instead of jQuery)
+            document.getElementById("backButton").addEventListener("click", function () {
+                window.location.href = "{{ path('app_produit_admin_index') }}";
+            });
+        });
+
+    </script>
+{% endblock %}
