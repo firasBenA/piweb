@@ -199,20 +199,34 @@ class AdminController extends AbstractController
 
 
     #[Route('/admin/evenArtic', name: 'evenArticAdmin')]
-    public function evenArtic(Security $security, EntityManagerInterface $entityManager): Response
-    {
+    public function evenArtic(
+    Security $security, 
+    EntityManagerInterface $entityManager, 
+    PaginatorInterface $paginator, 
+    Request $request
+): Response {
+    $user = $security->getUser();
 
-        $user = $security->getUser();
+   
+    $evenementsQuery = $entityManager->getRepository(Evenement::class)->createQueryBuilder('e')->getQuery();
+    $articlesQuery = $entityManager->getRepository(Article::class)->createQueryBuilder('a')->getQuery();
 
-        // Retrieve the 'prescriptions' related to the logged-in Medecin
-        $evenements = $entityManager->getRepository(Evenement::class)->findAll();
-        $articles = $entityManager->getRepository(Article::class)->findAll();
+    $evenements = $paginator->paginate(
+        $evenementsQuery,
+        $request->query->getInt('page', 1), 
+        3 
+    );
 
+    $articles = $paginator->paginate(
+        $articlesQuery,
+        $request->query->getInt('page', 1), 
+        3 
+    );
 
-        return $this->render('admin/evenArtic.html.twig', [
-            'user' => $user,
-            'evenements' => $evenements,
-            'articles' => $articles
-        ]);
-    }
+    return $this->render('admin/evenArtic.html.twig', [
+        'user' => $user,
+        'evenements' => $evenements,
+        'articles' => $articles
+    ]);
+}
 }

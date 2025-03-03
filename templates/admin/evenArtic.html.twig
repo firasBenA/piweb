@@ -40,12 +40,15 @@
 											</tr>
 										{% else %}
 											<tr>
-												<td colspan="6" class="text-center">No diagnostiques available.</td>
+												<td colspan="6" class="text-center">Il n'ya pas d'evenements pour le moment</td>
 											</tr>
 										{% endfor %}
 									</tbody>
 								</table>
 							</div>
+							<div class="pagination-container text-center">
+    {{ knp_pagination_render(evenements) }}
+</div>
 						</div>
 					</div>
 				</div>
@@ -105,11 +108,14 @@
 											</tr>
 										{% else %}
 											<tr>
-												<td colspan="6" class="text-center">No diagnostiques available.</td>
+												<td colspan="6" class="text-center">Il n'ya pas d'articles pour le moment</td>
 											</tr>
 										{% endfor %}
 									</tbody>
 								</table>
+								<div class="pagination-container text-center">
+    								{{ knp_pagination_render(articles) }}
+</div>
 							</div>
 						</div>
 					</div>
