@@ -39,9 +39,23 @@ class Reclamation
     #[ORM\Column(length: 255)]
     private ?string $etat = null;
 
-    #[ORM\ManyToOne(targetEntity: Patient::class, inversedBy: 'reclamations')]
-    private ?Patient $patient = null;
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'reclamations')]
+    #[ORM\JoinColumn(nullable: false)]
+    private ?User $user = null;
+    
+    #[ORM\OneToOne(mappedBy: 'reclamation', cascade: ['persist', 'remove'])]
+    private ?Reponse $reponse = null;
 
+    public function getReponse(): ?Reponse
+    {
+        return $this->reponse;
+    }
+
+    public function setReponse(?Reponse $reponse): static
+    {
+        $this->reponse = $reponse;
+        return $this;
+    }
     public function getId(): ?int
     {
         return $this->id;
@@ -95,15 +109,14 @@ class Reclamation
         return $this;
     }
 
-    public function getPatient(): ?Patient
+    public function getUser(): ?User
     {
-        return $this->patient;
+        return $this->user;
     }
 
-    public function setPatient(?Patient $patient): static
+    public function setUser(?User $user): static
     {
-        $this->patient = $patient;
-
+        $this->user = $user;
         return $this;
     }
 }

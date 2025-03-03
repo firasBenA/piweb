@@ -124,7 +124,6 @@ final class ConsultationController extends AbstractController
     }
 
 
-
     #[Route('medash', name: 'medecinDashboard')]
     public function dashboard(Security $security): Response
     {

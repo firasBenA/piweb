@@ -4,9 +4,19 @@
     <div class="container mt-5">
         <h1 class="text-center text-primary fw-bold mb-4">📑 Ajouter une Réclamation</h1>
 
+        {# Affichage des messages de succès #}
         {% for message in app.flashes('success') %}
-            <div class="alert alert-success">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
                 {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+        {% endfor %}
+
+        {# Affichage des messages d'erreur #}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
             </div>
         {% endfor %}
 
@@ -34,12 +44,17 @@
                     {{ form_label(form.description, null, {'label_attr': {'class': 'form-label'}}) }}
                     {{ form_widget(form.description, {
                         'attr': {
-                            'class': 'form-control',
+                            'class': 'form-control ' ~ (app.flashes('error') ? 'is-invalid' : ''),
                             'required': 'required',
                             'minlength': 10,
                             'rows': 5
                         }
                     }) }}
+                    {% if app.flashes('error') %}
+                        <div class="invalid-feedback fw-bold">
+                            {{ app.flashes('error')|first }}
+                        </div>
+                    {% endif %}
                     {{ form_errors(form.description, {'attr': {'class': 'text-danger fw-bold mt-1'}}) }}
                 </div>
 
@@ -76,6 +91,26 @@
 
         .form-control {
             border-radius: 8px;
+        }
+
+        .form-control.is-invalid {
+            border: 2px solid red;
+            background-color: #ffe6e6;
+        }
+
+        .alert {
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
         }
     </style>
 {% endblock %}

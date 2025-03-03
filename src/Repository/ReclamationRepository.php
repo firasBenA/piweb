@@ -15,7 +15,25 @@ class ReclamationRepository extends ServiceEntityRepository
     {
         parent::__construct($registry, Reclamation::class);
     }
+    public function getStatsParEtat(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->select('r.etat as etat, COUNT(r.id) as count')
+            ->groupBy('r.etat')
+            ->getQuery()
+            ->getResult();
+    }
 
+    public function getStatsParDateDebut(): array
+    {
+        return $this->createQueryBuilder('r')
+            ->select("FUNCTION('DATE', r.date_debut) as date, COUNT(r.id) as count")
+            ->groupBy('date')
+            ->orderBy('date', 'ASC')
+            ->getQuery()
+            ->getResult();
+    }
+    
     //    /**
     //     * @return Reclamation[] Returns an array of Reclamation objects
     //     */

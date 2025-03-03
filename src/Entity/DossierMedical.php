@@ -28,7 +28,6 @@ class DossierMedical
     #[ORM\OneToOne(targetEntity: User::class, inversedBy: 'dossierMedical')]
     #[ORM\JoinColumn(nullable: false)]
     private ?User $user = null;
-
     /**
      * @var Collection<int, Prescription>
      */

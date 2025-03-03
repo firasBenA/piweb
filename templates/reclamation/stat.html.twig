@@ -1,0 +1,49 @@
+{% extends './admin/baseadmin.html.twig' %}
+
+{% block title %}Dashboard
+{% endblock %}
+{% block stylesheets %}
+	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+{% endblock %}
+{% block body %}
+<div style="display: flex; justify-content: center; align-items: center; height: 80vh;background-color: #f8f9fa;">
+    <div style="width: 50%;">
+        <h1>Statistiques des réclamations</h1>
+
+        <canvas id="reclamationChart"></canvas>
+    </div>
+</div>
+ 
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        var ctx = document.getElementById('reclamationChart').getContext('2d');
+        var reclamationChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: {{ labels|raw }},
+                datasets: [{
+                    label: 'Nombre de réclamations',
+                    data: {{ data|raw }},
+                    backgroundColor: ['#F27438', '#A7E0E0'],
+                    borderColor: 'black',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                  plugins: {
+                    legend: {
+                        display: false // Cache la légende
+                    }
+                },
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+{% endblock %}

@@ -9,7 +9,8 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
 use App\Entity\Reclamation;
 use App\Form\ReclamationType;
-use App\Entity\Patient; // Ajout de l'entité Patient si elle est liée
+use App\Entity\User; // Use User instead of Patient
+use Symfony\Component\Security\Core\Security;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 
 final class ReclamationController extends AbstractController
@@ -17,78 +18,136 @@ final class ReclamationController extends AbstractController
     #[Route('/liste', name: 'reclamation_page')]
     public function index(EntityManagerInterface $entityManager, Request $request): Response
     {
-        // Get the 'etat' parameter from the request (query string)
+        $user = $this->getUser();
         $etat = $request->query->get('etat');
-    
-        // Check if the 'etat' is provided and apply the filter accordingly
+
+        $criteria = ['user' => $user];
         if ($etat) {
-            // Filter by the selected state
-            $reclamations = $entityManager->getRepository(Reclamation::class)
-                ->findBy(['etat' => $etat], ['date_debut' => 'DESC']);
-        } else {
-            // If no filter, fetch all reclamations
-            $reclamations = $entityManager->getRepository(Reclamation::class)
-                ->findBy([], ['date_debut' => 'DESC']);
+            $criteria['etat'] = $etat;
         }
-    
+
+        $reclamations = $entityManager->getRepository(Reclamation::class)
+            ->findBy($criteria, ['date_debut' => 'DESC']);
+
+        // Handle AJAX requests: return only the table partial
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('reclamation/_table.html.twig', [
+                'reclamations' => $reclamations,
+            ]);
+        }
+
+        // Regular response: return full page with layout
         return $this->render('reclamation/liste.html.twig', [
             'reclamations' => $reclamations,
         ]);
     }
-    
+
+
+
+
+
 
     #[Route('/ajouter', name: 'ajouter_reclamation')]
-    public function ajouter(Request $request, EntityManagerInterface $entityManager): Response
+    public function ajouter(Request $request, EntityManagerInterface $entityManager, Security $security): Response
     {
         $reclamation = new Reclamation();
         $form = $this->createForm(ReclamationType::class, $reclamation);
         $form->handleRequest($request);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
-            // Récupérer un patient existant (remplace l'ID par un ID valide)
-            $patient = $entityManager->getRepository(Patient::class)->find(1);
-    
-            if (!$patient) {
-                throw $this->createNotFoundException("Le patient avec l'ID 1 n'existe pas !");
+            // Liste des mots interdits
+            $forbiddenWords = [
+                // Anglais
+                'fuck',
+                'bitch',
+                'asshole',
+                'dickhead',
+                'cunt',
+                'shit',
+                'motherfucker',
+                // Français
+                'pute',
+                'salope',
+                'fils de pute',
+                'enculé',
+                'ta mère',
+                'tocard',
+                'gros con',
+                'dégage',
+
+            ];
+
+            // Récupérer le contenu de la réclamation (supposons un champ 'description')
+            $content = $reclamation->getDescription(); // Ajuste selon le nom de ton champ
+            $sujet = $reclamation->getSujet();
+            // Vérifier si le contenu contient des mots interdits
+            $contentLower = strtolower($content);
+            foreach ($forbiddenWords as $word) {
+                if (strpos($contentLower, $word) !== false) {
+                    $this->addFlash('error', 'Oops ! Certains mots de votre commentaire ne respectent pas nos règles. Essayez de les reformuler 😊.');
+                    return $this->render('reclamation/ajouterrec.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
+                if (strpos(strtolower($sujet), $word) !== false) {
+                    $this->addFlash('error', 'Oops ! Certains mots de votre commentaire ne respectent pas nos règles. Essayez de les reformuler 😊.');
+                    return $this->render('reclamation/ajouterrec.html.twig', [
+                        'form' => $form->createView(),
+                    ]);
+                }
             }
-    
-            // Associer la réclamation au patient
-            $reclamation->setPatient($patient);
+
+            // Get the current logged-in user
+            $user = $security->getUser();
+
+            if (!$user) {
+                throw $this->createAccessDeniedException('Vous devez être connecté pour faire une réclamation.');
+            }
+
+            $reclamation->setUser($user);
             $reclamation->setEtat('en_attente');
             $reclamation->setDateDebut(new \DateTime());
-    
-            // Persister la réclamation dans la base de données
+
             $entityManager->persist($reclamation);
             $entityManager->flush();
-    
-            // Ajouter un message flash de succès
+
             $this->addFlash('success', 'Réclamation ajoutée avec succès !');
-    
-            // Rediriger vers la liste des réclamations
             return $this->redirectToRoute('reclamation_page');
         }
-    
-        // Rendre le formulaire d'ajout de réclamation
+
         return $this->render('reclamation/ajouterrec.html.twig', [
             'form' => $form->createView(),
         ]);
     }
 
-    #[Route('/modifier/{id}', name: 'modifier_reclamation')]
+    #[Route('/modifierreclamtion/{id}', name: 'modifier_reclamation')]
     public function modifier(Request $request, Reclamation $reclamation, EntityManagerInterface $entityManager): Response
     {
+        // Get the currently logged-in user
+        $user = $this->getUser();
+
+        // Check if the reclamation is associated with the current user
+        if ($reclamation->getUser() !== $user) {
+            // If the reclamation is not created by the logged-in user, deny access
+            throw $this->createAccessDeniedException('Vous n\'avez pas la permission de modifier cette réclamation.');
+        }
+
+        // Create and handle the form for editing the reclamation
         $form = $this->createForm(ReclamationType::class, $reclamation);
         $form->handleRequest($request);
 
+        // If the form is submitted and valid, update the reclamation in the database
         if ($form->isSubmitted() && $form->isValid()) {
             $entityManager->flush();
 
-            // Flash message
+            // Flash success message
             $this->addFlash('success', 'Réclamation mise à jour avec succès !');
 
+            // Redirect to the reclamation list page
             return $this->redirectToRoute('reclamation_page');
         }
 
+        // Render the form in the view
         return $this->render('reclamation/modifier.html.twig', [
             'form' => $form->createView(),
         ]);
@@ -102,5 +161,31 @@ final class ReclamationController extends AbstractController
         $entityManager->flush();
 
         return $this->redirectToRoute('reclamation_page');
+    }
+    #[Route('/statistiques', name: 'reclamation_statistiques')]
+    public function statistiques(EntityManagerInterface $entityManager): Response
+    {
+        $repository = $entityManager->getRepository(Reclamation::class);
+
+        // Utilisation de QueryBuilder pour compter les réclamations par état
+        $stats = $repository->createQueryBuilder('r')
+            ->select('r.etat, COUNT(r.id) as count')
+            ->groupBy('r.etat')
+            ->getQuery()
+            ->getResult();
+
+        // Formater les données pour le graphique
+        $labels = [];
+        $data = [];
+
+        foreach ($stats as $stat) {
+            $labels[] = $stat['etat'];
+            $data[] = $stat['count'];
+        }
+
+        return $this->render('reclamation/stat.html.twig', [
+            'labels' => json_encode($labels),
+            'data' => json_encode($data),
+        ]);
     }
 }

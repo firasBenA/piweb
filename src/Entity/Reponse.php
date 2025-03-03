@@ -27,7 +27,7 @@ class Reponse
     #[ORM\Column(type: "datetime")]
     private ?\DateTimeInterface $date_de_reponse = null;
     
-
+        
     #[ORM\OneToOne(targetEntity: Reclamation::class, inversedBy: 'reponses')]
     #[ORM\JoinColumn(nullable: false)]
     #[ORM\JoinColumn(onDelete: 'CASCADE')]
@@ -49,8 +49,7 @@ class Reponse
 
         return $this;
     }
-
-    public function getDateDeReponse(): ?string
+    public function getDateDeReponse(): ?\DateTimeInterface
     {
         return $this->date_de_reponse;
     }
