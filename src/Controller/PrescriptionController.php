@@ -241,8 +241,8 @@ class PrescriptionController extends AbstractController
     }
 
 
-    #[Route('/prescriptions/search', name: 'prescription_search', methods: ['GET'])]
-    public function search(Request $request, PrescriptionRepository $prescriptionRepository, LoggerInterface $logger): JsonResponse
+    #[Route('/prescriptions/admin/search', name: 'prescriptionAdmin_search', methods: ['GET'])]
+    public function searchAdmin(Request $request, PrescriptionRepository $prescriptionRepository, LoggerInterface $logger): JsonResponse
     {
         try {
             $searchTerm = $request->query->get('search', '');
@@ -276,6 +276,62 @@ class PrescriptionController extends AbstractController
             return $this->json(['error' => 'An error occurred'], 500);
         }
     }
+
+
+    #[Route('/prescriptions/search', name: 'prescription_search', methods: ['GET'])]
+    public function search(Request $request, PrescriptionRepository $prescriptionRepository, LoggerInterface $logger, Security $security): JsonResponse
+    {
+        try {
+            $searchTerm = $request->query->get('search', '');
+            $logger->info('Search term: ' . $searchTerm); // Debugging
+
+            // Fetch the currently authenticated user (Medecin)
+            $user = $security->getUser();
+
+            // Ensure the user is an instance of User (Medecin)
+            if (!$user instanceof User || !method_exists($user, 'getId')) {
+                throw $this->createAccessDeniedException('Access Denied. Medecin not found.');
+            }
+
+            $medecinId = $user->getId(); // Get the authenticated Medecin's ID
+
+            // Search query adjusted to filter by Medecin and search term
+            if (!$searchTerm) {
+                $prescriptions = $prescriptionRepository->createQueryBuilder('p')
+                    ->innerJoin('p.medecin', 'm')
+                    ->where('m.id = :medecinId')
+                    ->setParameter('medecinId', $medecinId)
+                    ->getQuery()
+                    ->getResult(); // Get prescriptions for the authenticated Medecin
+            } else {
+                $prescriptions = $prescriptionRepository->createQueryBuilder('p')
+                    ->innerJoin('p.medecin', 'm')
+                    ->where('m.id = :medecinId')
+                    ->andWhere('p.titre LIKE :search')
+                    ->setParameter('medecinId', $medecinId)
+                    ->setParameter('search', '%' . $searchTerm . '%')
+                    ->getQuery()
+                    ->getResult(); // Filter by Medecin and search term
+            }
+
+            $data = [];
+            foreach ($prescriptions as $prescription) {
+                $data[] = [
+                    'id' => $prescription->getId(),
+                    'titre' => $prescription->getTitre(),
+                    'contenue' => $prescription->getContenue(),
+                    'date' => $prescription->getDatePrescription()->format('Y-m-d'),
+                    'medecin' => ['nom' => $prescription->getMedecin()->getNom()],
+                ];
+            }
+
+            return $this->json($data);
+        } catch (\Exception $e) {
+            $logger->error('Error in search: ' . $e->getMessage());
+            return $this->json(['error' => 'An error occurred'], 500);
+        }
+    }
+
 
 
     #[Route('/download/{id}', name: 'prescription_download')]

@@ -117,7 +117,7 @@
 document.getElementById('searchDiagnostique').addEventListener('input', function () {
     let searchValue = this.value.trim();
 
-    fetch('/diagnostique/search?search=' + encodeURIComponent(searchValue) + '&page=1') // Reset to page 1 when a new search starts
+    fetch('/admin/diagnostique/search?search=' + encodeURIComponent(searchValue) + '&page=1') // Reset to page 1 when a new search starts
         .then(response => response.json())
         .then(data => {
             let tableBody = document.getElementById('diagnosticsTable');
@@ -177,7 +177,7 @@ document.getElementById('searchDiagnostique').addEventListener('input', function
 
 // Function to load a specific page
 function loadPage(page, searchValue) {
-    fetch(`/diagnostique/search?search=${encodeURIComponent(searchValue)}&page=${page}`)
+    fetch(`/admin/diagnostique/search?search=${encodeURIComponent(searchValue)}&page=${page}`)
         .then(response => response.json())
         .then(data => {
             let tableBody = document.getElementById('diagnosticsTable');
@@ -241,7 +241,7 @@ document.addEventListener("DOMContentLoaded", function () {
 document.getElementById('searchPrescription').addEventListener('input', function () {
 let searchValue = this.value.trim();
 
-fetch('/prescription/prescriptions/search?search=' + encodeURIComponent(searchValue)).then(response => response.json()).then(data => {
+fetch('/prescription/prescriptions/admin/search?search=' + encodeURIComponent(searchValue)).then(response => response.json()).then(data => {
 let tableBody = document.getElementById('prescriptionsTable');
 tableBody.innerHTML = '';
 

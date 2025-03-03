@@ -24,10 +24,8 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\StreamedResponse;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
-    
 
     #[Route('admin/prescription', name: 'prescriptionAdmin')]
     public function prescriptionDashboard(
@@ -141,8 +139,10 @@ class AdminController extends AbstractController
     // }
 
     // 
-    #[Route('/diagnostique/search', name: 'diagnostique_search', methods: ['GET'])]
-    public function search(Request $request, DiagnostiqueRepository $diagnostiqueRepository, LoggerInterface $logger, PaginatorInterface $paginator): JsonResponse
+
+  
+    #[Route('/admin/diagnostique/search', name: 'diagnostiqueAdmin_search', methods: ['GET'])]
+    public function searchAdmin(Request $request, DiagnostiqueRepository $diagnostiqueRepository, LoggerInterface $logger, PaginatorInterface $paginator): JsonResponse
     {
         try {
             $searchTerm = $request->query->get('search', '');
@@ -192,6 +192,73 @@ class AdminController extends AbstractController
             return $this->json(['error' => 'An error occurred'], 500);
         }
     }
+
+
+    #[Route('/diagnostique/search', name: 'diagnostique_search', methods: ['GET'])]
+    public function search(Request $request, DiagnostiqueRepository $diagnostiqueRepository, LoggerInterface $logger, PaginatorInterface $paginator, Security $security): JsonResponse
+    {
+        try {
+            $searchTerm = $request->query->get('search', '');
+            $page = $request->query->getInt('page', 1); // Get page number
+            $limit = 5; // Number of results per page
+
+            // Fetch the currently authenticated user (Medecin)
+            $user = $security->getUser();
+
+            // Ensure the user is an instance of User (Medecin)
+            if (!$user instanceof User || !method_exists($user, 'getId')) {
+                throw $this->createAccessDeniedException('Access Denied. Medecin not found.');
+            }
+
+            $medecinId = $user->getId(); // Get the authenticated Medecin's ID
+
+            // Search query adjusted to filter by Medecin and search term
+            $queryBuilder = $diagnostiqueRepository->createQueryBuilder('d')
+                ->innerJoin('d.medecin', 'm')
+                ->where('m.id = :medecinId')
+                ->setParameter('medecinId', $medecinId);
+
+            if ($searchTerm) {
+                $queryBuilder->andWhere('d.nom LIKE :search')
+                    ->setParameter('search', '%' . $searchTerm . '%');
+            }
+
+            // Paginate the results
+            $pagination = $paginator->paginate(
+                $queryBuilder, // Query builder
+                $page, // Current page number
+                $limit // Number of results per page
+            );
+
+            // Prepare the data to be sent as JSON
+            $data = [];
+            foreach ($pagination->getItems() as $diagnostique) {
+                $data[] = [
+                    'id' => $diagnostique->getId(),
+                    'nom' => $diagnostique->getNom(),
+                    'zoneCorps' => $diagnostique->getZoneCorps(),
+                    'date' => $diagnostique->getDateDiagnostique()->format('Y-m-d'),
+                    'medecin' => $diagnostique->getMedecin() ? $diagnostique->getMedecin()->getNom() : null,
+                    'status' => $diagnostique->getStatus(),
+                ];
+            }
+
+            // Manually calculate total pages
+            $totalItems = $pagination->getTotalItemCount();
+            $totalPages = ceil($totalItems / $limit);
+
+            // Return paginated data along with pagination details
+            return $this->json([
+                'results' => $data,
+                'totalPages' => $totalPages,  // Total pages calculated manually
+                'currentPage' => $pagination->getCurrentPageNumber(),  // Current page number
+            ]);
+        } catch (\Exception $e) {
+            $logger->error('Error in search: ' . $e->getMessage());
+            return $this->json(['error' => 'An error occurred'], 500);
+        }
+    }
+
 
 
 
@@ -315,21 +382,20 @@ class AdminController extends AbstractController
         $response->headers->set('Cache-Control', 'max-age=0');
 
         return $response;
-
     }
     #[Route('/', name: 'admin_dashboard')]
     public function index(Security $security, UserRepository $userRepository): Response
     {
         // Get the logged-in user
         $user = $security->getUser();
-    
+
         // Get the list of medecins and patients
         $medecins = $userRepository->findByRoles('ROLE_MEDECIN');
         $patients = $userRepository->findByRoles('ROLE_PATIENT');
-    
+
         // Debug: Check the data fetched
         dump($medecins, $patients);
-    
+
         return $this->render('admin/index.html.twig', [
             'user' => $user,
             'medecins' => $medecins,
@@ -337,7 +403,7 @@ class AdminController extends AbstractController
         ]);
     }
 
-    
+
     #[Route('/users', name: 'admin_users', methods: ['GET'])]
     public function listUsers(UserRepository $userRepository): Response
     {
@@ -357,30 +423,30 @@ class AdminController extends AbstractController
     {
         // Récupérer le rôle actuel de l'utilisateur
         $currentRoles = $user->getRoles();
-    
+
         // Si l'utilisateur n'est pas déjà bloqué, stocker son rôle actuel dans un rôle personnalisé
         if (!in_array('BLOCKED', $currentRoles)) {
             // Ajouter un rôle personnalisé pour stocker le rôle d'origine
             $originalRole = $currentRoles[0]; // Rôle d'origine (MEDECIN ou PATIENT)
             $user->setRoles(['BLOCKED', 'ORIGINAL_ROLE_' . $originalRole]);
         }
-    
+
         // Bloquer l'utilisateur
         $entityManager->flush();
-    
+
         return $this->json([
             'status' => 'User blocked successfully',
             'newRole' => 'BLOCKED',
             'userId' => $user->getId(),
         ]);
     }
-    
+
     #[Route('/admin/users/{id}/unblock', name: 'admin_unblock_user', methods: ['POST'])]
     public function unblockUser(User $user, EntityManagerInterface $entityManager): JsonResponse
     {
         // Récupérer tous les rôles de l'utilisateur
         $currentRoles = $user->getRoles();
-    
+
         // Trouver le rôle d'origine (s'il existe)
         $originalRole = null;
         foreach ($currentRoles as $role) {
@@ -389,21 +455,20 @@ class AdminController extends AbstractController
                 break;
             }
         }
-    
+
         // Si aucun rôle d'origine n'est trouvé, attribuer un rôle par défaut (PATIENT ou MEDECIN)
         if (!$originalRole) {
             $originalRole = 'ROLE_PATIENT'; // ou une autre logique pour déterminer le rôle par défaut
         }
-    
+
         // Débloquer l'utilisateur et lui redonner son rôle d'origine
         $user->setRoles([$originalRole]);
         $entityManager->flush();
-    
+
         return $this->json([
             'status' => 'User unblocked successfully',
             'newRole' => $originalRole,
             'userId' => $user->getId(),
         ]);
     }
-
 }

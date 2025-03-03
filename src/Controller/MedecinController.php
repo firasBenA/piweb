@@ -7,6 +7,7 @@ use App\Entity\Diagnostique;
 use App\Entity\DossierMedical;
 use App\Entity\Patient;
 use App\Entity\Prescription;
+use App\Entity\User;
 use Doctrine\ORM\EntityManagerInterface;
 use Knp\Component\Pager\PaginatorInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -42,10 +43,23 @@ final class MedecinController extends AbstractController
     ): Response {
         // Fetch the currently authenticated user (Medecin)
         $user = $security->getUser();
-        $queryBuilder = $entityManager->getRepository(Diagnostique::class)->createQueryBuilder('d');
+
+        // Ensure the user is an instance of User (Medecin) and has an ID
+        if (!$user instanceof User || !method_exists($user, 'getId')) {
+            throw $this->createAccessDeniedException('Access Denied. Medecin not found.');
+        }
+
+        $medecinId = $user->getId();
+
+        $queryBuilder = $entityManager->getRepository(Diagnostique::class)
+            ->createQueryBuilder('d')
+            ->innerJoin('d.medecin', 'm')
+            ->where('m.id = :medecinId')
+            ->setParameter('medecinId', $medecinId);
 
         // Get the current page number (default: 1)
         $page = $request->query->getInt('page', 1);
+
         $diagnostiques = $paginator->paginate(
             $queryBuilder->getQuery(),
             $page,
@@ -64,8 +78,16 @@ final class MedecinController extends AbstractController
             ]);
         }
 
-        $prescriptions = $entityManager->getRepository(Prescription::class)->findAll();
+        // Fetch prescriptions for the authenticated Medecin
+        $prescriptions = $entityManager->getRepository(Prescription::class)
+            ->createQueryBuilder('p')
+            ->innerJoin('p.medecin', 'm')
+            ->where('m.id = :medecinId')
+            ->setParameter('medecinId', $medecinId)
+            ->getQuery()
+            ->getResult();
 
+            
         return $this->render('medecin/prescriptionDashboard.html.twig', [
             'medecin' => $user,
             'diagnostiques' => $diagnostiques,
@@ -164,7 +186,6 @@ final class MedecinController extends AbstractController
         return $this->render('medecin/form.html.twig', [
             'controller_name' => 'MedecinController',
         ]);
-
     }
 
 
@@ -232,7 +253,7 @@ final class MedecinController extends AbstractController
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $slugger->slug($originalFilename);
-        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
 
         try {
             $file->move(
@@ -246,5 +267,4 @@ final class MedecinController extends AbstractController
 
         return $newFilename;
     }
-
 }
