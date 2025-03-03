@@ -34,7 +34,7 @@ final class ResponseController extends AbstractController
     public function index(EntityManagerInterface $entityManager, PaginatorInterface $paginator, Request $request): Response
     {
         $page = $request->query->getInt('page', 1); // Get the current page from the URL, default is 1
-        $limit = 2; // Set the number of items per page to 2
+        $limit = 4; // Set the number of items per page to 2
     
         // Fetch the data
         $reclamations = $entityManager->getRepository(Reclamation::class)

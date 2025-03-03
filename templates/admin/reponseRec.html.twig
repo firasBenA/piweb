@@ -1,20 +1,19 @@
 {% extends './admin/baseadmin.html.twig' %}
 
-{% block title %}Dashboard
-{% endblock %}
+{% block title %}Dashboard{% endblock %}
+
 {% block stylesheets %}
-	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
-
     <h1 class="text-center text-primary fw-bold">📋 Liste des Réclamations</h1>
-	   <a href="{{ path('reclamation_statistiques') }}" class="btn btn-primary">
-            Voir les statistiques 📊
-        </a>
-<div class="mb-4">
- <div class="mb-4">
+    <a href="{{ path('reclamation_statistiques') }}" class="btn btn-primary">
+        Voir les statistiques 📊
+    </a>
+
+    <div class="mb-4">
         <div class="d-flex justify-content-between">
             <input type="text" id="search" class="form-control w-25" placeholder="🔍 Rechercher...">
             
@@ -28,47 +27,48 @@
         <div id="reclamationTableContainer">
             {% include 'admin/_tabledash.html.twig' %}
         </div>
-    <div class="d-flex justify-content-between mb-3">
-    <button id="exportExcel" class="btn btn-success">
-        <i class="fas fa-file-excel"></i> Télécharger Excel
-    </button>
-</div>
+
+        <div class="d-flex justify-content-between mb-3">
+            <button id="exportExcel" class="btn btn-success">
+                <i class="fas fa-file-excel"></i> Télécharger Excel
+            </button>
+        </div>
     </div>
-</div>
-    <script>
-    document.getElementById('exportExcel').addEventListener('click', function () {
-        window.location.href = "{{ path('export_reclamations') }}";
-    });
-</script>
-   
 
     <script>
     document.addEventListener("DOMContentLoaded", function () {
         const filterEtat = document.getElementById("filterEtat");
         const searchInput = document.getElementById("search");
+        const tableContainer = document.getElementById("reclamationTableContainer");
 
-        // Trigger table update on filter change
-        filterEtat.addEventListener("change", function () {
-            updateReclamationTable(this.value);
-        });
+function updateReclamationTable(url = '/admin/reponseRec?page=1') {
+    const etat = filterEtat.value;
+    const search = searchInput.value.toLowerCase();
 
-        // Trigger table filtering on search
-        searchInput.addEventListener("keyup", function () {
-            let filter = this.value.toLowerCase();
-            searchInTable(filter);
-        });
+    // Ensure the URL always has a valid page number
+    const newUrl = new URL(url, window.location.origin);
+    let page = newUrl.searchParams.get("page");
 
-        function updateReclamationTable(etat) {
-            fetch('/admin/reponseRec?etat=' + etat, {
-                method: 'GET',
-                headers: { 'X-Requested-With': 'XMLHttpRequest' } // Mark as AJAX request
-            })
-            .then(response => response.text())
-            .then(html => {
-                document.getElementById('reclamationTableContainer').innerHTML = html;
-            })
-            .catch(error => console.error("Erreur mise à jour:", error));
-        }
+    if (!page || page < 1) {
+        page = 1; // Default to page 1 if invalid
+        newUrl.searchParams.set("page", page);
+    }
+
+    newUrl.searchParams.set("etat", etat);
+
+    fetch(newUrl.toString(), {
+        method: 'GET',
+        headers: { 'X-Requested-With': 'XMLHttpRequest' } // AJAX request
+    })
+    .then(response => response.text())
+    .then(html => {
+        tableContainer.innerHTML = html;
+        searchInTable(search); // Apply search after updating the table
+        attachPaginationEvents(); // Re-attach event listeners after new content is loaded
+    })
+    .catch(error => console.error("Erreur mise à jour:", error));
+}
+
 
         function searchInTable(filter) {
             document.querySelectorAll("#reclamationTable tbody tr").forEach(row => {
@@ -77,6 +77,29 @@
                 row.style.display = (sujet.includes(filter) || description.includes(filter)) ? "" : "none";
             });
         }
+
+        function attachPaginationEvents() {
+            document.querySelectorAll(".pagination a").forEach(link => {
+                link.addEventListener("click", function (e) {
+                    e.preventDefault(); // Prevent default page reload
+                    const url = this.getAttribute("href");
+                    updateReclamationTable(url); // Fetch new results via AJAX
+                });
+            });
+        }
+
+        // Initial event listeners
+        filterEtat.addEventListener("change", () => updateReclamationTable());
+        searchInput.addEventListener("keyup", function () {
+            searchInTable(this.value.toLowerCase());
+        });
+
+        attachPaginationEvents(); // Attach pagination event on first load
+    });
+
+    // Export Excel button event
+    document.getElementById('exportExcel').addEventListener('click', function () {
+        window.location.href = "{{ path('export_reclamations') }}";
     });
     </script>
 

@@ -20,11 +20,11 @@ class EmailServiceReclamtion
         $this->mailer = new Mailer($transport);
     }
 
-    public function sendEmail(string $to, string $subject, string $content)
+    public function sendEmail(string $to, string $subject, string $content)//
     {
         $email = (new Email())
             ->from('esprit.recover.plus@gmail.com')
-            ->to($to)
+            ->to($to)//
             ->subject($subject)
             ->html($content); // Send HTML formatted email
 

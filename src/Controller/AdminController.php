@@ -47,7 +47,7 @@ class AdminController extends AbstractController
     public function listereclamation(EntityManagerInterface $entityManager, PaginatorInterface $paginator, Request $request): Response
     {
         $page = $request->query->getInt('page', 1);
-        $limit = 4; // Nombre de résultats par page
+        $limit = 3; // Nombre de résultats par page
         $etat = $request->query->get('etat');
     
         // Création des critères de recherche (sans QueryBuilder)
