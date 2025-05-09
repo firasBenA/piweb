@@ -98,9 +98,19 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
 
     #[ORM\Column(type: 'datetime')]
     private $createdAt;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Veuillez spécifier le type d\'utilisateur.')]
+    #[Assert\Choice(
+        choices: ['ADMIN', 'PATIENT', 'MEDECIN'],
+        message: 'Le type d\'utilisateur doit être ADMIN, PATIENT ou MEDECIN.'
+    )]
+    private string $userType = 'PATIENT';
+
     public function __construct()
     {
         $this->createdAt = new \DateTime(); 
+        $this->userType = 'PATIENT';
     }
     #[ORM\Column(type: 'integer', options: ['default' => 0])]
     private int $failedLoginAttempts = 0;
@@ -345,5 +355,16 @@ public function setLockUntil(?\DateTimeInterface $lockUntil): self
     public function getEmailAuthRecipient(): string
     {
         return $this->getEmail();
+    }
+
+    public function getUserType(): string
+    {
+        return $this->userType;
+    }
+
+    public function setUserType(string $userType): static
+    {
+        $this->userType = $userType;
+        return $this;
     }
 }

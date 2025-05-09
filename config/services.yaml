@@ -8,6 +8,11 @@ parameters:
     images_directory: '%kernel.project_dir%/public/uploads/images'
 
 services:
+
+    App\Security\JBCryptPasswordHasher:
+        arguments:
+            $cost: 10
+
     App\Security\TwoFactorMailer:
         arguments:
             $mailer: '@mailer.mailer'

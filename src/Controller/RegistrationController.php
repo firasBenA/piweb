@@ -24,14 +24,14 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
-
-            // encode the plain password
+            $plainPassword = $form->get('plainPassword')->getData();           
+             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-
+           
+           
             // set the roles for the user
-            $selectedRole = $form->get('roles')->getData();
-            $user->setRoles([$selectedRole]);
+           // $selectedRole = $form->get('roles')->getData();
+            //$user->setRoles([$selectedRole]);
 
             // handle file uploads
             $certificatFile = $form->get('certificat')->getData();
