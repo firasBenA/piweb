@@ -8,6 +8,16 @@ parameters:
     images_directory: '%kernel.project_dir%/public/uploads/images'
 
 services:
+
+    Knp\Component\Pager\PaginatorInterface: '@knp_paginator'
+    App\Security\TwoFactorMailer:
+        arguments:
+            $mailer: '@mailer.mailer'
+            $twig: '@twig'
+        tags:
+            - { name: 'scheb_two_factor.email.auth_code_mailer' }
+
+
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
@@ -25,6 +35,12 @@ services:
     App\Security\AppAuthenticator:
         arguments:
             $urlGenerator: '@router'
+
+    App\Service\TwilioService:
+        arguments:
+            $twilioSid: '%env(TWILIO_ACCOUNT_SID)%'
+            $twilioToken: '%env(TWILIO_AUTH_TOKEN)%'
+            $twilioPhoneNumber: '%env(TWILIO_PHONE_NUMBER)%'
 
     # add more service definitions when explicit configuration is needed
     # please note that last definitions always *replace* previous ones

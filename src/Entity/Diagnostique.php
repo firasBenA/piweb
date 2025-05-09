@@ -3,10 +3,9 @@
 namespace App\Entity;
 
 use App\Repository\DiagnostiqueRepository;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 #[ORM\Entity(repositoryClass: DiagnostiqueRepository::class)]
 class Diagnostique
@@ -19,31 +18,59 @@ class Diagnostique
     #[ORM\Column(type: Types::DATE_MUTABLE)]
     private ?\DateTimeInterface $dateDiagnostique = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $nom = null;
 
-    #[ORM\Column(length: 255)]
+    #[ORM\Column(length: 255, nullable: true)]
     private ?string $description = null;
 
-    #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
+    #[ORM\ManyToOne(targetEntity: DossierMedical::class)]
+    #[ORM\JoinColumn(nullable: false)]
     private ?DossierMedical $dossierMedical = null;
 
-    #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
-    private ?Patient $Patient = null;
+    #[ORM\Column(type: 'string', length: 255)]
+    #[Assert\NotBlank(message: 'Please select a body zone.')]
+    private ?string $zoneCorps = null;
 
-    #[ORM\ManyToOne(inversedBy: 'diagnostiques')]
-    private ?Medecin $medecin = null;
+    #[ORM\Column(type: Types::DATE_MUTABLE, nullable: true)]
+    #[Assert\Type(type: \DateTimeInterface::class, message: "La date doit être valide.")]
+    #[Assert\NotBlank(message: "La date de prescription est obligatoire.")]
+    #[Assert\GreaterThanOrEqual(
+        value: "today",
+        message: "La date de prescription ne peut pas être dans le passé."
+    )]
+    private ?\DateTimeInterface $dateSymptomes = null;
+    
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'diagnostiques')]
+    private ?User $patient = null;
 
-    /**
-     * @var Collection<int, Symptomes>
-     */
-    #[ORM\ManyToMany(targetEntity: Symptomes::class, inversedBy: 'diagnostiques')]
-    private Collection $symptomes;
+    #[Assert\NotBlank(message: "Il faut choisre un medecin.")]
+    #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'diagnostiques')]
+    private ?User $medecin = null;
 
-    public function __construct()
+    #[ORM\Column]
+    private ?int $status = null;
+
+    #[ORM\Column(type: 'string', nullable: true)]
+    #[Assert\NotBlank(message: 'Please select at least one symptom.')]
+    #[Assert\Length(min: 1, minMessage: 'Please select at least one symptom.')]
+    private ?string $selectedSymptoms = null;
+
+
+
+    public function getStatus(): ?int
     {
-        $this->symptomes = new ArrayCollection();
+        return $this->status;
     }
+
+    public function setStatus(int $status): self
+    {
+        $this->status = $status;
+
+        return $this;
+    }
+
+    public function __construct() {}
 
     public function getId(): ?int
     {
@@ -62,9 +89,33 @@ class Diagnostique
         return $this;
     }
 
+    public function getDateSymptomes(): ?\DateTimeInterface
+    {
+        return $this->dateSymptomes;
+    }
+
+    public function setDateSymptomes(\DateTimeInterface $dateSymptomes): static
+    {
+        $this->dateSymptomes = $dateSymptomes;
+
+        return $this;
+    }
+
     public function getNom(): ?string
     {
         return $this->nom;
+    }
+
+    public function setZoneCorps(string $zoneCorps): static
+    {
+        $this->zoneCorps = $zoneCorps;
+
+        return $this;
+    }
+
+    public function getZoneCorps(): ?string
+    {
+        return $this->zoneCorps;
     }
 
     public function setNom(string $nom): static
@@ -98,51 +149,38 @@ class Diagnostique
         return $this;
     }
 
-    public function getPatient(): ?Patient
+    public function getPatient(): ?User
     {
         return $this->patient;
     }
 
-    public function setPatient(?Patient $Patient): static
+    public function setPatient(?User $patient): static
     {
-        $this->Patient = $Patient;
+        $this->patient = $patient;
 
         return $this;
     }
 
-    public function getMedecin(): ?Medecin
+    public function getMedecin(): ?User
     {
         return $this->medecin;
     }
 
-    public function setMedecin(?Medecin $medecin): static
+    public function setMedecin(?User $medecin): static
     {
         $this->medecin = $medecin;
 
         return $this;
     }
 
-    /**
-     * @return Collection<int, Symptomes>
-     */
-    public function getSymptomes(): Collection
+    public function getSelectedSymptoms(): String
     {
-        return $this->symptomes;
+        return $this->selectedSymptoms;
     }
 
-    public function addSymptome(Symptomes $symptome): static
+    public function setSelectedSymptoms(String $selectedSymptoms): self
     {
-        if (!$this->symptomes->contains($symptome)) {
-            $this->symptomes->add($symptome);
-        }
-
-        return $this;
-    }
-
-    public function removeSymptome(Symptomes $symptome): static
-    {
-        $this->symptomes->removeElement($symptome);
-
+        $this->selectedSymptoms = $selectedSymptoms;
         return $this;
     }
 }

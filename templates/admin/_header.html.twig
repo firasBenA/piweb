@@ -1,0 +1,171 @@
+<header>
+	<div class="header-area">
+		<div class="main-header header-sticky">
+			<div class="container-fluid">
+				<div class="row align-items-center">
+					<div class="col-xl-2 col-lg-2 col-md-1">
+						<div class="logo">
+							<a href="#"><img src="assets/img/logo/logo.png" alt="Medical Logo"></a>
+						</div>
+					</div>
+					<div class="col-xl-10 col-lg-10 col-md-10">
+						<div class="menu-main d-flex align-items-center justify-content-end">
+							<div class="main-menu f-right d-none d-lg-block">
+								<nav>
+									<ul id="navigation">
+									<li>
+											<a href="{{ path('admin_dashboard') }}">Utilisateur</a>
+										</li>
+										<li>
+											<a href="{{ path('prescriptionAdmin') }}">Prescription</a>
+										</li>
+										<li>
+											<a href="{{ path('reponseRecAdmin') }}">Reclamation</a>
+										</li>
+										<li>
+											<a href="{{ path('reclamation_statistiques') }}">Statistiques</a>
+										</li>
+
+										
+									</ul>
+								</nav>
+							</div>
+							<div class="header-right-btn f-right d-none d-lg-block ml-30">
+								{% if user is defined and user %}
+									<a href="{{ path('app_logout') }}" class="btn header-btn" style="background-color: #dc3545; color: white; padding: 10px 20px; border-radius: 5px;">Logout</a>
+								{% else %}
+									<a href="{{ path('app_login2') }}" class="btn header-btn" style="background-color: #007bff; color: white; padding: 10px 20px; border-radius: 5px;">Sign-In</a>
+								{% endif %}
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+</header>
+
+<style>
+	body {
+		background-color: #f8f9fa;
+		font-family: 'Poppins', sans-serif;
+	}
+
+	.card {
+		border-radius: 10px;
+	}
+
+	.table th,
+	.table td {
+		vertical-align: middle;
+	}
+
+	.btn {
+		border-radius: 20px;
+	}
+
+
+	.header-area {
+		background: #fff;
+		padding: 10px 0;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+	}
+
+	.main-header {
+		display: flex;
+		align-items: center;
+		justify-content: space-between;
+	}
+
+	.menu-main {
+		display: flex;
+		align-items: center;
+	}
+
+	.main-menu nav ul {
+		list-style: none;
+		padding: 0;
+		margin: 0;
+		display: flex;
+	}
+
+	.main-menu nav ul li {
+		position: relative;
+		margin: 0 15px;
+	}
+
+	.main-menu nav ul li a {
+		text-decoration: none;
+		color: #000;
+		font-weight: 600;
+		font-size: 16px;
+		padding: 10px 15px;
+		display: block;
+	}
+
+	.main-menu nav ul li a:hover {
+		color: #007bff;
+	}
+
+	.header-right-btn {
+		margin-left: 30px;
+	}
+
+	.header-btn {
+		background-color: #007bff;
+		color: white;
+		padding: 10px 20px;
+		border-radius: 5px;
+		text-decoration: none;
+		font-weight: bold;
+	}
+
+	.header-btn:hover {
+		background-color: #0056b3;
+	}
+
+	/* Sous-menu */
+	.main-menu nav ul li ul.submenu {
+		display: none;
+		position: absolute;
+		top: 100%;
+		left: 0;
+		background: #fff;
+		box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		border-radius: 5px;
+		min-width: 180px;
+	}
+
+	.main-menu nav ul li:hover ul.submenu {
+		display: block;
+	}
+
+	.main-menu nav ul li ul.submenu li {
+		margin: 0;
+		display: block;
+	}
+
+	.main-menu nav ul li ul.submenu li a {
+		padding: 10px;
+		display: block;
+	}
+
+
+	body {
+		font-family: 'Poppins', sans-serif;
+	}
+
+	.main-menu nav ul li a {
+		font-family: 'Poppins', sans-serif;
+		font-weight: 400;
+		font-size: 16px;
+		color: #2c2c2c;
+		text-transform: capitalize;
+	}
+
+	.header-btn {
+		font-family: 'Poppins', sans-serif;
+		font-weight: 400;
+		font-size: 16px;
+	}
+</style>

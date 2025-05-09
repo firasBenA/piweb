@@ -1,0 +1,24 @@
+{% for diagnostique in diagnostiques %}
+    <tr>
+        <td>{{ diagnostique.id }}</td>
+        <td>{{ diagnostique.nom }}</td>
+        <td>{{ diagnostique.zoneCorps }}</td>
+        <td>{{ diagnostique.dateDiagnostique|date('Y-m-d') }}</td>
+        <td class="px-4 py-3 text-xs">
+            {% if diagnostique.status == 0 %}
+                <a href="{{ path('app_prescription_new', {'diagnostique_id': diagnostique.id}) }}" 
+                    class="px-2 py-1 font-semibold leading-tight text-black-700 bg-white-100 rounded-full dark:bg-blue-500 dark:text-white">
+                    <p>+</p>
+                </a>
+            {% elseif diagnostique.status == 1 %}
+                <div class="px-2 py-1 font-semibold leading-tight text-black-700 bg-white-100 rounded-full dark:bg-blue-500 dark:text-white">
+                    <i class="fas fa-check"></i>
+                </div>
+            {% endif %}
+        </td>
+    </tr>
+{% else %}
+    <tr>
+        <td colspan="5" class="text-center">No diagnostiques available.</td>
+    </tr>
+{% endfor %}

@@ -1,37 +1,33 @@
 {% extends 'base.html.twig' %}
 
-{% block title %} Nouvelle Prescription {% endblock %}
+{% block title %}Créer une Prescription{% endblock %}
 
 {% block body %}
     <div class="container mt-5">
-        <h2>Ajouter une Nouvelle Prescription</h2>
+        <h1>Créer une Prescription</h1>
 
-        {{ form_start(form) }}
-            <div class="mb-3">
-                {{ form_label(form.contenue) }}
-                {{ form_widget(form.contenue) }}
-                {{ form_errors(form.contenue) }}
-            </div>
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
 
-            <div class="mb-3">
-                {{ form_label(form.datePrscription) }}
-                {{ form_widget(form.datePrscription) }}
-                {{ form_errors(form.datePrscription) }}
-            </div>
+        <div class="mb-3">
+            {{ form_label(form.titre) }}
+            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.titre) }}
+        </div>
 
-            <div class="mb-3">
-                {{ form_label(form.dossierMedical) }}
-                {{ form_widget(form.dossierMedical) }}
-                {{ form_errors(form.dossierMedical) }}
-            </div>
+        <div class="mb-3">
+            {{ form_label(form.contenue) }}
+            {{ form_widget(form.contenue, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.contenue) }}
+        </div>
 
-            <div class="mb-3">
-                {{ form_label(form.diagnostique) }}
-                {{ form_widget(form.diagnostique) }}
-                {{ form_errors(form.diagnostique) }}
-            </div>
+        <div class="mb-3">
+            {{ form_label(form.datePrescription) }}
+            {{ form_widget(form.datePrescription, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.datePrescription) }}
+        </div>
 
-            <button type="submit" class="btn btn-success">{{ form_widget(form.save) }}</button>
+        <button type="submit" class="btn btn-primary">Créer</button>
+
         {{ form_end(form) }}
     </div>
 {% endblock %}

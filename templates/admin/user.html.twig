@@ -1,0 +1,105 @@
+{% block body %}
+    <!-- Debug: Check if medecins and patients are passed -->
+    <pre>{{ dump(medecins) }}</pre>
+    <pre>{{ dump(patients) }}</pre>
+
+    <div class="flex h-screen bg-gray-50 dark:bg-gray-900">
+        <main class="h-full pb-16 overflow-y-auto">
+            <div class="container grid px-6 mx-auto">
+                <h2 class="my-6 text-2xl font-semibold text-gray-700 dark:text-gray-200">
+                    Tables
+                </h2>
+
+                <!-- Medecins Table -->
+                <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
+                    Medecins
+                </h4>
+                <div class="w-full mb-8 overflow-hidden rounded-lg shadow-xs">
+                    <div class="w-full overflow-x-auto">
+                        <table class="w-full whitespace-no-wrap">
+                            <thead>
+                                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                                    <th class="px-4 py-3">Email</th>
+                                    <th class="px-4 py-3">Nom</th>
+                                    <th class="px-4 py-3">Prénom</th>
+                                    <th class="px-4 py-3">Age</th>
+                                    <th class="px-4 py-3">Sexe</th>
+                                    <th class="px-4 py-3">Telephone</th>
+                                    <th class="px-4 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                                {% for medecin in medecins %}
+                                    <tr class="text-gray-700 dark:text-gray-400">
+                                        <td class="px-4 py-3">{{ medecin.email }}</td>
+                                        <td class="px-4 py-3">{{ medecin.nom }}</td>
+                                        <td class="px-4 py-3">{{ medecin.prenom }}</td>
+                                        <td class="px-4 py-3">{{ medecin.age }}</td>
+                                        <td class="px-4 py-3">{{ medecin.sexe }}</td>
+                                        <td class="px-4 py-3">{{ medecin.telephone }}</td>
+                                        <td class="px-4 py-3">
+                                            {% if 'ROLE_BLOCKED' in medecin.roles %}
+                                                <button class="btn btn-success unblock-user" data-id="{{ medecin.id }}">Unblock</button>
+                                            {% else %}
+                                                <button class="btn btn-danger block-user" data-id="{{ medecin.id }}">Block</button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-3 text-center">No medecins found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- Patients Table -->
+                <h4 class="mb-4 text-lg font-semibold text-gray-600 dark:text-gray-300">
+                    Patients
+                </h4>
+                <div class="w-full overflow-hidden rounded-lg shadow-xs">
+                    <div class="w-full overflow-x-auto">
+                        <table class="w-full whitespace-no-wrap">
+                            <thead>
+                                <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
+                                    <th class="px-4 py-3">Email</th>
+                                    <th class="px-4 py-3">Nom</th>
+                                    <th class="px-4 py-3">Prénom</th>
+                                    <th class="px-4 py-3">Age</th>
+                                    <th class="px-4 py-3">Sexe</th>
+                                    <th class="px-4 py-3">Telephone</th>
+                                    <th class="px-4 py-3">Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
+                                {% for patient in patients %}
+                                    <tr class="text-gray-700 dark:text-gray-400">
+                                        <td class="px-4 py-3">{{ patient.email }}</td>
+                                        <td class="px-4 py-3">{{ patient.nom }}</td>
+                                        <td class="px-4 py-3">{{ patient.prenom }}</td>
+                                        <td class="px-4 py-3">{{ patient.age }}</td>
+                                        <td class="px-4 py-3">{{ patient.sexe }}</td>
+                                        <td class="px-4 py-3">{{ patient.telephone }}</td>
+                                        <td class="px-4 py-3">
+                                            {% if 'ROLE_BLOCKED' in patient.roles %}
+                                                <button class="btn btn-success unblock-user" data-id="{{ patient.id }}">Unblock</button>
+                                            {% else %}
+                                                <button class="btn btn-danger block-user" data-id="{{ patient.id }}">Block</button>
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                {% else %}
+                                    <tr>
+                                        <td colspan="7" class="px-4 py-3 text-center">No patients found.</td>
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+{% endblock %}

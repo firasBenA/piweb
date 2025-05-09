@@ -151,7 +151,7 @@
             const medecinFields = document.getElementById('medecin-fields');
 
             function toggleMedecinFields() {
-                if (roleField.value === 'MEDECIN') {
+                if (roleField.value === 'ROLE_MEDECIN') {
                     medecinFields.style.display = 'block';
                 } else {
                     medecinFields.style.display = 'none';
@@ -162,7 +162,7 @@
             toggleMedecinFields(); // Initial check
 
             // Keep fields visible if there are validation errors
-            if (roleField.value === 'MEDECIN' || {{ form_errors(registrationForm.specialite) is not empty or form_errors(registrationForm.certificat) is not empty ? 'true' : 'false' }}) {
+            if (roleField.value === 'ROLE_MEDECIN' || {{ form_errors(registrationForm.specialite) is not empty or form_errors(registrationForm.certificat) is not empty ? 'true' : 'false' }}) {
                 medecinFields.style.display = 'block';
             }
         });

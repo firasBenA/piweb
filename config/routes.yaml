@@ -14,4 +14,9 @@ medecin_dashboard:
 
 patient_dashboard:
     path: /patient
-    controller: App\Controller\PatientController::index
+    controller: App\Controller\MainController::index
+    
+diagnostique_pdf:
+    path: /diagnostique/pdf/{id}
+    controller: App\Controller\DiagnostiqueController::generatePdf
+

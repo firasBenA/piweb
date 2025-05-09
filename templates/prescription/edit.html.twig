@@ -1,16 +1,35 @@
-{# templates/prescription/edit.html.twig #}
-
 {% extends 'base.html.twig' %}
 
-{% block title %}Edit Prescription{% endblock %}
+{% block title %}Modifier une Prescription{% endblock %}
 
 {% block body %}
-    <h1>Edit Prescription</h1>
+    <div class="container mt-5">
+        <h1>Modifier la Prescription</h1>
+        
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
+        
+        <div class="mb-3">
+            {{ form_label(form.titre) }}
+            {{ form_widget(form.titre, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.titre) }}
+        </div>
+        
+        <div class="mb-3">
+            {{ form_label(form.contenue) }}
+            {{ form_widget(form.contenue, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.contenue) }}
+        </div>
+        
+        <div class="mb-3">
+            {{ form_label(form.datePrescription) }}
+            {{ form_widget(form.datePrescription, {'attr': {'class': 'form-control'}}) }}
+            {{ form_errors(form.datePrescription) }}
+        </div>
+        
+        {{ form_widget(form.save, {'attr': {'class': 'btn btn-success'}}) }}
 
-    {{ form_start(form) }}
-        {{ form_row(form) }}
-        <button class="btn btn-primary">Save changes</button>
-    {{ form_end(form) }}
-
-    <a href="{{ path('app_prescription_index') }}" class="btn btn-secondary">Back to list</a>
+        {{ form_rest(form) }}
+        
+        {{ form_end(form) }}
+    </div>
 {% endblock %}

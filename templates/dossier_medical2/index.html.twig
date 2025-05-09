@@ -1,0 +1,34 @@
+{% extends 'base.html.twig' %}
+
+{% block body %}
+    <h1>Medical Records</h1>
+    <a href="{{ path('dossier_medical2_new') }}">Create New Record</a>
+
+    <table>
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Patient</th>
+                <th>Date</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dossierMedical in dossierMedicals %}
+                <tr>
+                    <td>{{ dossierMedical.id }}</td>
+                    <td>{{ dossierMedical.patient.nom }}</td>
+                    <td>{{ dossierMedical.datePrescription|date('Y-m-d') }}</td>
+                    <td>
+                        <a href="{{ path('dossier_medical2_show', { id: dossierMedical.id }) }}">View</a>
+                        <a href="{{ path('dossier_medical2_edit', { id: dossierMedical.id }) }}">Edit</a>
+                        <form method="post" action="{{ path('dossier_medical2_delete', { id: dossierMedical.id }) }}">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ dossierMedical.id) }}">
+                            <button type="submit">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+{% endblock %}

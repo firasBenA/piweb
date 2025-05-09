@@ -69,8 +69,8 @@ class RegistrationFormType extends AbstractType
             'label' => 'Rôle',
             'mapped' => false,
             'choices' => [
-            'Patient' => 'PATIENT',
-            'Médecin' => 'MEDECIN',
+            'Patient' => 'ROLE_PATIENT',
+            'Médecin' => 'ROLE_MEDECIN',
             ],
             'multiple' => false, 
             'placeholder' => 'Sélectionnez votre rôle',
@@ -103,7 +103,7 @@ class RegistrationFormType extends AbstractType
             'data_class' => User::class,
             'validation_groups' => function (FormInterface $form) {
                 $data = $form->getData();
-                if ($form->get('roles')->getData() === 'MEDECIN') 
+                if ($form->get('roles')->getData() === 'ROLE_MEDECIN') 
                     {
                     return ['Default', 'medecin'];
                 }

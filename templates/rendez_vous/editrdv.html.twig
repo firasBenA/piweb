@@ -1,0 +1,115 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Modifier le Rendez-vous{% endblock %}
+
+{% block body %}
+    <div class="container mt-5">
+        <h1 class="text-center text-primary fw-bold">📝 Modifier le Rendez-vous</h1>
+
+        {# Display Flash Messages #}
+        {% for message in app.flashes('error') %}
+            <div class="alert alert-danger" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+        
+        {% for message in app.flashes('success') %}
+            <div class="alert alert-success" role="alert">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="row justify-content-center">
+            <div class="col-md-8 col-lg-6">
+                <div class="card p-4 shadow-sm rounded" style="border: 1px solid #007bff;">
+                    {{ form_start(form, {'attr': {'class': 'form', 'novalidate': 'novalidate'}}) }}  {# Ajout de 'novalidate' #}
+
+                    <h2 class="text-center mb-4">Détails du Rendez-vous</h2>
+
+                    {# Champ Date du rendez-vous #}
+                    <div class="mb-4">
+                        {{ form_label(form.date, 'Date du rendez-vous', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.date, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Choisissez une nouvelle date'}}) }}
+                        <div class="text-danger mt-1">{{ form_errors(form.date) }}</div>
+                    </div>
+
+                    {# Champ Type de rendez-vous #}
+                    <div class="mb-4">
+                        {{ form_label(form.type_rdv, 'Type de rendez-vous', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.type_rdv, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Sélectionnez le type'}}) }}
+                        <div class="text-danger mt-1">{{ form_errors(form.type_rdv) }}</div>
+                    </div>
+
+                    {# Champ Cause du rendez-vous #}
+                    <div class="mb-4">
+                        {{ form_label(form.cause, 'Cause du rendez-vous', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.cause, {'attr': {'class': 'form-control form-control-lg', 'placeholder': 'Décrivez la cause du rendez-vous'}}) }}
+                        <div class="text-danger mt-1">{{ form_errors(form.cause) }}</div>
+                    </div>
+
+                    {# Champ Médecin #}
+                    <div class="mb-4">
+                        {{ form_label(form.medecin, 'Médecin', {'attr': {'class': 'form-label'}}) }}
+                        {{ form_widget(form.medecin, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                        <div class="text-danger mt-1">{{ form_errors(form.medecin) }}</div>
+                    </div>
+
+                    <div class="text-center">
+                        <button type="submit" class="btn btn-success btn-lg shadow px-4 py-2 fw-bold">Enregistrer les modifications</button>
+                    </div>
+
+                    {{ form_end(form) }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        body {
+            background-color: #f8f9fa; /* Couleur de fond */
+            font-family: 'Poppins', sans-serif; /* Police de caractère */
+        }
+
+        .form-control, .btn {
+            transition: all 0.3s ease-in-out; /* Transition pour les effets */
+        }
+
+        .form-control:focus {
+            box-shadow: 0 0 5px rgba(0, 123, 255, 0.5); /* Ombre au focus */
+            border-color: #007bff; /* Couleur de bordure au focus */
+        }
+
+        .btn:hover {
+            transform: scale(1.05); /* Effet de zoom au survol */
+            box-shadow: 0 4px 15px rgba(0, 123, 255, 0.3); /* Ombre au survol */
+        }
+
+        .card {
+            background-color: #ffffff; /* Couleur de fond de la carte */
+            border-radius: 15px; /* Arrondi des coins */
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1); /* Ombre de la carte */
+        }
+
+        .form-control-lg {
+            font-size: 1.2rem; /* Augmentation de la taille de la police */
+            padding: 1.25rem; /* Augmentation du rembourrage */
+        }
+
+        .mb-4 {
+            margin-bottom: 1.5rem; /* Espacement en bas */
+        }
+
+        .text-primary {
+            color: #007bff !important; /* Couleur primaire */
+        }
+
+        .fw-bold {
+            font-weight: bold; /* Texte en gras */
+        }
+
+        .btn-success {
+            background-color: #28a745; /* Couleur du bouton */
+            border-color: #28a745; /* Couleur de bordure du bouton */
+        }
+    </style>
+{% endblock %}
