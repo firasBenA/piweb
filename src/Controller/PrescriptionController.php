@@ -94,14 +94,11 @@ class PrescriptionController extends AbstractController
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
-            // Update the diagnostique status if needed
             $diagnostique->setStatus(1);
 
-            // Persist the prescription
             $entityManager->persist($prescription);
             $entityManager->flush();
 
-            // ✅ SEND SMS TO THE PATIENT
             $phoneNumber = '+216' . $patient->getTelephone();
             $message = 'Allez voir votre ordonnance!';
             if ($phoneNumber) {

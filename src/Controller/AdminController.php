@@ -34,11 +34,9 @@ class AdminController extends AbstractController
         Request $request,
         PaginatorInterface $paginator
     ): Response {
-        // Fetch the currently authenticated user (Medecin)
         $user = $security->getUser();
         $queryBuilder = $entityManager->getRepository(Diagnostique::class)->createQueryBuilder('d');
 
-        // Get the current page number (default: 1)
         $page = $request->query->getInt('page', 1);
         $diagnostiques = $paginator->paginate(
             $queryBuilder->getQuery(),
@@ -76,11 +74,10 @@ class AdminController extends AbstractController
             ->setParameter('searchTerm', '%' . $searchTerm . '%')
             ->orderBy('d.nom', 'ASC');
 
-        // Paginate the results
         $pagination = $paginator->paginate(
             $queryBuilder,
             $request->query->getInt('page', 1),
-            5 // 10 results per page
+            5 
         );
 
         $diagnostiques = $pagination->getItems();
@@ -159,9 +156,9 @@ class AdminController extends AbstractController
 
             // Paginate the results
             $pagination = $paginator->paginate(
-                $queryBuilder, // Query builder
-                $page, // Current page number
-                $limit // Number of results per page
+                $queryBuilder, 
+                $page, 
+                $limit 
             );
 
             // Prepare the data to be sent as JSON
@@ -199,20 +196,17 @@ class AdminController extends AbstractController
     {
         try {
             $searchTerm = $request->query->get('search', '');
-            $page = $request->query->getInt('page', 1); // Get page number
-            $limit = 5; // Number of results per page
+            $page = $request->query->getInt('page', 1); 
+            $limit = 5; 
 
-            // Fetch the currently authenticated user (Medecin)
             $user = $security->getUser();
 
-            // Ensure the user is an instance of User (Medecin)
             if (!$user instanceof User || !method_exists($user, 'getId')) {
                 throw $this->createAccessDeniedException('Access Denied. Medecin not found.');
             }
 
-            $medecinId = $user->getId(); // Get the authenticated Medecin's ID
+            $medecinId = $user->getId(); 
 
-            // Search query adjusted to filter by Medecin and search term
             $queryBuilder = $diagnostiqueRepository->createQueryBuilder('d')
                 ->innerJoin('d.medecin', 'm')
                 ->where('m.id = :medecinId')
@@ -223,11 +217,10 @@ class AdminController extends AbstractController
                     ->setParameter('search', '%' . $searchTerm . '%');
             }
 
-            // Paginate the results
             $pagination = $paginator->paginate(
-                $queryBuilder, // Query builder
-                $page, // Current page number
-                $limit // Number of results per page
+                $queryBuilder, 
+                $page, 
+                $limit 
             );
 
             // Prepare the data to be sent as JSON
@@ -250,8 +243,8 @@ class AdminController extends AbstractController
             // Return paginated data along with pagination details
             return $this->json([
                 'results' => $data,
-                'totalPages' => $totalPages,  // Total pages calculated manually
-                'currentPage' => $pagination->getCurrentPageNumber(),  // Current page number
+                'totalPages' => $totalPages,  
+                'currentPage' => $pagination->getCurrentPageNumber(),  
             ]);
         } catch (\Exception $e) {
             $logger->error('Error in search: ' . $e->getMessage());
