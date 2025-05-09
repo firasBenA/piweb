@@ -187,7 +187,7 @@ public function generateQrCode(EntityManagerInterface $em, int $id): JsonRespons
         ->size(300)
         ->build();
 
-    $uploadsDir = $this->getParameter('kernel.project_dir') . '/public/uploads/qrcodes';
+    $uploadsDir = $this->getParameter('kernel.project_dir') . '/public/assets/img';
     if (!file_exists($uploadsDir)) {
         mkdir($uploadsDir, 0777, true);
     }
@@ -196,7 +196,7 @@ public function generateQrCode(EntityManagerInterface $em, int $id): JsonRespons
     $filePath = $uploadsDir . '/' . $fileName;
     file_put_contents($filePath, $qrCode->getString());
 
-    return new JsonResponse(['qr_code_url' => '/uploads/qrcodes/' . $fileName]);
+    return new JsonResponse(['qr_code_url' => '/assets/img/' . $fileName]);
 }
 
 }
