@@ -38,11 +38,17 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
 
     private array $roles = [];
 
+
+    #[ORM\Column]
+    private ?string $user_type = null;
+
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
     private ?string $password = null;
+
+
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Veuillez entrer votre nom.')]
@@ -218,6 +224,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
     {
         $this->roles = $roles;
 
+        return $this;
+    }
+
+    
+    public function getUserType(): ?String
+    {
+        return $this->user_type;
+    }
+
+    public function setUserType(?String $user_type): self
+    {
+        $this->user_type = $user_type;
         return $this;
     }
 
