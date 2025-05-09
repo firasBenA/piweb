@@ -35,6 +35,8 @@ services:
     App\Security\AppAuthenticator:
         arguments:
             $urlGenerator: '@router'
+            $em: '@doctrine.orm.entity_manager'
+            $passwordHasher: '@security.password_hasher'
 
     App\Service\TwilioService:
         arguments:
