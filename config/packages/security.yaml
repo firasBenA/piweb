@@ -36,7 +36,7 @@ security:
 
             two_factor:
                 auth_form_path: /2fa
-                check_path: /2fa_check
+                check_path: /verify-2fa-code
                 auth_code_parameter_name: auth_code
                 default_target_path: home_page
                 multi_factor: true
