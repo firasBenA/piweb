@@ -20,6 +20,7 @@ class EmailController extends AbstractController
 
     #[Route('/evenement/send-email/{id}', name: 'app_evenement_send_email', methods: ['POST'])]
     #[IsGranted('ROLE_PATIENT')]
+    
     public function sendEmail(Evenement $evenement): Response
     {
         $user = $this->getUser();
@@ -57,4 +58,7 @@ class EmailController extends AbstractController
 
         return $this->redirectToRoute('app_evenement_index');
     }
+
+
+    
 }

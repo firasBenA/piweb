@@ -15,6 +15,11 @@ medecin_dashboard:
 patient_dashboard:
     path: /patient
     controller: App\Controller\MainController::index
+
+patient_dashboarde:
+    path: /patient
+    controller: App\Controller\PatientController::index
+
     
 diagnostique_pdf:
     path: /diagnostique/pdf/{id}

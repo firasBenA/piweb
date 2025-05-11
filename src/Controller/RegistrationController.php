@@ -2,10 +2,8 @@
 
 namespace App\Controller;
 
-use App\Entity\DossierMedical;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
-use DateTime;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -23,66 +21,50 @@ class RegistrationController extends AbstractController
         $user = new User();
         $form = $this->createForm(RegistrationFormType::class, $user);
         $form->handleRequest($request);
-    
+
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();
-    
-            // Encode the plain password
+            $plainPassword = $form->get('plainPassword')->getData();           
+             // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-    
-            // Set the roles for the user
-            $selectedRole = $form->get('roles')->getData();
-            $user->setRoles([$selectedRole]);
-    
-             // Set userType based on role
-             if ($selectedRole === 'ROLE_PATIENT') {
-                $user->setUserType('PATIENT');
-            } elseif ($selectedRole === 'ROLE_MEDECIN') {
-                $user->setUserType('MEDECIN');
-            }
-    
-            // Handle file uploads
+           
+           
+            // set the roles for the user
+           // $selectedRole = $form->get('roles')->getData();
+            //$user->setRoles([$selectedRole]);
+
+            // handle file uploads
             $certificatFile = $form->get('certificat')->getData();
             $imageProfilFile = $form->get('imageProfil')->getData();
-    
+
             if ($certificatFile) {
                 $certificatFileName = $this->uploadFile($certificatFile, $slugger, 'certificats_directory');
                 $user->setCertificat($certificatFileName);
             }
-    
+
             if ($imageProfilFile) {
                 $imageProfilFileName = $this->uploadFile($imageProfilFile, $slugger, 'images_directory');
                 $user->setImageProfil($imageProfilFileName);
             }
-    
-            // Create a new DossierMedical for the user
-            $dossierMedical = new DossierMedical();
-            $dossierMedical->setUser($user);
-            $dossierMedical->setDatePrescription(new \DateTime());
-    
-           
-            // Persist the user and the dossier
+
             $entityManager->persist($user);
-            $entityManager->persist($dossierMedical);
             $entityManager->flush();
-    
-            // Redirect to login page after registration
+
+            // do anything else you need here, like send an email
+
             return $this->redirectToRoute('app_login2');
         }
-    
+
         return $this->render('registration/register.html.twig', [
             'registrationForm' => $form,
         ]);
     }
-    
-
 
     private function uploadFile($file, SluggerInterface $slugger, $directoryParameter): string
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $slugger->slug($originalFilename);
-        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
+        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
 
         try {
             $file->move(

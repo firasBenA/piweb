@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'patemp.html.twig' %}
 
 {% block title %}Modifier le Rendez-vous{% endblock %}
 
@@ -47,10 +47,10 @@
                         <div class="text-danger mt-1">{{ form_errors(form.cause) }}</div>
                     </div>
 
-                    {# Champ Médecin #}
+                   {# Champ Médecin #}
                     <div class="mb-4">
                         {{ form_label(form.medecin, 'Médecin', {'attr': {'class': 'form-label'}}) }}
-                        {{ form_widget(form.medecin, {'attr': {'class': 'form-control form-control-lg'}}) }}
+                        {{ form_widget(form.medecin, {'attr': {'class': 'form-control'}}) }}
                         <div class="text-danger mt-1">{{ form_errors(form.medecin) }}</div>
                     </div>
 

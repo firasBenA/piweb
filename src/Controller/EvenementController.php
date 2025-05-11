@@ -18,7 +18,7 @@ use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 use Knp\Component\Pager\PaginatorInterface;
-
+use Symfony\Bundle\SecurityBundle\Security;
 
 #[Route('/evenement')]
 final class EvenementController extends AbstractController
@@ -44,25 +44,52 @@ final class EvenementController extends AbstractController
         ]);
     }
 
-    #[Route('/ajouter', name: 'app_evenement_ajouter', methods: ['GET', 'POST'])]
-    public function new(Request $request, EntityManagerInterface $entityManager): Response
-    {
-        $evenement = new Evenement();
-        $form = $this->createForm(EvenementType::class, $evenement);
-        $form->handleRequest($request);
-
-        if ($form->isSubmitted() && $form->isValid()) {
-            $entityManager->persist($evenement);
-            $entityManager->flush();
-
-            return $this->redirectToRoute('app_evenement_index', [], Response::HTTP_SEE_OTHER);
-        }
-
-        return $this->render('evenement/new.html.twig', [
-            'evenement' => $evenement,
-            'form' => $form,
+    #[Route('/ajouterMed',name: 'app_evenement_index_medecin', methods: ['GET'])]
+    public function indexMed(
+        Request $request,
+        EvenementRepository $evenementRepository,
+        PaginatorInterface $paginator
+    ): Response {
+        // Fetch query without executing it
+        $query = $evenementRepository->createQueryBuilder('e')->getQuery();
+    
+        // Paginate the results, limiting to 3 events per page
+        $pagination = $paginator->paginate(
+            $query,
+            $request->query->getInt('page', 1), // Get page number from request, default to 1
+            4 // Limit to 3 events per page
+        );
+    
+        return $this->render('evenement/eventMedAdd.html.twig', [
+            'evenements' => $pagination,
         ]);
     }
+
+   #[Route('/ajouter', name: 'app_evenement_ajouter', methods: ['GET', 'POST'])]
+public function new(Request $request, EntityManagerInterface $entityManager, Security $security): Response
+{
+    // Get the logged-in user
+    $user = $security->getUser();
+
+    $evenement = new Evenement();
+    $form = $this->createForm(EvenementType::class, $evenement);
+    $form->handleRequest($request);
+
+    if ($form->isSubmitted() && $form->isValid()) {
+        $entityManager->persist($evenement);
+        $entityManager->flush();
+
+        return $this->redirectToRoute('app_evenement_index', [], Response::HTTP_SEE_OTHER);
+    }
+
+    return $this->render('evenement/new.html.twig', [
+        'evenement' => $evenement,
+        'form' => $form,
+        'medecin' => $user, // Pass the user to the template
+    ]);
+}
+
+
 
     #[Route('/{id}', name: 'app_evenement_afficher', methods: ['GET'])]
     public function show(Evenement $evenement): Response

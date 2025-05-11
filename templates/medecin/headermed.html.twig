@@ -23,9 +23,12 @@
 										<li>
 											<a href="{{ path('PrescriptionMedecin_page', {'id': app.user.id}) }}">Prescription</a>
 										</li>
+										<li>
+											<a href="{{ path('app_evenement_index_medecin')}}">Evenements</a>
+										</li>
 
 										<li>
-											<a href="#" ">Consultations</a>
+											<a href="{{ path('consultation_medecin_list') }}">Consultations</a>
 										</li>
 
 										<div class="header-right-btn f-right d-none d-lg-block ml-30">
@@ -224,4 +227,6 @@
 		.profile-dropdown-content a:hover {
 			background-color: #f1f1f1;
 		}
+
+		
 	</style>

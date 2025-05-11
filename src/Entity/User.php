@@ -21,7 +21,9 @@ use Scheb\TwoFactorBundle\Model\Email\TwoFactorInterface as EmailTwoFactorInterf
 #[UniqueEntity(fields: ['email'], message: 'il existe déjà un compte avec cet email.')]
 class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTwoFactorInterface
 {
-    #[ORM\Id]
+
+
+     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column]
     private ?int $id = null;
@@ -35,20 +37,14 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
      * @var list<string> The user roles
      */
     #[ORM\Column]
-
+    
     private array $roles = [];
-
-
-    #[ORM\Column]
-    private ?string $user_type = null;
 
     /**
      * @var string The hashed password
      */
     #[ORM\Column]
     private ?string $password = null;
-
-
 
     #[ORM\Column(length: 255)]
     #[Assert\NotBlank(message: 'Veuillez entrer votre nom.')]
@@ -73,11 +69,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
     #[Assert\NotBlank(message: 'Veuillez choisir votre sexe.')]
     private ?string $sexe = null;
 
-    #[ORM\Column(type: 'string', length: 20, nullable: true)]
+    #[ORM\Column]
     #[Assert\NotBlank(message: 'Veuillez entrer votre numéro de téléphone.')]
     #[Assert\Regex(pattern: '/^\d{8}$/', message: 'Le numéro de téléphone doit contenir exactement 8 chiffres.')]
-    private ?string $telephone = null; // ✅ Make sure it's "string", not "String"
-
+    private ?int $telephone = null;
 
     #[ORM\Column(length: 255, nullable: true)]
     #[Assert\File(
@@ -101,6 +96,37 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
     #[Assert\NotBlank(message: 'Veuillez télécharger votre certificat.', groups: ['medecin'])]
     private ?string $certificat = null;
 
+
+    #[ORM\Column(type: 'boolean')]
+    private $emailAuthEnabled = true;
+
+    #[ORM\Column(type: 'string', length: 255, nullable: true)]
+    private ?string $emailAuthCode = null;
+
+    #[ORM\Column(type: 'datetime')]
+    private $createdAt;
+
+    #[ORM\Column(length: 255)]
+    #[Assert\NotBlank(message: 'Veuillez spécifier le type d\'utilisateur.')]
+    #[Assert\Choice(
+        choices: ['ADMIN', 'PATIENT', 'MEDECIN'],
+        message: 'Le type d\'utilisateur doit être ADMIN, PATIENT ou MEDECIN.'
+    )]
+    private string $userType = 'PATIENT';
+
+    public function __construct()
+    {
+        $this->createdAt = new \DateTime(); 
+        $this->userType = 'PATIENT';
+    }
+    #[ORM\Column(type: 'integer', options: ['default' => 0])]
+    private int $failedLoginAttempts = 0;
+    
+    #[ORM\Column(type: 'datetime', nullable: true)]
+    private ?\DateTimeInterface $lockUntil = null;
+
+
+
     #[ORM\OneToOne(targetEntity: DossierMedical::class, mappedBy: 'user')]
     private ?DossierMedical $dossierMedical = null;
 
@@ -116,51 +142,147 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
     #[ORM\Column(type: 'float', nullable: true)]
     private ?float $longitude = null;
 
-    public function __construct()
+        #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: 'users')]
+    private Collection $evenements;
+
+
+    public function getLatitude(): ?float
     {
-        $this->rendezVouses = new ArrayCollection();
-        $this->consultations = new ArrayCollection();
-        $this->createdAt = new \DateTime();
-        $this->evenements = new ArrayCollection();
+        return $this->latitude;
+    }
+
+    public function setLatitude(?float $latitude): self
+    {
+        $this->latitude = $latitude;
+        return $this;
+    }
+
+    public function getLongitude(): ?float
+    {
+        return $this->longitude;
+    }
+
+    public function setLongitude(?float $longitude): self
+    {
+        $this->longitude = $longitude;
+        return $this;
+    }
+
+    public function getDossierMedical(): ?DossierMedical
+    {
+        return $this->dossierMedical;
+    }
+
+    public function setDossierMedical(?DossierMedical $dossierMedical): self
+    {
+        $this->dossierMedical = $dossierMedical;
+
+        return $this;
+    }
+
+    public function getRendezVouses(): Collection
+    {
+        return $this->rendezVouses;
+    }
+
+    public function addRendezVouse(RendezVous $rendezvous): self
+    {
+        if (!$this->rendezVouses->contains($rendezvous)) {
+            $this->rendezVouses[] = $rendezvous;
+            $rendezvous->setUser($this); // set the user in the rendezvous
+        }
+
+        return $this;
+    }
+
+    public function removeRendezVouse(RendezVous $rendezvous): self
+    {
+        $this->rendezVouses->removeElement($rendezvous);
+        // set the owning side to null (unless already changed)
+        if ($rendezvous->getUser() === $this) {
+            $rendezvous->setUser(null);
+        }
+
+        return $this;
+    }
+
+    public function getConsultations(): Collection
+    {
+        return $this->consultations;
+    }
+
+    public function addConsultation(Consultation $consultation): self
+    {
+        if (!$this->consultations->contains($consultation)) {
+            $this->consultations[] = $consultation;
+           // $consultation->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeConsultation(Consultation $consultation): self
+    {
+        if ($this->consultations->removeElement($consultation)) {
+            if ($consultation->getUser() === $this) {
+                $consultation->setUser(null);
+            }
+        }
+
+        return $this;
     }
 
 
-    #[ORM\Column(type: 'boolean')]
-    private $emailAuthEnabled = true;
 
-    #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    private ?string $emailAuthCode = null;
 
-    #[ORM\Column(type: 'datetime')]
-    private $createdAt;
+    public function getEvenements(): Collection
+    {
+        return $this->evenements;
+    }
 
-    #[ORM\Column(type: 'integer', options: ['default' => 0])]
-    private int $failedLoginAttempts = 0;
+    public function addEvenement(Evenement $evenement): static
+    {
+        if (!$this->evenements->contains($evenement)) {
+            $this->evenements->add($evenement);
+            $evenement->addUser($this);
+        }
 
-    #[ORM\Column(type: 'datetime', nullable: true)]
-    private ?\DateTimeInterface $lockUntil = null;
+        return $this;
+    }
+
+    public function removeEvenement(Evenement $evenement): static
+    {
+        if ($this->evenements->removeElement($evenement)) {
+            $evenement->removeUser($this);
+        }
+
+        return $this;
+    }
+
+
+
 
     public function getFailedLoginAttempts(): int
-    {
-        return $this->failedLoginAttempts;
-    }
+{
+    return $this->failedLoginAttempts;
+}
 
-    public function setFailedLoginAttempts(int $attempts): self
-    {
-        $this->failedLoginAttempts = $attempts;
-        return $this;
-    }
+public function setFailedLoginAttempts(int $attempts): self
+{
+    $this->failedLoginAttempts = $attempts;
+    return $this;
+}
 
-    public function getLockUntil(): ?\DateTimeInterface
-    {
-        return $this->lockUntil;
-    }
+public function getLockUntil(): ?\DateTimeInterface
+{
+    return $this->lockUntil;
+}
 
-    public function setLockUntil(?\DateTimeInterface $lockUntil): self
-    {
-        $this->lockUntil = $lockUntil;
-        return $this;
-    }
+public function setLockUntil(?\DateTimeInterface $lockUntil): self
+{
+    $this->lockUntil = $lockUntil;
+    return $this;
+}
 
 
     public function getCreatedAt(): ?\DateTimeInterface
@@ -226,41 +348,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
 
         return $this;
     }
-
-    
-    public function getUserType(): ?String
-    {
-        return $this->user_type;
-    }
-
-    public function setUserType(?String $user_type): self
-    {
-        $this->user_type = $user_type;
-        return $this;
-    }
-
-    public function getLatitude(): ?float
-    {
-        return $this->latitude;
-    }
-
-    public function setLatitude(?float $latitude): self
-    {
-        $this->latitude = $latitude;
-        return $this;
-    }
-
-    public function getLongitude(): ?float
-    {
-        return $this->longitude;
-    }
-
-    public function setLongitude(?float $longitude): self
-    {
-        $this->longitude = $longitude;
-        return $this;
-    }
-
 
     /**
      * @see PasswordAuthenticatedUserInterface
@@ -346,14 +433,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
         return $this;
     }
 
-    public function getTelephone(): ?string
+    public function getTelephone(): ?int
     {
         return $this->telephone;
     }
 
-    public function setTelephone(string $telephone): static
+    public function setTelephone(int $telephone): static
     {
         $this->telephone = $telephone;
+
         return $this;
     }
 
@@ -392,71 +480,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
 
         return $this;
     }
-
-    public function getDossierMedical(): ?DossierMedical
-    {
-        return $this->dossierMedical;
-    }
-
-    public function setDossierMedical(?DossierMedical $dossierMedical): self
-    {
-        $this->dossierMedical = $dossierMedical;
-
-        return $this;
-    }
-
-    public function getRendezVouses(): Collection
-    {
-        return $this->rendezVouses;
-    }
-
-    public function addRendezVouse(RendezVous $rendezvous): self
-    {
-        if (!$this->rendezVouses->contains($rendezvous)) {
-            $this->rendezVouses[] = $rendezvous;
-            $rendezvous->setUser($this); // set the user in the rendezvous
-        }
-
-        return $this;
-    }
-
-    public function removeRendezVouse(RendezVous $rendezvous): self
-    {
-        $this->rendezVouses->removeElement($rendezvous);
-        // set the owning side to null (unless already changed)
-        if ($rendezvous->getUser() === $this) {
-            $rendezvous->setUser(null);
-        }
-
-        return $this;
-    }
-
-    public function getConsultations(): Collection
-    {
-        return $this->consultations;
-    }
-
-    public function addConsultation(Consultation $consultation): self
-    {
-        if (!$this->consultations->contains($consultation)) {
-            $this->consultations[] = $consultation;
-            $consultation->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeConsultation(Consultation $consultation): self
-    {
-        if ($this->consultations->removeElement($consultation)) {
-            if ($consultation->getUser() === $this) {
-                $consultation->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getEmailAuthCode(): ?string
     {
         return $this->emailAuthCode;
@@ -467,7 +490,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
         $this->emailAuthCode = $authCode;
     }
 
-
+    
     public function isEmailAuthEnabled(): bool
     {
         return $this->emailAuthEnabled;
@@ -478,32 +501,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface, EmailTw
         return $this->getEmail();
     }
 
-    #[ORM\ManyToMany(targetEntity: Evenement::class, mappedBy: 'users')]
-    private Collection $evenements;
-
-
-
-    public function getEvenements(): Collection
+    public function getUserType(): string
     {
-        return $this->evenements;
+        return $this->userType;
     }
 
-    public function addEvenement(Evenement $evenement): static
+    public function setUserType(string $userType): static
     {
-        if (!$this->evenements->contains($evenement)) {
-            $this->evenements->add($evenement);
-            $evenement->addUser($this);
-        }
-
+        $this->userType = $userType;
         return $this;
     }
 
-    public function removeEvenement(Evenement $evenement): static
-    {
-        if ($this->evenements->removeElement($evenement)) {
-            $evenement->removeUser($this);
-        }
 
-        return $this;
-    }
+
+
 }

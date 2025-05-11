@@ -1,32 +1,195 @@
-{% extends 'base.html.twig' %}
+{% include 'medecin/headermed.html.twig' %}
 
-{% block title %}Nouveau Evenement{% endblock %}
+{% block title %}Nouveau Evenement
+{% endblock %}
 
 {% block stylesheets %}
-    {{ parent() }}
-    <style>
-        .title {
-            text-align: center;
-            margin-top: 20px;
-            font-weight: bold;
-            color: #343a40;
-        }
-        .form-container {
-            margin: 30px auto;
-            width: 70%;
-            background: white;
-            padding: 20px;
-            border-radius: 10px;
-            box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-        }
-    </style>
+	<style>
+
+    /* Navbar Styling */
+		.header-area {
+			background: #fff;
+			padding: 10px 0;
+			box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+		}
+
+		.main-header {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+		}
+
+		.menu-main {
+			display: flex;
+			align-items: center;
+		}
+
+		.main-menu nav ul {
+			list-style: none;
+			padding: 0;
+			margin: 0;
+			display: flex;
+			justify-content: flex-end; /* Aligner les éléments à droite */
+		}
+
+		.main-menu nav ul li {
+			position: relative;
+			margin: 0 15px;
+		}
+
+		.main-menu nav ul li a {
+			text-decoration: none;
+			color: #000;
+			font-weight: normal; /* Retirer le gras */
+			font-size: 16px;
+			padding: 10px 15px;
+			display: block;
+		}
+
+		.main-menu nav ul li a:hover {
+			color: #007bff;
+		}
+
+		.header-right-btn {
+			margin-left: 30px;
+		}
+
+		.header-btn {
+			background-color: #007bff;
+			color: white;
+			padding: 10px 20px;
+			border-radius: 5px;
+			text-decoration: none;
+			font-weight: bold;
+		}
+
+		.header-btn:hover {
+			background-color: #0056b3;
+		}
+
+		/* Footer Styling */
+		footer {
+			background-color: #343a40;
+			color: #fff;
+		}
+
+		.social-links a {
+			font-size: 20px;
+			transition: color 0.3s;
+		}
+
+		.social-links a:hover {
+			color: #007bff;
+		}
+
+		.btn-secondary {
+			background-color: #6c757d;
+			color: white;
+			padding: 10px 20px;
+			border-radius: 5px;
+			text-decoration: none;
+			font-weight: bold;
+		}
+
+		.btn-secondary:hover {
+			background-color: #5a6268;
+		}
+        
+		.title {
+			text-align: center;
+			margin-top: 20px;
+			font-weight: bold;
+			color: #343a40;
+		}
+		.form-container {
+			margin: 30px auto;
+			width: 70%;
+			background: white;
+			padding: 20px;
+			border-radius: 10px;
+			box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+		}
+
+		/* General form styling */
+		.form-container {
+			max-width: 700px;
+			margin: 0 auto;
+			padding: 30px;
+			background: #fff;
+			border-radius: 8px;
+			box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+		}
+
+		/* Styling for form labels */
+		.form-label {
+			font-size: 14px;
+			font-weight: bold;
+			color: #495057;
+			margin-bottom: 8px;
+			display: block;
+		}
+
+		/* Styling for input fields */
+		.form-control {
+			width: 100%;
+			padding: 10px;
+			font-size: 16px;
+			border: 1px solid #ced4da;
+			border-radius: 4px;
+			box-sizing: border-box;
+			transition: border-color 0.3s;
+		}
+
+		.form-control:focus {
+			border-color: #007bff;
+			outline: none;
+		}
+
+		/* Add some space between form fields */
+		.mb-3 {
+			margin-bottom: 20px;
+		}
+
+		/* Button styling */
+		.btn {
+			padding: 12px 20px;
+			font-size: 16px;
+			font-weight: bold;
+			border-radius: 4px;
+			border: none;
+			cursor: pointer;
+			background-color: #007bff;
+			color: #fff;
+			transition: background-color 0.3s;
+		}
+
+		.btn:hover {
+			background-color: #0056b3;
+		}
+
+		/* Form error messages */
+		.form-error {
+			color: #e74c3c;
+			font-size: 12px;
+			margin-top: 5px;
+		}
+
+		button:disabled {
+			background-color: #ccc;
+			cursor: not-allowed;
+		}
+
+		/* Add spacing for the form start and end */
+		.form-start,
+		.form-end {
+			margin-bottom: 20px;
+		}
+	</style>
 {% endblock %}
 {% block body %}
-    <h1 class="title">Creer un evenement</h1>
+	<h1 class="title">Creer un evenement</h1>
 
-    <div class="form-container">
-        {{ include('evenement/_form.html.twig') }}
-    </div>
-
-    <a class="btn btn-primary" href="{{ path('app_evenement_index') }}">Retourner</a>
+	<div class="form-container">
+		{{ include('evenement/_form.html.twig') }}
+	</div>
 {% endblock %}

@@ -1,4 +1,4 @@
-{% extends 'base.html.twig' %}
+{% extends 'patemp.html.twig' %}
 
 {% block title %}Réservation de Rendez-vous{% endblock %}
 
@@ -55,6 +55,9 @@
 
                     <div class="text-center">
                         <button type="submit" class="btn btn-primary btn-lg shadow px-5 py-2">Réserver</button>
+<a href="{{ path('patientDashboard' ,{'id':app.user.id}) }}" class="btn btn-secondary btn-lg shadow px-5 py-2 ml-2">
+    Dashboard
+</a>
                     </div>
 
                     {{ form_end(form) }}
@@ -80,6 +83,13 @@
         }
         .btn-primary:hover {
             background-color: #0056b3; /* Couleur au survol */
+        }
+        .btn-secondary {
+            background-color: #6c757d; /* Gris Bootstrap */
+            border: none;
+        }
+        .btn-secondary:hover {
+            background-color: #5a6268;
         }
         .form-label {
             font-weight: bold; /* Met en gras les labels */
