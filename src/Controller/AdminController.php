@@ -13,7 +13,6 @@ use App\Entity\User;
 use App\Repository\UserRepository;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-
 #[IsGranted('ROLE_ADMIN')]
 class AdminController extends AbstractController
 {
@@ -24,8 +23,8 @@ class AdminController extends AbstractController
         $user = $security->getUser();
     
         // Get the list of medecins and patients
-        $medecins = $userRepository->findByRoles('MEDECIN');
-        $patients = $userRepository->findByRoles('PATIENT');
+        $medecins = $userRepository->findByRoles('ROLE_MEDECIN');
+        $patients = $userRepository->findByRoles('ROLE_PATIENT');
     
         // Debug: Check the data fetched
         dump($medecins, $patients);
@@ -37,13 +36,12 @@ class AdminController extends AbstractController
         ]);
     }
 
-    
     #[Route('/users', name: 'admin_users', methods: ['GET'])]
     public function listUsers(UserRepository $userRepository): Response
     {
         // Get the list of medecins and patients
-        $medecins = $userRepository->findByRoles('MEDECIN');
-        $patients = $userRepository->findByRoles('PATIENT');
+        $medecins = $userRepository->findByRoles('ROLE_MEDECIN');
+        $patients = $userRepository->findByRoles('ROLE_PATIENT');
 
         // Render the Twig template
         return $this->render('admin/index.html.twig', [
@@ -55,22 +53,31 @@ class AdminController extends AbstractController
     #[Route('/admin/users/{id}/block', name: 'admin_block_user', methods: ['POST'])]
     public function blockUser(User $user, EntityManagerInterface $entityManager): JsonResponse
     {
-        // Récupérer le rôle actuel de l'utilisateur
+        // Get the current roles of the user
         $currentRoles = $user->getRoles();
     
-        // Si l'utilisateur n'est pas déjà bloqué, stocker son rôle actuel dans un rôle personnalisé
-        if (!in_array('BLOCKED', $currentRoles)) {
-            // Ajouter un rôle personnalisé pour stocker le rôle d'origine
-            $originalRole = $currentRoles[0]; // Rôle d'origine (MEDECIN ou PATIENT)
-            $user->setRoles(['BLOCKED', 'ORIGINAL_ROLE_' . $originalRole]);
+        // If the user is not already blocked, store their original role
+        if (!in_array('ROLE_BLOCKED', $currentRoles)) {
+            // Assume the first role is the primary role (ROLE_MEDECIN or ROLE_PATIENT)
+            $originalRole = $currentRoles[0] ?? 'ROLE_PATIENT'; // Default to ROLE_PATIENT if no role
+            // Ensure the original role is valid
+            if (!in_array($originalRole, ['ROLE_MEDECIN', 'ROLE_PATIENT'])) {
+                return $this->json([
+                    'status' => 'error',
+                    'message' => 'Rôle d\'origine non valide.',
+                ], 400);
+            }
+            // Set roles to ["ROLE_BLOCKED", "ORIGINAL_ROLE_MEDECIN"] or ["ROLE_BLOCKED", "ORIGINAL_ROLE_PATIENT"]
+            $user->setRoles(['ROLE_BLOCKED', 'ORIGINAL_ROLE_' . substr($originalRole, 5)]); // Remove "ROLE_" prefix
         }
     
-        // Bloquer l'utilisateur
+        // Persist changes
         $entityManager->flush();
     
         return $this->json([
-            'status' => 'User blocked successfully',
-            'newRole' => 'BLOCKED',
+            'status' => 'success',
+            'message' => 'Utilisateur bloqué avec succès.',
+            'newRoles' => $user->getRoles(),
             'userId' => $user->getId(),
         ]);
     }
@@ -78,32 +85,40 @@ class AdminController extends AbstractController
     #[Route('/admin/users/{id}/unblock', name: 'admin_unblock_user', methods: ['POST'])]
     public function unblockUser(User $user, EntityManagerInterface $entityManager): JsonResponse
     {
-        // Récupérer tous les rôles de l'utilisateur
+        // Get all roles of the user
         $currentRoles = $user->getRoles();
     
-        // Trouver le rôle d'origine (s'il existe)
+        // Find the original role (if it exists)
         $originalRole = null;
         foreach ($currentRoles as $role) {
             if (strpos($role, 'ORIGINAL_ROLE_') === 0) {
-                $originalRole = str_replace('ORIGINAL_ROLE_', '', $role);
+                $originalRole = 'ROLE_' . substr($role, 14); // Reconstruct with ROLE_ prefix
                 break;
             }
         }
     
-        // Si aucun rôle d'origine n'est trouvé, attribuer un rôle par défaut (PATIENT ou MEDECIN)
+        // If no original role is found, assign a default role
         if (!$originalRole) {
-            $originalRole = 'PATIENT'; // ou une autre logique pour déterminer le rôle par défaut
+            $originalRole = 'ROLE_PATIENT'; // Default role
         }
     
-        // Débloquer l'utilisateur et lui redonner son rôle d'origine
+        // Ensure the restored role is valid
+        if (!in_array($originalRole, ['ROLE_MEDECIN', 'ROLE_PATIENT'])) {
+            return $this->json([
+                'status' => 'error',
+                'message' => 'Rôle d\'origine non valide pour le déblocage.',
+            ], 400);
+        }
+    
+        // Unblock the user and restore the original role
         $user->setRoles([$originalRole]);
         $entityManager->flush();
     
         return $this->json([
-            'status' => 'User unblocked successfully',
-            'newRole' => $originalRole,
+            'status' => 'success',
+            'message' => 'Utilisateur débloqué avec succès.',
+            'newRoles' => $user->getRoles(),
             'userId' => $user->getId(),
         ]);
     }
-
 }

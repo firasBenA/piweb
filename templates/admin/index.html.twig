@@ -1,8 +1,9 @@
 
+{% block title %}Admin Dashboard{% endblock %}
+
 {% block stylesheets %}
-	<link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -17,13 +18,14 @@
                 <ul class="mt-6">
                     <li class="relative px-6 py-3">
                         <a class="inline-flex items-center w-full text-sm font-semibold transition-colors duration-150 hover:text-gray-800 dark:hover:text-gray-200" href="#">
-                            <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewbox="0 0 24 24" stroke="currentColor">
+                            <svg class="w-5 h-5" aria-hidden="true" fill="none" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" stroke="currentColor">
                                 <path d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path>
                             </svg>
                             <span class="ml-4">Dashboard</span>
                         </a>
                     </li>
                 </ul>
+            </div>
         </aside>
         
         <div class="flex flex-col flex-1 w-full">
@@ -31,7 +33,7 @@
                 <div class="container flex items-center justify-between h-full px-6 mx-auto text-purple-600 dark:text-purple-300">
                     <!-- Mobile hamburger -->
                     <button class="p-1 mr-5 -ml-1 rounded-md md:hidden focus:outline-none focus:shadow-outline-purple" @click="toggleSideMenu" aria-label="Menu">
-                        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20">
+                        <svg class="w-6 h-6" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                             <path fill-rule="evenodd" d="M3 5a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 10a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zM3 15a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1z" clip-rule="evenodd"></path>
                         </svg>
                     </button>
@@ -39,7 +41,6 @@
                     <div class="flex justify-center flex-1 lg:mr-32">
                         <div class="relative w-full max-w-xl mr-6 focus-within:text-purple-500">
                             <div class="absolute inset-y-0 flex items-center pl-2">
-                                
                             </div>
                         </div>
                     </div>
@@ -48,95 +49,87 @@
                         <li class="flex">
                             <button class="rounded-md focus:outline-none focus:shadow-outline-purple" @click="toggleTheme" aria-label="Toggle color mode">
                                 <template x-if="!dark">
-                                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20">
+                                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                                         <path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path>
                                     </svg>
                                 </template>
                                 <template x-if="dark">
-                                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20">
+                                    <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
                                         <path fill-rule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clip-rule="evenodd"></path>
                                     </svg>
                                 </template>
                             </button>
                         </li>
-                        
-<!-- Notification icon -->
-<li class="relative">
-    <button class="relative align-middle rounded-md focus:outline-none focus:shadow-outline-purple" @click="toggleNotificationsMenu" aria-label="Notifications" aria-haspopup="true">
-        <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewbox="0 0 20 20">
-            <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
-        </svg>
-        <!-- Notification badge -->
-        <span id="notification-badge" class="absolute top-0 right-0 inline-block w-3 h-3 transform translate-x-1 -translate-y-1 bg-red-600 border-2 border-white rounded-full dark:border-gray-800 hidden"></span>
-    </button>
-
-    <!-- Notification dropdown -->
-    <div id="notifications-dropdown" class="absolute right-0 w-56 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:text-gray-300 dark:border-gray-700 dark:bg-gray-700 hidden">
-        <div id="notifications-list">
-            <div class="text-center text-gray-500">Aucune notification</div>
-        </div>
-    </div>
-</li>
-                            </template>
+                        <!-- Notification icon -->
+                        <li class="relative">
+                            <button class="relative align-middle rounded-md focus:outline-none focus:shadow-outline-purple" @click="toggleNotificationsMenu" aria-label="Notifications" aria-haspopup="true">
+                                <svg class="w-5 h-5" aria-hidden="true" fill="currentColor" viewBox="0 0 20 20">
+                                    <path d="M10 2a6 6 0 00-6 6v3.586l-.707.707A1 1 0 004 14h12a1 1 0 00.707-1.707L16 11.586V8a6 6 0 00-6-6zM10 18a3 3 0 01-3-3h6a3 3 0 01-3 3z"></path>
+                                </svg>
+                                <!-- Notification badge -->
+                                <span id="notification-badge" class="absolute top-0 right-0 inline-block w-3 h-3 transform translate-x-1 -translate-y-1 bg-red-600 border-2 border-white rounded-full dark:border-gray-800 hidden"></span>
+                            </button>
+                            <!-- Notification dropdown -->
+                            <div id="notifications-dropdown" class="absolute right-0 w-56 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:text-gray-300 dark:border-gray-700 dark:bg-gray-700 hidden">
+                                <div id="notifications-list">
+                                    <div class="text-center text-gray-500">Aucune notification</div>
+                                </div>
+                            </div>
                         </li>
-                       <!-- Profile menu -->
-<li class="relative" x-data="{ isProfileMenuOpen: false }">
-    <button
-        class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none"
-        @click="isProfileMenuOpen = !isProfileMenuOpen"
-        @keydown.escape="isProfileMenuOpen = false"
-        aria-label="Account"
-        aria-haspopup="true"
-    >
-        <img
-            class="object-cover w-8 h-8 rounded-full"
-            src="https://images.unsplash.com/photo-1502378735452-bc7d86632805?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=aa3a807e1bbdfd4364d1f449eaa96d82"
-            alt="Profile Image"
-            aria-hidden="true"
-        />
-    </button>
-
-    <!-- Dropdown menu -->
-    <ul
-        x-show="isProfileMenuOpen"
-        x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 transform scale-95"
-        x-transition:enter-end="opacity-100 transform scale-100"
-        x-transition:leave="transition ease-in duration-150"
-        x-transition:leave-start="opacity-100 transform scale-100"
-        x-transition:leave-end="opacity-0 transform scale-95"
-        @click.away="isProfileMenuOpen = false"
-        class="absolute right-0 w-48 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:border-gray-700 dark:text-gray-300 dark:bg-gray-700"
-        aria-label="submenu"
-    >
-        
-        <li class="flex">
-            <a
-                class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
-                href="{{ path('app_logout') }}"
-            >
-                <svg
-                    class="w-4 h-4 mr-3"
-                    aria-hidden="true"
-                    fill="none"
-                    stroke-linecap="round"
-                    stroke-linejoin="round"
-                    stroke-width="2"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                >
-                    <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
-                </svg>
-                <span>Déconnexion</span>
-            </a>
-        </li>
-    </ul>
-</li>
+                        <!-- Profile menu -->
+                        <li class="relative" x-data="{ isProfileMenuOpen: false }">
+                            <button
+                                class="align-middle rounded-full focus:shadow-outline-purple focus:outline-none"
+                                @click="isProfileMenuOpen = !isProfileMenuOpen"
+                                @keydown.escape="isProfileMenuOpen = false"
+                                aria-label="Account"
+                                aria-haspopup="true"
+                            >
+                                <img
+                                    class="object-cover w-8 h-8 rounded-full"
+                                    src="https://images.unsplash.com/photo-1502378735452-bc7d86632805?ixlib=rb-0.3.5&q=80&fm=jpg&crop=entropy&cs=tinysrgb&w=200&fit=max&s=aa3a807e1bbdfd4364d1f449eaa96d82"
+                                    alt="Profile Image"
+                                    aria-hidden="true"
+                                />
+                            </button>
+                            <!-- Dropdown menu -->
+                            <ul
+                                x-show="isProfileMenuOpen"
+                                x-transition:enter="transition ease-out duration-200"
+                                x-transition:enter-start="opacity-0 transform scale-95"
+                                x-transition:enter-end="opacity-100 transform scale-100"
+                                x-transition:leave="transition ease-in duration-150"
+                                x-transition:leave-start="opacity-100 transform scale-100"
+                                x-transition:leave-end="opacity-0 transform scale-95"
+                                @click.away="isProfileMenuOpen = false"
+                                class="absolute right-0 w-48 p-2 mt-2 space-y-2 text-gray-600 bg-white border border-gray-100 rounded-md shadow-md dark:border-gray-700 dark:text-gray-300 dark:bg-gray-700"
+                                aria-label="submenu"
+                            >
+                                <li class="flex">
+                                    <a
+                                        class="inline-flex items-center w-full px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200"
+                                        href="{{ path('app_logout') }}"
+                                    >
+                                        <svg
+                                            class="w-4 h-4 mr-3"
+                                            aria-hidden="true"
+                                            fill="none"
+                                            stroke-linecap="round"
+                                            stroke-linejoin="round"
+                                            stroke-width="2"
+                                            viewBox="0 0 24 24"
+                                            stroke="currentColor"
+                                        >
+                                            <path d="M11 16l-4-4m0 0l4-4m-4 4h14m-5 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h7a3 3 0 013 3v1"></path>
+                                        </svg>
+                                        <span>Déconnexion</span>
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     </ul>
                 </div>
             </header>
-
             
             <main class="h-full pb-16 overflow-y-auto">
                 <div class="container grid px-6 mx-auto">
@@ -153,38 +146,36 @@
                             <table class="w-full whitespace-no-wrap">
                                 <thead>
                                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                                        
                                         <th class="px-4 py-3">Email</th>
                                         <th class="px-4 py-3">Nom</th>
                                         <th class="px-4 py-3">Prénom</th>
-										<th class="px-4 py-3">age</th>
-										<th class="px-4 py-3">Sexe</th>
-										<th class="px-4 py-3">Telephone</th>
+                                        <th class="px-4 py-3">Age</th>
+                                        <th class="px-4 py-3">Sexe</th>
+                                        <th class="px-4 py-3">Telephone</th>
                                         <th class="px-4 py-3">Adresse</th>
                                         <th class="px-4 py-3">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
-    {% for medecin in medecins %}
-        <tr class="text-gray-700 dark:text-gray-400">
-            
-            <td class="px-4 py-3">{{ medecin.email }}</td>
-            <td class="px-4 py-3">{{ medecin.nom }}</td>
-            <td class="px-4 py-3">{{ medecin.prenom }}</td>
-            <td class="px-4 py-3">{{ medecin.age }}</td>
-            <td class="px-4 py-3">{{ medecin.sexe }}</td>
-            <td class="px-4 py-3">{{ medecin.telephone }}</td>
-            <td class="px-4 py-3">{{ medecin.adresse }}</td>
-            <td class="px-4 py-3">
-                {% if 'BLOCKED' in medecin.roles %}
-                    <button class="btn btn-success unblock-user" data-id="{{ medecin.id }}">Unblock</button>
-                {% else %}
-                    <button class="btn btn-danger block-user" data-id="{{ medecin.id }}">Block</button>
-                {% endif %}
-            </td>
-        </tr>
-    {% endfor %}
-</tbody>
+                                    {% for medecin in medecins %}
+                                        <tr class="text-gray-700 dark:text-gray-400">
+                                            <td class="px-4 py-3">{{ medecin.email }}</td>
+                                            <td class="px-4 py-3">{{ medecin.nom }}</td>
+                                            <td class="px-4 py-3">{{ medecin.prenom }}</td>
+                                            <td class="px-4 py-3">{{ medecin.age }}</td>
+                                            <td class="px-4 py-3">{{ medecin.sexe }}</td>
+                                            <td class="px-4 py-3">{{ medecin.telephone }}</td>
+                                            <td class="px-4 py-3">{{ medecin.adresse }}</td>
+                                            <td class="px-4 py-3">
+                                                {% if 'ROLE_BLOCKED' in medecin.roles %}
+                                                    <button class="btn btn-success unblock-user" data-id="{{ medecin.id }}">Débloquer</button>
+                                                {% else %}
+                                                    <button class="btn btn-danger block-user" data-id="{{ medecin.id }}">Bloquer</button>
+                                                {% endif %}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
                             </table>
                         </div>
                     </div>
@@ -198,36 +189,32 @@
                             <table class="w-full whitespace-no-wrap">
                                 <thead>
                                     <tr class="text-xs font-semibold tracking-wide text-left text-gray-500 uppercase border-b dark:border-gray-700 bg-gray-50 dark:text-gray-400 dark:bg-gray-800">
-                                        
                                         <th class="px-4 py-3">Email</th>
                                         <th class="px-4 py-3">Nom</th>
                                         <th class="px-4 py-3">Prénom</th>
-										<th class="px-4 py-3">age</th>
-										<th class="px-4 py-3">Sexe</th>
-										<th class="px-4 py-3">Telephone</th>
-                                      <th class="px-4 py-3">Adresse</th>
-
+                                        <th class="px-4 py-3">Age</th>
+                                        <th class="px-4 py-3">Sexe</th>
+                                        <th class="px-4 py-3">Telephone</th>
+                                        <th class="px-4 py-3">Adresse</th>
                                         <th class="px-4 py-3">Actions</th>
                                     </tr>
                                 </thead>
                                 <tbody class="bg-white divide-y dark:divide-gray-700 dark:bg-gray-800">
                                     {% for patient in patients %}
                                         <tr class="text-gray-700 dark:text-gray-400">
-                                            
                                             <td class="px-4 py-3">{{ patient.email }}</td>
                                             <td class="px-4 py-3">{{ patient.nom }}</td>
                                             <td class="px-4 py-3">{{ patient.prenom }}</td>
-											<td class="px-4 py-3">{{ patient.age }}</td>
-											<td class="px-4 py-3">{{ patient.sexe }}</td>
-											<td class="px-4 py-3">{{ patient.telephone }}</td>
+                                            <td class="px-4 py-3">{{ patient.age }}</td>
+                                            <td class="px-4 py-3">{{ patient.sexe }}</td>
+                                            <td class="px-4 py-3">{{ patient.telephone }}</td>
                                             <td class="px-4 py-3">{{ patient.adresse }}</td>
-                                            
                                             <td class="px-4 py-3">
-                                                 {% if 'BLOCKED' in patient.roles %}
-                                                     <button class="btn btn-success unblock-user" data-id="{{ patient.id }}">Unblock</button>
-                                                 {% else %}
-                                                     <button class="btn btn-danger block-user" data-id="{{ patient.id }}">Block</button>
-                                                 {% endif %}
+                                                {% if 'ROLE_BLOCKED' in patient.roles %}
+                                                    <button class="btn btn-success unblock-user" data-id="{{ patient.id }}">Débloquer</button>
+                                                {% else %}
+                                                    <button class="btn btn-danger block-user" data-id="{{ patient.id }}">Bloquer</button>
+                                                {% endif %}
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -242,7 +229,6 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
-
     <link rel="stylesheet" href="{{asset('./medecin/assets/css/tailwind.output.css')}}"/>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.css"/>
     <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
@@ -250,8 +236,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.9.3/Chart.min.js" defer></script>
     <script src="{{asset('./medecin/assets/js/charts-lines.js')}}" defer></script>
     <script src="{{asset('./medecin/assets/js/charts-pie.js')}}" defer></script>
-    <script src="https://cdn.jsdelivr.net/gh/alpinejs/alpine@v2.x.x/dist/alpine.min.js" defer></script>
-   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
         document.querySelectorAll('.block-user, .unblock-user').forEach(button => {
             button.addEventListener('click', async function() {
@@ -264,113 +249,112 @@
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
-                            'X-Requested-With': 'XMLHttpRequest'
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'X-CSRF-Token': '{{ csrf_token('block_user') }}'
                         }
                     });
 
                     const data = await response.json();
 
-                    if (data.status === 'User blocked successfully' || data.status === 'User unblocked successfully') {
-                        // Mettre à jour le bouton sans recharger la page
+                    if (data.status === 'success') {
+                        // Update the button without reloading the page
                         const button = document.querySelector(`[data-id="${userId}"]`);
-                        if (data.newRole === 'BLOCKED') {
-                            button.textContent = 'Unblock';
-                            button.classList.remove('btn-danger');
-                            button.classList.add('btn-success');
-                            button.classList.remove('block-user');
-                            button.classList.add('unblock-user');
+                        if (data.newRoles.includes('ROLE_BLOCKED')) {
+                            button.textContent = 'Débloquer';
+                            button.classList.remove('btn-danger', 'block-user');
+                            button.classList.add('btn-success', 'unblock-user');
                         } else {
-                            button.textContent = 'Block';
-                            button.classList.remove('btn-success');
-                            button.classList.add('btn-danger');
-                            button.classList.remove('unblock-user');
-                            button.classList.add('block-user');
+                            button.textContent = 'Bloquer';
+                            button.classList.remove('btn-success', 'unblock-user');
+                            button.classList.add('btn-danger', 'block-user');
                         }
 
-                        // Afficher une notification SweetAlert2
+                        // Show SweetAlert2 notification
                         Swal.fire({
                             icon: 'success',
-                            title: data.status,
+                            title: data.message,
                             showConfirmButton: false,
                             timer: 1500
+                        });
+                    } else {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Erreur',
+                            text: data.message || 'Une erreur s\'est produite.',
                         });
                     }
                 } catch (error) {
                     console.error('Error:', error);
                     Swal.fire({
                         icon: 'error',
-                        title: 'An error occurred',
-                        text: 'Please try again.',
+                        title: 'Erreur',
+                        text: 'Une erreur s\'est produite. Veuillez réessayer.',
                     });
                 }
             });
         });
     </script>
 
-<script>
-   function timeSince(date) {
-    const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+    <script>
+        function timeSince(date) {
+            const seconds = Math.floor((new Date() - new Date(date)) / 1000);
+            let interval = seconds / 31536000;
+            if (interval > 1) {
+                return Math.floor(interval) + " ans";
+            }
+            interval = seconds / 2592000;
+            if (interval > 1) {
+                return Math.floor(interval) + " mois";
+            }
+            interval = seconds / 86400;
+            if (interval > 1) {
+                return Math.floor(interval) + " jours";
+            }
+            interval = seconds / 3600;
+            if (interval > 1) {
+                return Math.floor(interval) + " heures";
+            }
+            interval = seconds / 60;
+            if (interval > 1) {
+                return Math.floor(interval) + " minutes";
+            }
+            return Math.floor(seconds) + " secondes";
+        }
 
-    let interval = seconds / 31536000;
-    if (interval > 1) {
-        return Math.floor(interval) + " ans";
-    }
-    interval = seconds / 2592000;
-    if (interval > 1) {
-        return Math.floor(interval) + " mois";
-    }
-    interval = seconds / 86400;
-    if (interval > 1) {
-        return Math.floor(interval) + " jours";
-    }
-    interval = seconds / 3600;
-    if (interval > 1) {
-        return Math.floor(interval) + " heures";
-    }
-    interval = seconds / 60;
-    if (interval > 1) {
-        return Math.floor(interval) + " minutes";
-    }
-    return Math.floor(seconds) + " secondes";
-}
+        const eventSource = new EventSource("{{ path('notifications') }}");
 
-const eventSource = new EventSource("{{ path('notifications') }}");
+        eventSource.onmessage = function (event) {
+            const data = JSON.parse(event.data);
+            console.log(data); // Vérifiez les données reçues
 
-eventSource.onmessage = function (event) {
-    const data = JSON.parse(event.data);
-    console.log(data); // Vérifiez les données reçues
+            const notificationItem = document.createElement('div');
+            notificationItem.className = 'flex items-center justify-between px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200';
+            notificationItem.innerHTML = `
+                <span>${data.message}</span>
+                <span class="text-green-500">+ Nouveau compte</span>
+                <span class="text-gray-500 text-xs">il y a ${timeSince(data.timestamp)}</span>
+            `;
 
-    const notificationItem = document.createElement('div');
-    notificationItem.className = 'flex items-center justify-between px-2 py-1 text-sm font-semibold transition-colors duration-150 rounded-md hover:bg-gray-100 hover:text-gray-800 dark:hover:bg-gray-800 dark:hover:text-gray-200';
-    notificationItem.innerHTML = `
-        <span>${data.message}</span>
-        <span class="text-green-500">+ Nouveau compte</span>
-        <span class="text-gray-500 text-xs">il y a ${timeSince(data.timestamp)}</span>
-    `;
+            const notificationsList = document.getElementById('notifications-list');
+            notificationsList.prepend(notificationItem);
 
-    const notificationsList = document.getElementById('notifications-list');
-    notificationsList.prepend(notificationItem);
+            // Limite le nombre de notifications affichées
+            if (notificationsList.children.length > 10) {
+                notificationsList.removeChild(notificationsList.lastChild);
+            }
 
-    // Limite le nombre de notifications affichées
-    if (notificationsList.children.length > 10) {
-        notificationsList.removeChild(notificationsList.lastChild);
-    }
+            const notificationBadge = document.getElementById('notification-badge');
+            notificationBadge.style.display = 'block';
+        };
 
-    const notificationBadge = document.getElementById('notification-badge');
-    notificationBadge.style.display = 'block';
-};
+        document.querySelector('[aria-label="Notifications"]').addEventListener('click', function () {
+            const dropdown = document.getElementById('notifications-dropdown');
+            dropdown.classList.toggle('hidden');
 
-document.querySelector('[aria-label="Notifications"]').addEventListener('click', function () {
-    const dropdown = document.getElementById('notifications-dropdown');
-    dropdown.classList.toggle('hidden');
-
-    // Masque le badge de notification après avoir ouvert la liste
-    const notificationBadge = document.getElementById('notification-badge');
-    notificationBadge.style.display = 'none';
-});
-</script>
-    
+            // Masque le badge de notification après avoir ouvert la liste
+            const notificationBadge = document.getElementById('notification-badge');
+            notificationBadge.style.display = 'none';
+        });
+    </script>
 </body>
-
 {% endblock %}
-
