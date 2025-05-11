@@ -16,13 +16,24 @@ use App\Form\UpdateProfileFormType;
 use App\Form\ChangePasswordFormType;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Security\Http\Attribute\IsGranted;
+use Symfony\Component\Security\Core\Authentication\Token\Storage\TokenStorageInterface;
+
 
 #[IsGranted('ROLE_PATIENT')]
 class PatientController extends AbstractController
 {
+
+    private $tokenStorage;
+
+    public function __construct(TokenStorageInterface $tokenStorage)
+    {
+        $this->tokenStorage = $tokenStorage;
+    }
+    
     #[Route('/patient', name: 'patient_dashboard')]
     public function index(Request $request, EntityManagerInterface $entityManager, SluggerInterface $slugger, UserPasswordHasherInterface $passwordHasher): Response
     {
+
         $user = $this->getUser();
         $form = $this->createForm(UpdateProfileFormType::class, $user);
         $passwordForm = $this->createForm(ChangePasswordFormType::class);
@@ -41,7 +52,7 @@ class PatientController extends AbstractController
             $entityManager->persist($user);
             $entityManager->flush();
 
-            $this->addFlash('success', 'Profil mis à jour avec succès.');
+            $this->addFlash('success', 'Votre profil a été mis à jour avec succès.');
             return $this->redirectToRoute('patient_dashboard');
         }
 
@@ -59,7 +70,7 @@ class PatientController extends AbstractController
                 $entityManager->persist($user);
                 $entityManager->flush();
 
-                $this->addFlash('success', 'Mot de passe mis à jour avec succès.');
+                $this->addFlash('success', 'Votre mot de passe a été mis à jour avec succès.');
                 return $this->redirectToRoute('patient_dashboard');
             }
         }
@@ -103,7 +114,7 @@ class PatientController extends AbstractController
 
             return $this->json([
                 'status' => 'success',
-                'message' => 'Profil mis à jour avec succès.',
+                'message' => 'Votre profil a été mis à jour avec succès.',
             ]);
         }
 
@@ -114,7 +125,7 @@ class PatientController extends AbstractController
     }
 
     #[Route('/patient/delete-profile', name: 'patient_delete_profile')]
-    public function deleteProfile(EntityManagerInterface $entityManager): Response
+    public function deleteProfile(EntityManagerInterface $entityManager, Request $request): Response
     {
         $user = $this->getUser();
 
@@ -122,11 +133,24 @@ class PatientController extends AbstractController
             return $this->redirectToRoute('app_login2');
         }
 
+        // Delete the user
         $entityManager->remove($user);
         $entityManager->flush();
 
-        return $this->redirectToRoute('app_logout');
+        // Invalidate the session
+        $session = $request->getSession();
+        $session->invalidate();
+
+        // Clear the security token to log out the user
+        $this->tokenStorage->setToken(null);
+
+        // Add success flash message
+        $this->addFlash('success', 'Votre compte a été supprimé avec succès.');
+
+        return $this->redirectToRoute('app_login2'); // Redirect to login instead of logout
     }
+
+    
 
     private function uploadFile($file, SluggerInterface $slugger, $directoryParameter): string
     {
