@@ -104,10 +104,10 @@ class RegistrationFormType extends AbstractType
             $user = $event->getData();
             $role = $form->get('roles')->getData();
 
-            if ($role === 'ROLE_PATIENT') {
+            if ($role === 'PATIENT') {
                 $user->setUserType('PATIENT');
                 $user->setRoles(['ROLE_PATIENT']);
-            } elseif ($role === 'ROLE_MEDECIN') {
+            } elseif ($role === 'MEDECIN') {
                 $user->setUserType('MEDECIN');
                 $user->setRoles(['ROLE_MEDECIN']);
             } else {
