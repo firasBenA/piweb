@@ -46,6 +46,10 @@ class Prescription
     #[ORM\ManyToOne(targetEntity: User::class, inversedBy: 'prescriptions')]
     private ?User $patient = null;
     
+    public function __construct()
+{
+    $this->datePrescription = new \DateTime();
+}
 
     public function getId(): ?int
     {

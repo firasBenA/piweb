@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\DossierMedical;
 use App\Entity\User;
 use App\Form\RegistrationFormType;
 use Doctrine\ORM\EntityManagerInterface;
@@ -24,13 +25,13 @@ class RegistrationController extends AbstractController
 
         if ($form->isSubmitted() && $form->isValid()) {
             /** @var string $plainPassword */
-            $plainPassword = $form->get('plainPassword')->getData();           
-             // encode the plain password
+            $plainPassword = $form->get('plainPassword')->getData();
+            // encode the plain password
             $user->setPassword($userPasswordHasher->hashPassword($user, $plainPassword));
-           
-           
+
+
             // set the roles for the user
-           // $selectedRole = $form->get('roles')->getData();
+            // $selectedRole = $form->get('roles')->getData();
             //$user->setRoles([$selectedRole]);
 
             // handle file uploads
@@ -47,7 +48,12 @@ class RegistrationController extends AbstractController
                 $user->setImageProfil($imageProfilFileName);
             }
 
+            $dossierMedical = new DossierMedical();
+            $dossierMedical->setUser($user);
+            $user->setDossierMedical($dossierMedical);
+
             $entityManager->persist($user);
+            $entityManager->persist($dossierMedical); // 👈 Add this line
             $entityManager->flush();
 
             // do anything else you need here, like send an email
@@ -64,7 +70,7 @@ class RegistrationController extends AbstractController
     {
         $originalFilename = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME);
         $safeFilename = $slugger->slug($originalFilename);
-        $newFilename = $safeFilename.'-'.uniqid().'.'.$file->guessExtension();
+        $newFilename = $safeFilename . '-' . uniqid() . '.' . $file->guessExtension();
 
         try {
             $file->move(

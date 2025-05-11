@@ -97,13 +97,13 @@ class AppAuthenticator extends AbstractLoginFormAuthenticator
 
         $user = $token->getUser();
 
-        if (in_array('ROLE_MEDECIN', $user->getRoles())) {
-            return new RedirectResponse($this->urlGenerator->generate('medecin_dashboard'));
-        } elseif (in_array('ROLE_PATIENT', $user->getRoles())) {
-            return new RedirectResponse($this->urlGenerator->generate('patient_dashboard'));
-        } elseif (in_array('ROLE_ADMIN', $user->getRoles())) {
-            return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
-        }
+        if (in_array('ROLE_ADMIN', $user->getRoles())) {
+        return new RedirectResponse($this->urlGenerator->generate('admin_dashboard'));
+    } elseif (in_array('ROLE_MEDECIN', $user->getRoles())) {
+        return new RedirectResponse($this->urlGenerator->generate('medecin_dashboard'));
+    } elseif (in_array('ROLE_PATIENT', $user->getRoles())) {
+        return new RedirectResponse($this->urlGenerator->generate('patient_dashboard'));
+    }
 
         return new RedirectResponse($this->urlGenerator->generate('home_page'));
     }

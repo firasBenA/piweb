@@ -44,6 +44,7 @@ class DossierMedical
     {
         $this->prescriptions = new ArrayCollection();
         $this->diagnostiques = new ArrayCollection();
+        $this->datePrescription = new \DateTime();
     }
 
     public function getId(): ?int
@@ -75,7 +76,7 @@ class DossierMedical
 
         return $this;
     }
-    
+
 
     public function getPrescriptions(): Collection
     {

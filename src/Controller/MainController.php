@@ -23,41 +23,34 @@ class MainController extends AbstractController
     {
         $token = $tokenStorage->getToken();
         $user = $token?->getUser();
-        $dossierMedicalId = null;  // Default value for DossierMedical
-
-        // Check if the user is logged in
-        if ($user) {
-            // If the user is a patient and not already on the 'home_page'
-            if (in_array('ROLE_PATIENT', $user->getRoles())) {
-                // Directly fetch the DossierMedical related to the user if the user is a patient
+        $dossierMedicalId = null;
+    
+        if ($user instanceof User) {
+            $roles = $user->getRoles();
+    
+            // Check for admin first
+            if (in_array('ROLE_ADMIN', $roles, true)) {
+                return $this->redirectToRoute('admin_dashboard');
+            }
+    
+            // Then check for doctor
+            if (in_array('ROLE_MEDECIN', $roles, true)) {
+                return $this->redirectToRoute('medecin_dashboard');
+            }
+    
+            // Handle patient role
+            if (in_array('ROLE_PATIENT', $roles, true)) {
                 $dossierMedical = $entityManager->getRepository(DossierMedical::class)->findOneBy(['user' => $user]);
-
                 if ($dossierMedical) {
                     $dossierMedicalId = $dossierMedical->getId();
                 }
-
-                // Avoid redirect loop for patients: Only redirect if the user isn't already on the home page
-                if ($router->getContext()->getPathInfo() !== $router->generate('home_page')) {
-                    return $this->redirectToRoute('home_page');
-                }
-            }
-
-            // Logic for doctors
-            if (in_array('ROLE_MEDECIN', $user->getRoles())) {
-                // Perform doctor-specific actions here, like fetching patient lists or something relevant for medecin
-                // Example:
-                $patients = $entityManager->getRepository(User::class)->findBy(['roles' => 'ROLE_PATIENT']);
-
-                // Redirect the doctor to a different page (e.g., the doctor dashboard)
-                return $this->redirectToRoute('medecin_dashboard'); // Replace 'doctor_dashboard' with your actual route for doctors
             }
         }
-
-        // If no user is logged in or any other condition is met
+    
         return $this->render('main/index.html.twig', [
             'user' => $user,
             'dossierMedicalId' => $dossierMedicalId,
-            'patients' => isset($patients) ? $patients : null, // Pass patients data if the user is a doctor
+            'patients' => null,
         ]);
     }
 
