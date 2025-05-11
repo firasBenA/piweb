@@ -1,7 +1,9 @@
+{% extends 'base.html.twig' %}
+
 {% block stylesheets %}
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css " rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css " rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins :wght@300;400;600&display=swap" rel="stylesheet">
 {% endblock %}
 
 {% block body %}
@@ -46,6 +48,7 @@
 </header>
 
 <div class="container mt-5">
+    {# Flash Messages #}
     {% for message in app.flashes('success') %}
         <div class="alert alert-success alert-dismissible fade show" role="alert">
             {{ message }}
@@ -72,7 +75,7 @@
         <div class="col-md-6">
             <div class="card shadow-sm mb-4">
                 <div class="card-body">
-                    <h5 class="card-title">Mes Informations</h5>
+                    <h5 class="card-title text-center font-weight-bold">Mes Informations</h5>
                     <p><strong>Email :</strong> {{ app.user.email }}</p>
                     <p><strong>Âge :</strong> {{ app.user.age }} ans</p>
                     <p><strong>Téléphone :</strong> {{ app.user.telephone }}</p>
@@ -108,112 +111,98 @@
             </div>
         </div>
     </div>
+
+    <footer class="bg-light text-center py-4 mt-4">
+        <p>© 2025 Medical. Tous droits réservés.</p>
+    </footer>
 </div>
 
-<footer class="bg-light text-center py-4 mt-4">
-    <p>© 2025 Medical. Tous droits réservés.</p>
-</footer>
-
-<!-- The Modal -->
+<!-- Modals -->
 <div id="editModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closeModal()">×</span>
-        {{ form_start(form, {'attr': {'class': 'modal-form', 'novalidate': 'novalidate', 'data-turbo': 'false'}}) }}
+        {{ form_start(form, {'attr': {'novalidate': 'novalidate'}}) }}
             <div>
                 {{ form_label(form.nom) }}
                 {{ form_errors(form.nom) }}
-                {{ form_widget(form.nom) }}
+                {{ form_widget(form.nom, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div>
                 {{ form_label(form.prenom) }}
                 {{ form_errors(form.prenom) }}
-                {{ form_widget(form.prenom) }}
+                {{ form_widget(form.prenom, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div>
                 {{ form_label(form.email) }}
                 {{ form_errors(form.email) }}
-                {{ form_widget(form.email) }}
+                {{ form_widget(form.email, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div>
                 {{ form_label(form.telephone) }}
                 {{ form_errors(form.telephone) }}
-                {{ form_widget(form.telephone) }}
+                {{ form_widget(form.telephone, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div>
                 {{ form_label(form.adresse) }}
                 {{ form_errors(form.adresse) }}
-                {{ form_widget(form.adresse) }}
+                {{ form_widget(form.adresse, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div>
                 {{ form_label(form.age) }}
                 {{ form_errors(form.age) }}
-                {{ form_widget(form.age) }}
+                {{ form_widget(form.age, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div>
                 {{ form_label(form.sexe) }}
                 {{ form_errors(form.sexe) }}
-                {{ form_widget(form.sexe) }}
+                {{ form_widget(form.sexe, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div>
                 {{ form_label(form.imageProfil) }}
                 {{ form_errors(form.imageProfil) }}
-                {{ form_widget(form.imageProfil) }}
+                {{ form_widget(form.imageProfil, {'attr': {'class': 'form-control-file'}}) }}
             </div>
-            <button type="submit" class="btn btn-success">Enregistrer</button>
-            <button type="button" class="btn btn-info" onclick="openPasswordModal()">Changer le mot de passe</button>
+            <button type="submit" class="btn btn-success mt-3">Enregistrer</button>
+            <button type="button" class="btn btn-info mt-3" onclick="openPasswordModal()">Changer le mot de passe</button>
         {{ form_end(form) }}
     </div>
 </div>
 
-<!-- Password Change Modal -->
 <div id="passwordModal" class="modal">
     <div class="modal-content">
         <span class="close" onclick="closePasswordModal()">×</span>
-        {{ form_start(passwordForm, {'attr': {'class': 'modal-form', 'novalidate': 'novalidate'}}) }}
+        {{ form_start(passwordForm, {'attr': {'novalidate': 'novalidate'}}) }}
             <div>
                 {{ form_label(passwordForm.oldPassword) }}
                 {{ form_errors(passwordForm.oldPassword) }}
-                {{ form_widget(passwordForm.oldPassword) }}
+                {{ form_widget(passwordForm.oldPassword, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div>
                 {{ form_label(passwordForm.newPassword) }}
                 {{ form_errors(passwordForm.newPassword) }}
-                {{ form_widget(passwordForm.newPassword) }}
+                {{ form_widget(passwordForm.newPassword, {'attr': {'class': 'form-control'}}) }}
             </div>
             <div>
                 {{ form_label(passwordForm.confirmPassword) }}
                 {{ form_errors(passwordForm.confirmPassword) }}
-                {{ form_widget(passwordForm.confirmPassword) }}
+                {{ form_widget(passwordForm.confirmPassword, {'attr': {'class': 'form-control'}}) }}
             </div>
-            <button type="submit" class="btn btn-success">Changer le mot de passe</button>
+            <button type="submit" class="btn btn-success mt-3">Changer le mot de passe</button>
         {{ form_end(passwordForm) }}
     </div>
 </div>
 
 <script>
-    function openModal() {
-        document.getElementById('editModal').style.display = 'block';
-    }
-
-    function closeModal() {
-        document.getElementById('editModal').style.display = 'none';
-    }
-
-    function openPasswordModal() {
-        document.getElementById('passwordModal').style.display = 'block';
-    }
-
-    function closePasswordModal() {
-        document.getElementById('passwordModal').style.display = 'none';
-    }
+    function openModal() { document.getElementById('editModal').style.display = 'block'; }
+    function closeModal() { document.getElementById('editModal').style.display = 'none'; }
+    function openPasswordModal() { document.getElementById('passwordModal').style.display = 'block'; }
+    function closePasswordModal() { document.getElementById('passwordModal').style.display = 'none'; }
 
     window.onclick = function(event) {
-        if (event.target == document.getElementById('editModal')) {
-            closeModal();
-        }
-        if (event.target == document.getElementById('passwordModal')) {
-            closePasswordModal();
-        }
+        const modal1 = document.getElementById('editModal');
+        const modal2 = document.getElementById('passwordModal');
+        if (event.target == modal1) closeModal();
+        if (event.target == modal2) closePasswordModal();
     }
 
     function confirmDelete() {

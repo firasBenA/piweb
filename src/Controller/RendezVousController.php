@@ -71,19 +71,19 @@ final class RendezVousController extends AbstractController
             $entityManager->persist($rdv);
             $entityManager->flush();
 
-             $consultation = new Consultation();
+            $consultation = new Consultation();
             $consultation->setRendezVous($rdv); // Relier la consultation au rendez-vous
             $consultation->setPatient($user); // Relier la consultation au patient
             $consultation->setMedecin($rdv->getMedecin()); // Relier la consultation au médecin
             $consultation->setDate($rdv->getDate()); // Associer la même date de rendez-vous
             $consultation->setTypeConsultation('type à définir'); // Définir le type de consultation si nécessaire
-    
+
             // Persist the consultation
             $entityManager->persist($consultation);
             $entityManager->flush();
 
-            
-        
+
+
 
             $this->addFlash('success', 'Votre rendez-vous a été enregistré avec succès.');
 
@@ -98,64 +98,64 @@ final class RendezVousController extends AbstractController
         ]);
     }
 
-#[Route('/listrdv', name: 'listrdv')]
-public function listRendezVous(ManagerRegistry $rm, Security $security, Request $request): Response
-{
-    $entityManager = $rm->getManager();
-    $user = $security->getUser();
+    #[Route('/listrdv', name: 'listrdv')]
+    public function listRendezVous(ManagerRegistry $rm, Security $security, Request $request): Response
+    {
+        $entityManager = $rm->getManager();
+        $user = $security->getUser();
 
-    
 
-    // Récupérer les paramètres de pagination et de recherche
-    $page = $request->query->getInt('page', 1);
-    $limit = 3;
-    $offset = ($page - 1) * $limit;
-    $search = $request->query->get('search'); // Paramètre de recherche
 
-    $repository = $entityManager->getRepository(RendezVous::class);
-    $queryBuilder = $repository->createQueryBuilder('r')
-        ->leftJoin('r.medecin', 'm') // Joindre la table des médecins
-        ->where('r.patient = :patient')
-        ->setParameter('patient', $user);
+        // Récupérer les paramètres de pagination et de recherche
+        $page = $request->query->getInt('page', 1);
+        $limit = 3;
+        $offset = ($page - 1) * $limit;
+        $search = $request->query->get('search'); // Paramètre de recherche
 
-    // Appliquer le filtre de recherche si un terme est fourni
-    if ($search) {
-        $queryBuilder->andWhere('m.nom LIKE :search OR m.prenom LIKE :search')
-            ->setParameter('search', '%' . $search . '%');
-    }
+        $repository = $entityManager->getRepository(RendezVous::class);
+        $queryBuilder = $repository->createQueryBuilder('r')
+            ->leftJoin('r.medecin', 'm') // Joindre la table des médecins
+            ->where('r.patient = :patient')
+            ->setParameter('patient', $user);
 
-    // Pagination
-    $queryBuilder->orderBy('r.date', 'DESC');
-    $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($queryBuilder);
-    $totalRendezVous = count($paginator);
-    $totalPages = ceil($totalRendezVous / $limit);
+        // Appliquer le filtre de recherche si un terme est fourni
+        if ($search) {
+            $queryBuilder->andWhere('m.nom LIKE :search OR m.prenom LIKE :search')
+                ->setParameter('search', '%' . $search . '%');
+        }
 
-    $rendezVous = $paginator
-        ->getQuery()
-        ->setFirstResult($offset)
-        ->setMaxResults($limit)
-        ->getResult();
+        // Pagination
+        $queryBuilder->orderBy('r.date', 'DESC');
+        $paginator = new \Doctrine\ORM\Tools\Pagination\Paginator($queryBuilder);
+        $totalRendezVous = count($paginator);
+        $totalPages = ceil($totalRendezVous / $limit);
 
-    // Si c'est une requête AJAX, on retourne uniquement le contenu de la table
-    if ($request->isXmlHttpRequest()) {
-        return $this->render('rendez_vous/_table.html.twig', [
+        $rendezVous = $paginator
+            ->getQuery()
+            ->setFirstResult($offset)
+            ->setMaxResults($limit)
+            ->getResult();
+
+        // Si c'est une requête AJAX, on retourne uniquement le contenu de la table
+        if ($request->isXmlHttpRequest()) {
+            return $this->render('rendez_vous/_table.html.twig', [
+                'rendezVous' => $rendezVous,
+                'currentPage' => $page,
+                'totalPages' => $totalPages,
+            ]);
+        }
+
+        // Sinon, on retourne la page complète
+        return $this->render('rendez_vous/listrdv.html.twig', [
             'rendezVous' => $rendezVous,
+            'user' => $user,
             'currentPage' => $page,
             'totalPages' => $totalPages,
+            'search' => $search, // Passer le terme de recherche au template
         ]);
     }
 
-    // Sinon, on retourne la page complète
-    return $this->render('rendez_vous/listrdv.html.twig', [
-        'rendezVous' => $rendezVous,
-        'user' => $user,
-        'currentPage' => $page,
-        'totalPages' => $totalPages,
-        'search' => $search, // Passer le terme de recherche au template
-    ]);
-}
-
-   #[Route('/deleteRdv/{id}', name: 'delete_rdv')]
+    #[Route('/deleteRdv/{id}', name: 'delete_rdv')]
     public function deleteRendezVous(ManagerRegistry $rm, int $id): Response
     {
         $entityManager = $rm->getManager();
@@ -271,7 +271,7 @@ public function listRendezVous(ManagerRegistry $rm, Security $security, Request 
             $entityManager->flush();
 
             $this->addFlash('success', 'Profil mis à jour avec succès.');
-            return $this->redirectToRoute('patient_dashboard');
+            return $this->redirectToRoute('patientDashboard', ['id' => $user->getId()]);
         }
 
         if ($passwordForm->isSubmitted() && $passwordForm->isValid()) {
@@ -289,7 +289,7 @@ public function listRendezVous(ManagerRegistry $rm, Security $security, Request 
                 $entityManager->flush();
 
                 $this->addFlash('success', 'Mot de passe mis à jour avec succès.');
-                return $this->redirectToRoute('patient_dashboard');
+                return $this->redirectToRoute('patientDashboard', ['id' => $user->getId()]);
             }
         }
 
