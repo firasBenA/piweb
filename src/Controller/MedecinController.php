@@ -13,7 +13,7 @@ use Symfony\Component\HttpFoundation\File\Exception\FileException;
 
 use Symfony\Component\Security\Http\Attribute\IsGranted;
 
-#[IsGranted('MEDECIN')]
+#[IsGranted('ROLE_MEDECIN')]
 class MedecinController extends AbstractController
 {
     #[Route('/medecin', name: 'medecin_dashboard')]

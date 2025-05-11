@@ -11,19 +11,29 @@
         <div class="col-md-6" style="height:500px">
             <div class="card" style="margin-top:150px">
                 <div class="card-header text-center">
-                    <h1>Authentification à deux facteurs</h1>
+                    <h3>Authentification à deux facteurs</h3>
                 </div>
                 <div class="card-body">
-                    {% if error %}
-                        <div class="alert alert-danger">{{ error }}</div>
-                    {% endif %}
-                    <form action="{{ path('2fa_login_check') }}" method="post">
+                    {# Display success or error messages #}
+                    {% for flashMessage in app.flashes('success') %}
+                        <div class="alert alert-success">{{ flashMessage }}</div>
+                    {% endfor %}
+                    {% for flashMessage in app.flashes('error') %}
+                        <div class="alert alert-danger">{{ flashMessage }}</div>
+                    {% endfor %}
+
+                    <form action="{{ path('verify_2fa_code') }}" method="post">
                         <div class="form-group">
-                            <label for="2fa_code">Code d'authentification:</label>
-                            <input type="text" id="2fa_code" name="_auth_code" class="form-control" required>
+                            <label for="auth_code">Code d'authentification:</label>
+                            <input type="text" id="auth_code" name="auth_code" class="form-control" required autofocus>
                         </div>
-                        <button type="submit" class="btn btn-primary btn-block">Verifier</button>
+                        <input type="hidden" name="_csrf_token" value="{{ csrf_token('verify_2fa') }}">
+                        <button type="submit" class="btn btn-primary btn-block">Vérifier le code</button>
                     </form>
+
+                    <div class="text-center mt-3">
+                        <a href="{{ path('send_2fa_code') }}">Renvoyer un nouveau code</a>
+                    </div>
                 </div>
             </div>
         </div>
